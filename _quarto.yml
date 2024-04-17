@@ -1,0 +1,36 @@
+project:
+  type: website
+  render:
+    - "*.qmd"
+    - "*.markdown"
+
+website:
+  title: "Simon's snippets"
+  site-url: "https://www.simoncoulombe.com"
+  description: "learning stuff in public so I dont forget it"
+  navbar:
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/SimonCoulombe
+      - icon: twitter
+        href: https://twitter.com/coulsim
+      - icon: linkedin
+        href: https://www.linkedin.com/in/simon-c-310547112/
+  google-analytics: 
+    tracking-id: "UA-112244835-1"
+    anonymize-ip: true
+    storage: "cookies" # need this to be set to "cookies" in order to show up in google analytics
+  cookie-consent: false        
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    code-overflow: wrap
+    code-fold: true
+    code-folding: hide
+    code-summary: "\\<code\\>"
+    code-copy: hover
+editor: source
+
+
