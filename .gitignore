@@ -6,7 +6,7 @@
 
 /.quarto/
 _publish.yml
-_site/
+/_site/
 .httr-oauth
 .quarto
 .Rdata

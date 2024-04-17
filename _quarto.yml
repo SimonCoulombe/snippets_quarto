@@ -24,7 +24,7 @@ website:
   cookie-consent: false        
 format:
   html:
-    theme: cosmo
+    theme: sketchy
     css: styles.css
     code-overflow: wrap
     code-fold: true
