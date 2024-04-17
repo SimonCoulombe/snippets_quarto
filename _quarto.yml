@@ -32,5 +32,7 @@ format:
     code-summary: "\\<code\\>"
     code-copy: hover
 editor: source
+execute:
+  freeze: auto
 
 
