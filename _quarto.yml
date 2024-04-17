@@ -34,5 +34,6 @@ format:
 editor: source
 execute:
   freeze: auto
-
-
+comments:
+  giscus: 
+    repo: coulsim/snippets_quarto
