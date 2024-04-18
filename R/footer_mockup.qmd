@@ -1,0 +1,28 @@
+:::{.callout-tip collapse="true"}
+## Reproductibilité  
+
+Ce document a été généré le `r format(Sys.time(),"%e %B %Y à %T ")`.    par le programme `r knitr::current_input()`.  Note: les fichiers `.qmd` voient leur extension remplacée par rmarkdown ici.  
+
+```{r repo, cache=FALSE, echo = FALSE}
+git2r::repository()
+```
+
+```{r sessioninfo, cache = FALSE, echo = FALSE}
+# save the session info as an object
+library(sessioninfo)
+pkg_sesh <- sessioninfo::session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_sesh$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+)
+
+# print it out
+pkg_sesh
+```
+:::

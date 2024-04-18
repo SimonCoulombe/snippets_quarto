@@ -6,3 +6,29 @@ freeze: true
 
 # Enable banner style title blocks
 title-block-banner: true
+
+# Default knitr options
+execute:
+  echo: true
+  message: true
+  warning: true
+
+code-tools: 
+  source: repo
+  toggle: false
+  caption: none
+
+keep-md: true
+downloads: [pdf, epub]
+editor: source
+
+# Enable CC licence appendix
+license: "CC BY"
+
+# Default for table of contents
+toc: true
+toc-title: Table des matières
+toc-location: left
+
+# Default fields for citation
+citation: true

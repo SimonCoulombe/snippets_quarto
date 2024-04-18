@@ -1,0 +1,13 @@
+# Reproducibility receipt  
+
+This document was generated on `r Sys.time()`  by the program `r knitr::current_input()`.
+
+Repository:
+```{r, cache=FALSE}
+git2r::repository()
+```
+
+Session info:
+```{r cache=FALSE}
+sessioninfo::session_info()
+```

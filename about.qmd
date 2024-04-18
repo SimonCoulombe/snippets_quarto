@@ -1,6 +1,6 @@
 ---
-title: "About"
-image: profile.jpg
+title: "À propos"
+image: images/profile.jpg
 comments: false  
 about:
   template: jolla
@@ -14,7 +14,10 @@ about:
     - icon: github
       text: Github
       href: https://github.com/simoncoulombe
-
+    - text: Email
+      href: mailto:janedoe@amazing.net
 ---
 
-About this blog
+Je maintiens ce blog pour apprendre en public des nouvelles méthodes en public ou pour répondre à des questions que je me pose.
+
+[janedoe@amazing.net](mailto:janedoe@amazing.net)

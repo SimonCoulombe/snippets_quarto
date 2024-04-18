@@ -1,0 +1,14 @@
+{
+  "hash": "88eb11c03b351a74ed406eaf5f228f50",
+  "result": {
+    "markdown": "---\ntitle: \"Use R to generate a Quarto blogpost\"\ndescription: |\n  The {cli} and {fs} package make life easy!\nauthor: Simon Coulombe\ndate: 2024-04-17\ncategories: []\nlang: fr\n---\n\n\n:::{.callout-tip collapse=\"true\"}\n## Reproductibilité  \n\nCe document a été généré le 2024-04-17 22:25:59.267694  par le programme index.rmarkdown.\n\n\n::: {.cell}\n::: {.cell-output .cell-output-stdout}\n```\nLocal:    main C:/Users/simon/OneDrive/Documents/snippets_quarto\nRemote:   main @ origin (git@github.com:SimonCoulombe/snippets_quarto.git)\nHead:     [b8bfb61] 2024-04-17: comments work\n```\n:::\n:::\n\n::: {.cell}\n::: {.cell-output .cell-output-stdout}\n```\n─ Session info ───────────────────────────────────────────────────────────────\n setting  value\n version  R version 4.3.3 (2024-02-29 ucrt)\n os       Windows 11 x64 (build 22631)\n system   x86_64, mingw32\n ui       RTerm\n language (EN)\n collate  French_Canada.utf8\n ctype    French_Canada.utf8\n tz       America/Toronto\n date     2024-04-17\n pandoc   3.1.1 @ C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/ (via rmarkdown)\n quarto   1.3.450 @ C:\\\\PROGRA~1\\\\RStudio\\\\RESOUR~1\\\\app\\\\bin\\\\quarto\\\\bin\\\\quarto.exe\n\n─ Packages ───────────────────────────────────────────────────────────────────\n ! package     * version date (UTC) lib source\n P sessioninfo * 1.2.2   2021-12-06 [?] RSPM\n\n [1] C:/Users/simon/OneDrive/Documents/snippets_quarto/renv/library/R-4.3/x86_64-w64-mingw32\n [2] C:/Users/simon/AppData/Local/R/cache/R/renv/sandbox/R-4.3/x86_64-w64-mingw32/7cdaab8d\n\n P ── Loaded and on-disk path mismatch.\n\n──────────────────────────────────────────────────────────────────────────────\n```\n:::\n:::\n\n\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

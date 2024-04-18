@@ -5,23 +5,29 @@ project:
     - "*.markdown"
 
 website:
-  title: "Simon's snippets"
-  site-url: "https://www.simoncoulombe.com"
-  description: "learning stuff in public so I dont forget it"
+  title: "Les pelleteux de cloud"
+  site-url: https://simonssnippets.netlify.app/
+  repo-url: https://github.com/simoncoulombe/snippets_quarto
+  favicon: images/favicon.ico
+  description: "apprendre des trucs en public dans l'espoir de les oublier moins rapidement."
   navbar:
+#    title: false   # on en a juste besoin dans l'index, pis c'est déjà le titre de l'index.qmd, pas besoin de l'avoir en haut aussi..
+#    logo: images/pelleteux_carre.jpeg
     right:
-      - about.qmd
-      - icon: github
-        href: https://github.com/SimonCoulombe
-      - icon: twitter
-        href: https://twitter.com/coulsim
-      - icon: linkedin
-        href: https://www.linkedin.com/in/simon-c-310547112/
-  google-analytics: 
-    tracking-id: "UA-112244835-1"
+      - text: "Blog"
+        file: blog.qmd
+      - text: "À propos"
+        file: about.qmd
+      - icon: rss
+        href: index.xml        # https://quarto.org/docs/websites/website-blog.html
+  google-analytics:  
+    tracking-id: "UA-112244835-1" 
     anonymize-ip: true
-    storage: "cookies" # need this to be set to "cookies" in order to show up in google analytics
-  cookie-consent: false        
+    storage: "none" # no tracking of user between sesision # https://quarto.org/docs/websites/website-tools.html#google-analytics
+  cookie-consent: false # dont request cookie consent  https://quarto.org/docs/websites/website-tools.html#cookie-consent
+  reader-mode: true # allow users to hide side nav and table of content
+  open-graph: true # richer sharing of links to articles on the web (better preview of links pasted on linkedin etc..)
+lang: fr    
 format:
   html:
     theme: sketchy
@@ -31,9 +37,21 @@ format:
     code-folding: hide
     code-summary: "\\<code\\>"
     code-copy: hover
+    email-obfuscation: javascript
 editor: source
 execute:
   freeze: auto
 comments:
-  giscus: 
-    repo: simoncoulombe/snippets_quarto
+  giscus:
+    repo: "simoncoulombe/snippets_quarto"
+    repo-id: "R_kgDOLvcBAw"
+    category: "Blog posts"
+    category-id: "DIC_kwDOLvcBA84CewTE"
+    mapping: "pathname"
+    reactions-enabled: true
+    input-position: "top"
+    theme: "preferred_color_scheme"
+    language: "fr"
+    loading: "lazy"
+
+
