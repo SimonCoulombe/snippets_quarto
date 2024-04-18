@@ -8,7 +8,7 @@
 
 
 
-```{r, include = FALSE}
+```{r, include = FALSE, eval= FALSE}
 .url_gh <- function(x) {
   url_git <- git2r::remote_url(remote = "origin")
   url_web <- gsub(".git$", replacement = "", x = url_git)

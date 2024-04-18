@@ -12,7 +12,7 @@ website:
   description: "apprendre des trucs en public dans l'espoir de les oublier moins rapidement."
   navbar:
 #    title: false   # on en a juste besoin dans l'index, pis c'est déjà le titre de l'index.qmd, pas besoin de l'avoir en haut aussi..
-#    logo: images/pelleteux_carre.jpg
+    logo: images/pelleteux_carre.jpg
     right:
       - text: "Blog"
         file: blog.qmd
