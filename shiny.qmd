@@ -1,5 +1,6 @@
 ---
 title: "Shiny"
+title-block-banner: false # enleve le fond au titre
 comments: false  
 listing:
   id: shiny-listings
@@ -18,7 +19,6 @@ listing:
   fields: [image, date, title, description] ## pas besoin de author, on sait que c'est mo!
   feed: true   # Now, when your site is rendered, an RSS feed will also be generated. To learn more, see the article on RSS Feeds.
 page-layout: full
-title-block-banner: true
 ---
 
 ici je liste mes shiny apps qui sont disponibles publiquement.

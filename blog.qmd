@@ -1,6 +1,7 @@
 ---
 title: "Simon's snippets"
 #subtitle: "le blog à Simon"
+title-block-banner: false # enleve le fond au titre
 comments: false  
 listing:
   id: sample-listings
@@ -18,7 +19,6 @@ listing:
   fields: [image, date, title, description, categories] ## pas besoin de author, on sait que c'est mo!
   feed: true   # Now, when your site is rendered, an RSS feed will also be generated. To learn more, see the article on RSS Feeds.
 page-layout: full
-title-block-banner: true
 ---
 
 bienvenue!!   Je suis  en processus de migration vers Quarto à partir de mon blog `blogdown`+ `hugo` Simon's snippets, qui était hébergé à [www.simoncoulombe.com](www.simoncoulombe.com)

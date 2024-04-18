@@ -1,9 +1,9 @@
 ---
-title: Page Not Found
-title-block-banner: false
+title: Erreur 404 
+title-block-banner: false # enleve le fond au titre
 comments: false
 ---
 
-The page you requested cannot be found.  It's probably your fault.  
+La page que tu cherches existe pas.   C'est certainement une erreur de ta part.
 
 ![](images/tabarnak.jpg)
