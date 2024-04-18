@@ -16,6 +16,8 @@ website:
     right:
       - text: "Blog"
         file: blog.qmd
+      - text: "Shiny"
+        file: shiny.qmd        
       - text: "À propos"
         file: about.qmd
       - icon: rss

@@ -1,0 +1,30 @@
+---
+title: "Shiny"
+comments: false  
+listing:
+  id: shiny-listings
+  date-format: "long"
+  contents:  
+    shiny_list.yaml
+  sort: "date desc"
+  type: grid
+  categories: true
+  sort-ui: false
+  filter-ui: false
+  grid-columns: 3
+  image-height: 250px
+  page-size: 100
+  image-placeholder: "images/pelleteux_carre.jpg"  
+  fields: [image, date, title, description] ## pas besoin de author, on sait que c'est mo!
+  feed: true   # Now, when your site is rendered, an RSS feed will also be generated. To learn more, see the article on RSS Feeds.
+page-layout: full
+title-block-banner: true
+---
+
+ici je liste mes shiny apps qui sont disponibles publiquement.
+
+::: {#shiny-listings}
+:::   
+
+
+beu-bye!!
