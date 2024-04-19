@@ -105,7 +105,8 @@ PFMTYPG_codes <-
     "4", "Autres types de famille",
     "9", "Non déclaré"
   )
-PFMTYPG_codes
+PFMTYPG_codes %>% 
+  gt()
 ```
 
 Le problème c'est que la taxe de QS serait sur l'avoir net de l'individu et que nous disposons de l'avoir net du ménage.
@@ -508,7 +509,8 @@ pumf_qc_scenario1 <- pumf_qc  %>%
   )
 
 pumf_qc_scenario1 %>% arrange(desc(taxe_totale_scenario_max))  %>%
-  print(n=10)
+  head(10) %>%
+  gt()
 ```
 
 
