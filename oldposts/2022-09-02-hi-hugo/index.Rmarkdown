@@ -25,5 +25,5 @@ map <- leaflet::leaflet() %>%
   fitBounds(0, 40, 10, 50) %>%
   addPopups(-93.65, 42.0285, "Here is the <b>Department of Statistics</b>, ISU")
 
-learn::save_and_use_widget(map, "map.html")
+#learn::save_and_use_widget(map, "map.html")
 ```

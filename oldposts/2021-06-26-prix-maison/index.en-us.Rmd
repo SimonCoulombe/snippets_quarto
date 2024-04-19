@@ -39,7 +39,7 @@ suppressMessages(
     library(sf)
     library(tidyverse)
     library(pdftools)
-    library(tabulizer)
+    #library(tabulizer)
     library(tesseract)
     library(janitor)
     library(stringr)
