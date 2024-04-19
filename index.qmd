@@ -31,6 +31,6 @@ La section [shiny](shiny.qmd) est l'endroit où j'espère refaire revivre des ap
 
 Enfin, la section [pelleteux de cloud](pelleteux.qmd) vous annonce très subtilement que je suis aussi consultant en science de données.  
 
-
+Il y a une section "commentaires" en bas de chaque blog post, gênez-vous pas pour dire bonjour.  
  
 
