@@ -1,10 +1,9 @@
 ---
 title: "Simon's snippets"
-#subtitle: "le blog à Simon"
 title-block-banner: false # enleve le fond au titre
-comments: false  
+#comments: false  
 listing:
-  id: sample-listings
+  id: blog-listings
   date-format: "long"
   contents: posts
   sort: "date desc"
@@ -24,7 +23,7 @@ page-layout: full
 bienvenue!!   Je suis  en processus de migration vers Quarto à partir de mon blog `blogdown`+ `hugo` Simon's snippets, qui était hébergé à [www.simoncoulombe.com](www.simoncoulombe.com)
 
 
-::: {#sample-listings}
+::: {#blog-listings}
 :::   
 
 

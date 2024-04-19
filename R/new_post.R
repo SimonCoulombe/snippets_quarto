@@ -86,7 +86,9 @@ new_post <- function(
   # finalize new post text
   new_post_text <- paste0(
     c(new_post_text,
-    readLines("R/footer_mockup.qmd")),
+      readLines("R/abstract.qmd"),
+      readLines("R/footer_mockup.qmd")
+    ),
     collapse = "\n"
   )
   

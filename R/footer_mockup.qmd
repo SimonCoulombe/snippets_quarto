@@ -1,4 +1,4 @@
-:::{.callout-tip collapse="true"}
+:::{.callout-note collapse="true"}
 ## Reproductibilité  
 
 Ce document a été généré le `r format(Sys.time(),"%e %B %Y à %T ")`.    par le programme `r knitr::current_input()`.  Note: les fichiers `.qmd` voient leur extension remplacée par rmarkdown ici.  

@@ -1,9 +1,9 @@
 ---
 title: Erreur 404 
 title-block-banner: false # enleve le fond au titre
-comments: false
+#comments: false
 ---
 
-La page que tu cherches existe pas.   C'est certainement une erreur de ta part.
+La page que tu cherches n'existe pas.   C'est certainement une erreur de ta part.
 
 ![](images/tabarnak.jpg)
