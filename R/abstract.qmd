@@ -5,3 +5,19 @@
 
 
 :::
+
+```{r}
+
+#install.packages("ggokabeito")
+library(ggokabeito)
+ggplot2::theme_set(ggplot2::theme_minimal()) # this ggplot2 theme uses roboto condensed font, which works well with the font used for the whole document.
+options(ggplot2.discrete.fill  = function() scale_fill_viridis_d() )
+options(ggplot2.continuous.fill  = function() scale_fill_okabe_ito)
+options(ggplot2.discrete.colour = function() scale_color_okabe_ito())
+options(ggplot2.continuous.colour = function() scale_color_viridis_c())
+ggplot2::update_geom_defaults("point", ggplot2::aes(color = "#0072B2"))
+ggplot2::update_geom_defaults("line", ggplot2::aes(color = "#0072B2"))
+ggplot2::update_geom_defaults("rect", ggplot2::aes(color = "#0072B2", fill = "#0072B2"))
+options(scipen=999)
+```
+
