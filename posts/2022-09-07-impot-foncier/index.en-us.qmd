@@ -109,6 +109,7 @@ Lets' goooo!
 
 # Les manips   
 ```{r}
+
 pumf <- read_fwf(here::here("posts/2022-09-06-taxer-les-ultras-riches-ou-taxer-les-retrait-s/data/SFS2019_PUMF_F/SFS2019_EFAM_PUMF.txt"),
                  col_types = list(
                    PEFAMID  = col_character(),
@@ -474,7 +475,8 @@ pumf_qc <- pumf %>%
 
 Voici à quoi ressemblent les micro-données brutes:
 ```{r}
-pumf_qc %>% head(10) %>% knitr::kable()
+#| column: screen-inset-shaded
+pumf_qc %>% head(10) %>% gt::gt()
 ```
 
 

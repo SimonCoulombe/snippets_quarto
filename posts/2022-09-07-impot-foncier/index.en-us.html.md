@@ -79,22 +79,562 @@ Lets' goooo!
 
 Voici à quoi ressemblent les micro-données brutes:
 
-::: {.cell}
+::: {.cell .column-screen-inset-shaded}
 ::: {.cell-output-display}
 
 
-| PWNETWPT|   PWEIGHT| PWAPRVAL| PWASTRST|PAGEMIEG |gr_age   | valeur_fonciere| taxes_foncieres| taux_taxation_sur_patrimoine|
-|--------:|---------:|--------:|--------:|:--------|:--------|---------------:|---------------:|----------------------------:|
-|  8806000| 1393.1613|   800000|        0|12       |65-plus  |          800000|            8000|                    0.0009085|
-|   155050| 2935.6096|   390000|        0|04       |34-moins |          390000|            3900|                    0.0251532|
-|  8738950|  954.6999|   280000|   260000|05       |35-44    |          540000|            5400|                    0.0006179|
-|     5005| 1367.6644|        0|        0|04       |34-moins |               0|               0|                    0.0000000|
-|    73500| 1813.3366|    72500|        0|14       |65-plus  |           72500|             725|                    0.0098639|
-|  1308950| 2063.1375|   200000|    57500|08       |45-54    |          257500|            2575|                    0.0019672|
-|   138050| 4314.2599|        0|        0|13       |65-plus  |               0|               0|                    0.0000000|
-|   117250| 1595.1530|   260000|        0|04       |34-moins |          260000|            2600|                    0.0221748|
-|      555| 3910.7481|        0|        0|14       |65-plus  |               0|               0|                    0.0000000|
-|   422000| 1030.9989|        0|        0|11       |65-plus  |               0|               0|                    0.0000000|
+```{=html}
+<div id="ovsfgwzlgl" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ovsfgwzlgl table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#ovsfgwzlgl thead, #ovsfgwzlgl tbody, #ovsfgwzlgl tfoot, #ovsfgwzlgl tr, #ovsfgwzlgl td, #ovsfgwzlgl th {
+  border-style: none;
+}
+
+#ovsfgwzlgl p {
+  margin: 0;
+  padding: 0;
+}
+
+#ovsfgwzlgl .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#ovsfgwzlgl .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#ovsfgwzlgl .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#ovsfgwzlgl .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#ovsfgwzlgl .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ovsfgwzlgl .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ovsfgwzlgl .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ovsfgwzlgl .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#ovsfgwzlgl .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#ovsfgwzlgl .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#ovsfgwzlgl .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#ovsfgwzlgl .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#ovsfgwzlgl .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#ovsfgwzlgl .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#ovsfgwzlgl .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ovsfgwzlgl .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#ovsfgwzlgl .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#ovsfgwzlgl .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#ovsfgwzlgl .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ovsfgwzlgl .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#ovsfgwzlgl .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#ovsfgwzlgl .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#ovsfgwzlgl .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ovsfgwzlgl .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#ovsfgwzlgl .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ovsfgwzlgl .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ovsfgwzlgl .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ovsfgwzlgl .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#ovsfgwzlgl .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ovsfgwzlgl .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#ovsfgwzlgl .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ovsfgwzlgl .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ovsfgwzlgl .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ovsfgwzlgl .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ovsfgwzlgl .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ovsfgwzlgl .gt_left {
+  text-align: left;
+}
+
+#ovsfgwzlgl .gt_center {
+  text-align: center;
+}
+
+#ovsfgwzlgl .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#ovsfgwzlgl .gt_font_normal {
+  font-weight: normal;
+}
+
+#ovsfgwzlgl .gt_font_bold {
+  font-weight: bold;
+}
+
+#ovsfgwzlgl .gt_font_italic {
+  font-style: italic;
+}
+
+#ovsfgwzlgl .gt_super {
+  font-size: 65%;
+}
+
+#ovsfgwzlgl .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#ovsfgwzlgl .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#ovsfgwzlgl .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#ovsfgwzlgl .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#ovsfgwzlgl .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#ovsfgwzlgl .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#ovsfgwzlgl .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="PWNETWPT">PWNETWPT</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="PWEIGHT">PWEIGHT</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="PWAPRVAL">PWAPRVAL</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="PWASTRST">PWASTRST</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="PAGEMIEG">PAGEMIEG</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="gr_age">gr_age</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="valeur_fonciere">valeur_fonciere</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="taxes_foncieres">taxes_foncieres</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="taux_taxation_sur_patrimoine">taux_taxation_sur_patrimoine</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="PWNETWPT" class="gt_row gt_right">8806000</td>
+<td headers="PWEIGHT" class="gt_row gt_right">1393.1613</td>
+<td headers="PWAPRVAL" class="gt_row gt_right">800000</td>
+<td headers="PWASTRST" class="gt_row gt_right">0</td>
+<td headers="PAGEMIEG" class="gt_row gt_right">12</td>
+<td headers="gr_age" class="gt_row gt_left">65-plus</td>
+<td headers="valeur_fonciere" class="gt_row gt_right">800000</td>
+<td headers="taxes_foncieres" class="gt_row gt_right">8000</td>
+<td headers="taux_taxation_sur_patrimoine" class="gt_row gt_right">0.0009084715</td></tr>
+    <tr><td headers="PWNETWPT" class="gt_row gt_right">155050</td>
+<td headers="PWEIGHT" class="gt_row gt_right">2935.6096</td>
+<td headers="PWAPRVAL" class="gt_row gt_right">390000</td>
+<td headers="PWASTRST" class="gt_row gt_right">0</td>
+<td headers="PAGEMIEG" class="gt_row gt_right">04</td>
+<td headers="gr_age" class="gt_row gt_left">34-moins</td>
+<td headers="valeur_fonciere" class="gt_row gt_right">390000</td>
+<td headers="taxes_foncieres" class="gt_row gt_right">3900</td>
+<td headers="taux_taxation_sur_patrimoine" class="gt_row gt_right">0.0251531764</td></tr>
+    <tr><td headers="PWNETWPT" class="gt_row gt_right">8738950</td>
+<td headers="PWEIGHT" class="gt_row gt_right">954.6999</td>
+<td headers="PWAPRVAL" class="gt_row gt_right">280000</td>
+<td headers="PWASTRST" class="gt_row gt_right">260000</td>
+<td headers="PAGEMIEG" class="gt_row gt_right">05</td>
+<td headers="gr_age" class="gt_row gt_left">35-44</td>
+<td headers="valeur_fonciere" class="gt_row gt_right">540000</td>
+<td headers="taxes_foncieres" class="gt_row gt_right">5400</td>
+<td headers="taux_taxation_sur_patrimoine" class="gt_row gt_right">0.0006179232</td></tr>
+    <tr><td headers="PWNETWPT" class="gt_row gt_right">5005</td>
+<td headers="PWEIGHT" class="gt_row gt_right">1367.6644</td>
+<td headers="PWAPRVAL" class="gt_row gt_right">0</td>
+<td headers="PWASTRST" class="gt_row gt_right">0</td>
+<td headers="PAGEMIEG" class="gt_row gt_right">04</td>
+<td headers="gr_age" class="gt_row gt_left">34-moins</td>
+<td headers="valeur_fonciere" class="gt_row gt_right">0</td>
+<td headers="taxes_foncieres" class="gt_row gt_right">0</td>
+<td headers="taux_taxation_sur_patrimoine" class="gt_row gt_right">0.0000000000</td></tr>
+    <tr><td headers="PWNETWPT" class="gt_row gt_right">73500</td>
+<td headers="PWEIGHT" class="gt_row gt_right">1813.3366</td>
+<td headers="PWAPRVAL" class="gt_row gt_right">72500</td>
+<td headers="PWASTRST" class="gt_row gt_right">0</td>
+<td headers="PAGEMIEG" class="gt_row gt_right">14</td>
+<td headers="gr_age" class="gt_row gt_left">65-plus</td>
+<td headers="valeur_fonciere" class="gt_row gt_right">72500</td>
+<td headers="taxes_foncieres" class="gt_row gt_right">725</td>
+<td headers="taux_taxation_sur_patrimoine" class="gt_row gt_right">0.0098639456</td></tr>
+    <tr><td headers="PWNETWPT" class="gt_row gt_right">1308950</td>
+<td headers="PWEIGHT" class="gt_row gt_right">2063.1375</td>
+<td headers="PWAPRVAL" class="gt_row gt_right">200000</td>
+<td headers="PWASTRST" class="gt_row gt_right">57500</td>
+<td headers="PAGEMIEG" class="gt_row gt_right">08</td>
+<td headers="gr_age" class="gt_row gt_left">45-54</td>
+<td headers="valeur_fonciere" class="gt_row gt_right">257500</td>
+<td headers="taxes_foncieres" class="gt_row gt_right">2575</td>
+<td headers="taux_taxation_sur_patrimoine" class="gt_row gt_right">0.0019672256</td></tr>
+    <tr><td headers="PWNETWPT" class="gt_row gt_right">138050</td>
+<td headers="PWEIGHT" class="gt_row gt_right">4314.2599</td>
+<td headers="PWAPRVAL" class="gt_row gt_right">0</td>
+<td headers="PWASTRST" class="gt_row gt_right">0</td>
+<td headers="PAGEMIEG" class="gt_row gt_right">13</td>
+<td headers="gr_age" class="gt_row gt_left">65-plus</td>
+<td headers="valeur_fonciere" class="gt_row gt_right">0</td>
+<td headers="taxes_foncieres" class="gt_row gt_right">0</td>
+<td headers="taux_taxation_sur_patrimoine" class="gt_row gt_right">0.0000000000</td></tr>
+    <tr><td headers="PWNETWPT" class="gt_row gt_right">117250</td>
+<td headers="PWEIGHT" class="gt_row gt_right">1595.1530</td>
+<td headers="PWAPRVAL" class="gt_row gt_right">260000</td>
+<td headers="PWASTRST" class="gt_row gt_right">0</td>
+<td headers="PAGEMIEG" class="gt_row gt_right">04</td>
+<td headers="gr_age" class="gt_row gt_left">34-moins</td>
+<td headers="valeur_fonciere" class="gt_row gt_right">260000</td>
+<td headers="taxes_foncieres" class="gt_row gt_right">2600</td>
+<td headers="taux_taxation_sur_patrimoine" class="gt_row gt_right">0.0221748401</td></tr>
+    <tr><td headers="PWNETWPT" class="gt_row gt_right">555</td>
+<td headers="PWEIGHT" class="gt_row gt_right">3910.7481</td>
+<td headers="PWAPRVAL" class="gt_row gt_right">0</td>
+<td headers="PWASTRST" class="gt_row gt_right">0</td>
+<td headers="PAGEMIEG" class="gt_row gt_right">14</td>
+<td headers="gr_age" class="gt_row gt_left">65-plus</td>
+<td headers="valeur_fonciere" class="gt_row gt_right">0</td>
+<td headers="taxes_foncieres" class="gt_row gt_right">0</td>
+<td headers="taux_taxation_sur_patrimoine" class="gt_row gt_right">0.0000000000</td></tr>
+    <tr><td headers="PWNETWPT" class="gt_row gt_right">422000</td>
+<td headers="PWEIGHT" class="gt_row gt_right">1030.9989</td>
+<td headers="PWAPRVAL" class="gt_row gt_right">0</td>
+<td headers="PWASTRST" class="gt_row gt_right">0</td>
+<td headers="PAGEMIEG" class="gt_row gt_right">11</td>
+<td headers="gr_age" class="gt_row gt_left">65-plus</td>
+<td headers="valeur_fonciere" class="gt_row gt_right">0</td>
+<td headers="taxes_foncieres" class="gt_row gt_right">0</td>
+<td headers="taux_taxation_sur_patrimoine" class="gt_row gt_right">0.0000000000</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+```
 
 
 :::
@@ -353,23 +893,23 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
 
 
 ```{=html}
-<div id="cdgajiqxti" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#cdgajiqxti table {
+<div id="robsktxifw" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#robsktxifw table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#cdgajiqxti thead, #cdgajiqxti tbody, #cdgajiqxti tfoot, #cdgajiqxti tr, #cdgajiqxti td, #cdgajiqxti th {
+#robsktxifw thead, #robsktxifw tbody, #robsktxifw tfoot, #robsktxifw tr, #robsktxifw td, #robsktxifw th {
   border-style: none;
 }
 
-#cdgajiqxti p {
+#robsktxifw p {
   margin: 0;
   padding: 0;
 }
 
-#cdgajiqxti .gt_table {
+#robsktxifw .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -395,12 +935,12 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   border-left-color: #D3D3D3;
 }
 
-#cdgajiqxti .gt_caption {
+#robsktxifw .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#cdgajiqxti .gt_title {
+#robsktxifw .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -412,7 +952,7 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   border-bottom-width: 0;
 }
 
-#cdgajiqxti .gt_subtitle {
+#robsktxifw .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -424,7 +964,7 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   border-top-width: 0;
 }
 
-#cdgajiqxti .gt_heading {
+#robsktxifw .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -436,13 +976,13 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   border-right-color: #D3D3D3;
 }
 
-#cdgajiqxti .gt_bottom_border {
+#robsktxifw .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#cdgajiqxti .gt_col_headings {
+#robsktxifw .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -457,7 +997,7 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   border-right-color: #D3D3D3;
 }
 
-#cdgajiqxti .gt_col_heading {
+#robsktxifw .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -477,7 +1017,7 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   overflow-x: hidden;
 }
 
-#cdgajiqxti .gt_column_spanner_outer {
+#robsktxifw .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -489,15 +1029,15 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   padding-right: 4px;
 }
 
-#cdgajiqxti .gt_column_spanner_outer:first-child {
+#robsktxifw .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#cdgajiqxti .gt_column_spanner_outer:last-child {
+#robsktxifw .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#cdgajiqxti .gt_column_spanner {
+#robsktxifw .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -509,11 +1049,11 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   width: 100%;
 }
 
-#cdgajiqxti .gt_spanner_row {
+#robsktxifw .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#cdgajiqxti .gt_group_heading {
+#robsktxifw .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -539,7 +1079,7 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   text-align: left;
 }
 
-#cdgajiqxti .gt_empty_group_heading {
+#robsktxifw .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -554,15 +1094,15 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   vertical-align: middle;
 }
 
-#cdgajiqxti .gt_from_md > :first-child {
+#robsktxifw .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#cdgajiqxti .gt_from_md > :last-child {
+#robsktxifw .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#cdgajiqxti .gt_row {
+#robsktxifw .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -581,7 +1121,7 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   overflow-x: hidden;
 }
 
-#cdgajiqxti .gt_stub {
+#robsktxifw .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -594,7 +1134,7 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   padding-right: 5px;
 }
 
-#cdgajiqxti .gt_stub_row_group {
+#robsktxifw .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -608,15 +1148,15 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   vertical-align: top;
 }
 
-#cdgajiqxti .gt_row_group_first td {
+#robsktxifw .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#cdgajiqxti .gt_row_group_first th {
+#robsktxifw .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#cdgajiqxti .gt_summary_row {
+#robsktxifw .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -626,16 +1166,16 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   padding-right: 5px;
 }
 
-#cdgajiqxti .gt_first_summary_row {
+#robsktxifw .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#cdgajiqxti .gt_first_summary_row.thick {
+#robsktxifw .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#cdgajiqxti .gt_last_summary_row {
+#robsktxifw .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -645,7 +1185,7 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   border-bottom-color: #D3D3D3;
 }
 
-#cdgajiqxti .gt_grand_summary_row {
+#robsktxifw .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -655,7 +1195,7 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   padding-right: 5px;
 }
 
-#cdgajiqxti .gt_first_grand_summary_row {
+#robsktxifw .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -665,7 +1205,7 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   border-top-color: #D3D3D3;
 }
 
-#cdgajiqxti .gt_last_grand_summary_row_top {
+#robsktxifw .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -675,11 +1215,11 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   border-bottom-color: #D3D3D3;
 }
 
-#cdgajiqxti .gt_striped {
+#robsktxifw .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#cdgajiqxti .gt_table_body {
+#robsktxifw .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -688,7 +1228,7 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   border-bottom-color: #D3D3D3;
 }
 
-#cdgajiqxti .gt_footnotes {
+#robsktxifw .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -702,7 +1242,7 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   border-right-color: #D3D3D3;
 }
 
-#cdgajiqxti .gt_footnote {
+#robsktxifw .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -711,7 +1251,7 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   padding-right: 5px;
 }
 
-#cdgajiqxti .gt_sourcenotes {
+#robsktxifw .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -725,7 +1265,7 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   border-right-color: #D3D3D3;
 }
 
-#cdgajiqxti .gt_sourcenote {
+#robsktxifw .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -733,63 +1273,63 @@ Mais attention !  Ces moyennes cachent une grande variabilité des taux effectif
   padding-right: 5px;
 }
 
-#cdgajiqxti .gt_left {
+#robsktxifw .gt_left {
   text-align: left;
 }
 
-#cdgajiqxti .gt_center {
+#robsktxifw .gt_center {
   text-align: center;
 }
 
-#cdgajiqxti .gt_right {
+#robsktxifw .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#cdgajiqxti .gt_font_normal {
+#robsktxifw .gt_font_normal {
   font-weight: normal;
 }
 
-#cdgajiqxti .gt_font_bold {
+#robsktxifw .gt_font_bold {
   font-weight: bold;
 }
 
-#cdgajiqxti .gt_font_italic {
+#robsktxifw .gt_font_italic {
   font-style: italic;
 }
 
-#cdgajiqxti .gt_super {
+#robsktxifw .gt_super {
   font-size: 65%;
 }
 
-#cdgajiqxti .gt_footnote_marks {
+#robsktxifw .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#cdgajiqxti .gt_asterisk {
+#robsktxifw .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#cdgajiqxti .gt_indent_1 {
+#robsktxifw .gt_indent_1 {
   text-indent: 5px;
 }
 
-#cdgajiqxti .gt_indent_2 {
+#robsktxifw .gt_indent_2 {
   text-indent: 10px;
 }
 
-#cdgajiqxti .gt_indent_3 {
+#robsktxifw .gt_indent_3 {
   text-indent: 15px;
 }
 
-#cdgajiqxti .gt_indent_4 {
+#robsktxifw .gt_indent_4 {
   text-indent: 20px;
 }
 
-#cdgajiqxti .gt_indent_5 {
+#robsktxifw .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
