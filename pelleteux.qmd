@@ -1,0 +1,32 @@
+---
+title: "Les pelleteux de cloud"
+image: images/pelleteux_carre.jpg
+comments: false  
+about:
+  template: jolla
+  links:  # see https://icons.getbootstrap.com/ for icons
+    - icon: twitter
+      text: Twitter
+      href: https://twitter.com/coulsim
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/simon-c-310547112/
+    - icon: github
+      text: Github
+      href: https://github.com/simoncoulombe
+    - icon: envelope   
+      text: Email
+      href: mailto:janedoe@amazing.net
+---  
+
+Les pelleteux de cloud c'est le nom de ma petite shop de consultant en science de données.   
+
+Je travaille à temps partiel parce que je suis flemmard, mais aussi pour rester disponible pour des petits projets intéressants qui permettent de changer le mal de place.  
+
+Faites moi signe si vous voulez que je vous aide à sortir du jus de vos données.   Par exemple, ça peut-être en faisant des  analyses statistiques/apprentisage machine  ou simplement  pour "automatiser un processus de processus de gossage de données et de production de rapports qui va lever des flags si quelque chose cloche".  On peut même appeler ça de l'intelligence artificielle si vous souhaitez payer plus cher.   
+
+Je travaille surtout en R, mais j'aime bien jouer en Python.  J'ai 10 ans d'expérience en SAS et c'est bien écrit sur mon CV que je ne veux plus jamais toucher à SAS, mais si vous avez besoin de quelqu'un pour *sortir* de SAS et convertir votre processus en R ou en Python, là je suis crinqué.  
+
+J'ai déjà travaillé de cette façon pour un gouvernement provincial, un mensuel, des chercheurs en médecine et une étudiante en microbio.  
+
+Ça va être le fun!

@@ -1,5 +1,5 @@
 - title: "AccidentsSAAQ"
-  #path: 'https://simoncoulombe.shinyapps.io/saaqmtq' # doesnt work, see this issue https://github.com/quarto-dev/quarto-cli/discussions/6338
+  path: 'https://simoncoulombe.shinyapps.io/saaqmtq' # doesnt work, see this issue https://github.com/quarto-dev/quarto-cli/discussions/6338
   description: "Carte interactive de tous les accidents rapportés à la police (SAAQ)"
   author: Simon Coulombe
   date: 2020-01-01
