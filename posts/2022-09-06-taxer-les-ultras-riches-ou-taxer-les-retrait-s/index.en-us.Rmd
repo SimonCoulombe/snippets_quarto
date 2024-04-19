@@ -1,0 +1,902 @@
+---
+title: taxer les ultras riches
+author: Simon Coulombe
+date: '2022-09-06'
+slug: ultra-riches
+categories:
+  - ultra-riches
+lang: fr
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  #dpi = 150,
+  #fig.width = 5,
+  #fig.height = 5,
+  cache = FALSE # cache= TRUE leads to Error: path for html_dependency not found: error
+)
+library(matrixStats) # pour weightedMedian https://stackoverflow.com/questions/2748725/is-there-a-weighted-median-function
+library(dplyr)
+library(sf)
+library(readr)
+library(tidyr)
+library(janitor)
+library(readr)
+library(stringr)
+library(ggplot2)
+library(ggspatial)# for annotation_map_tile
+library(ggtext) # for element markdown
+library(hrbrthemes)
+library(tidygeocoder)
+library(patchwork)
+library(gt)
+library(wesanderson)
+
+ggplot2::theme_set(theme_minimal()) # this ggplot2 theme uses roboto condensed font, which works well with the font used for the whole document.
+#options(ggplot2.discrete.fill  = function() scale_fill_viridis_d() )
+options(ggplot2.discrete.fill  = function() scale_fill_manual(values = wes_palette(4, name = "Darjeeling1", type = "discrete")))
+options(ggplot2.continuous  = function() scale_fill_manual(values = wes_palette(8, name = "Darjeeling1", type = "continuous")))
+
+#options(ggplot2.continuous.fill  = function() scale_fill_viridis_c())
+options(ggplot2.discrete.colour = function() scale_color_viridis_d())
+options(ggplot2.continuous.colour = function() scale_color_viridis_c())
+options(scipen=999)
+
+
+```
+
+
+![](tweet_gnd.png)
+```{r}
+
+#blogdown::shortcode('tweet', '1567150862723588097')
+```
+
+Québec Solidaire a identifié un bon problème aujourd'hui avec son idée de taxer la richesses.     
+
+J'ai tilté sur quelques choses.  
+
+- Premièrement, je n'irais pas jusqu'à dire que quelqu'un qui vaut un million de dollars est un ultra-riche.    Si vous êtes une femme de 65 ans et que vous avez un million de dollar dans votre REER à 65 ans (et pas de maison), vous avez assez d'argent pour vous acheter [une annuité à la Sun Life](https://www.sunlife.ca/en/tools-and-resources/tools-and-calculators/annuity-calculator/) qui va vous donner 52 298 beaux dollars avant impôt (environ 34 384 après impôt)  à chaque année jusqu'à votre mort. Vos héritiers ne recevront rien, parce que c'est une annuité.
+![](img/annuity1.jpg)
+![](img/annuity2.jpg)
+Ce n'est certainement pas ça que j'Appelle être un ultra-riche.
+
+Ensuite, j'ai l'impression que le pourcentage de gens qui valent plus d'un million à l'approche de la retraite va être beaucoup plus élevé que 5%.  Je ne serais pas surpris que ce soit quelque chose comme 20% des 55-64 ans. Est-ce qu'on veut vraiment emmerder une forte proportiondes  nouveaux/futurs retraités en leur demandant d'estimer la valeur marchande de leur maison (on se paie tous un estimateur à 300 piasses ?) et de leur fond de pension (comment?) et de leur voiture usagée (une soirée sur marketplace?) à chaque année pour leur prélever genre 100$ d'impôt au final?
+
+Avant on était  "We are the 99%", maintenant on vise "We are the 95%", voire  "We are the 80%" chez les 55-64 ans si mon hypothèse se vérifie.  C'est bien beau "eat the rich", mais ça commence à faire beaucoup de riches à manger  ... :)
+
+Dans tous les cas, c'est pas des montants énormes.  On parle de 1000$ à 2 millions d'actifs nets.  Personne va arrêter de travailler parce que ça ne vaut plus la peine. C'est surtout le vocabulaire d'ultra-riches et la charge de travail que je suspecte imposée à beaucoup de monde pour récupérer peu d'argent au final qui me gosse.
+
+
+On investigue!  
+
+# Les données  
+
+La meilleure source de données au Canada pour la valeur nettes de gens, c'est l'enquête sur la sécurité financières des ménages de statistique canada.  Déjà, le plus gros problème c'est qu'elle vise le ménage, plutôt que l'individu comme la mesure de Québec Solidaire.  
+
+Le premier tableau à voir est donc le Tableau 1 dans le Quotidien du 22 décembre 2020. 
+
+https://www150.statcan.gc.ca/n1/daily-quotidien/201222/dq201222b-fra.htm
+
+![](img/tableau1.jpg)
+
+La richesse médiane des ménages au Canada était de 329 900$ en 2019.
+Chez les Québécois , elle était de seulement 237 800$.
+
+
+Quand on regarde par âge, on se rend compte que plus on est vieux, plus on a accumulé d'avoirs en prévision de la retraite.  Ainsi, la médiane des 55-64 ans était de 690 000$
+
+```{r}
+age_canada <- tribble(~gr_age, ~percentile,  ~avoir_net,  ~type_variable,
+        "34-moins", "50", 48800, "canada",
+        "35-44", "50", 234400,  "canada",
+        "45-54", "50", 521100,  "canada",
+        "55-64", "50", 690000,  "canada",
+        "65-plus", "50", 543200,  "canada",)
+#age_canada
+age_canada %>%
+  ggplot(aes(x=gr_age, y = avoir_net)) +
+  geom_col()+ 
+    scale_y_continuous(labels = scales::label_dollar(suffix = "$", prefix ="", big.mark = " ") ) + 
+  labs(
+    title = "Avoir net médian selon l'âge pour les unités familiales canadiennes en 2019",
+    caption = "Données PUMF ESF Statcan, calculs @coulsm",
+    x = "Groupe d'âge",
+    y = "Avoir net"
+    )
+```
+
+
+
+
+
+Le problème, c'est qu'on veut connaître le 95e percentile, chez les Québécois, pour les 55-64 ans et que le tableau ne permet de ventiler que par une variable à la fois (âge, ou province) en plus de n'avoir que la médiane.
+
+
+
+
+Il existe un autre tableau qui permet d'avoir plus de détails, le tableau [11-10-0049-01](https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=1110004901&pickMembers%5B0%5D=1.1&pickMembers%5B1%5D=2.27&pickMembers%5B2%5D=4.5&cubeTimeFrame.startYear=1999&cubeTimeFrame.endYear=2019&referencePeriods=19990101%2C20190101).
+
+![](img/tableau2.jpg)
+
+On y voir encore que la richesse médiane est de 329 900$ au Canada.  
+Ce qui est intéressant, c'est qu'on apprend la valeur médiane dans chaque quintile d'avoir net.
+Ainsi, la médiane du quintile inférieur d'avoir net ( 3000$), correspond au percentile à mi-chemin entre 0 et 20, donc le 10e percentile.  
+
+Le tableau ne permet donc de savoir que les  avoirs nets des 10e 30e, 50e, 70e et 90e percentiles:
+
+```{r}
+
+percentiles_canada <- tribble(~percentile, ~avoir_net, ~type_variable,
+        "10", 3000, "canada",
+        "30", 88000, "canada",
+        "50", 329900, "canada",
+        "70", 762000, "canada",
+        "90", 1814900, "canada")
+percentiles_canada
+```
+
+très cool, on avance!
+
+En plus, on peut choisir la géographie de notre choix, soit le Québec.
+![](img/tableau3.jpg)
+
+
+Ça concorde, la médiane du Québecv est de 237 800, soit ce qu'on avait déjà vu dans le quotidien.  Voici les autres chiffres qu'on apprend pour le Québec:
+
+```{r}
+percentiles_quebec <- tribble(~percentile, ~avoir_net, ~type_variable,
+        "10", 2600, "quebec",
+        "30", 62000, "quebec",
+        "50", 237800, "quebec",
+        "70", 545000, "quebec",
+        "90", 1312000 ,"quebec") 
+percentiles_quebec %>% knitr::kable()
+```
+
+Déjà, on voit que le top 10 des ménages Québécois valait 1 312 000 $ ou plus en 2019.  Certains de ces ménages comptent 2 adultes et le plan de QS est de taxer les personnes qui valent plus de 1 000 000, pas les ménages.
+
+
+
+
+```{r}
+percentiles_quebec %>%  bind_rows(percentiles_canada) %>%
+  ggplot(aes(x=percentile, y = avoir_net, fill = type_variable ))+
+  geom_col(position = "dodge")+ 
+    scale_y_continuous(labels = scales::label_dollar(suffix = "$", prefix ="", big.mark = " ") ) + 
+  labs(
+    title = "Avoir net médian selon le percentile pour les unités familiales canadiennes\n et québécoises en 2019",
+    caption = "Données PUMF ESF Statcan, calculs @coulsm",
+    x = "Percentile de revenu",
+    y = "Avoir net",
+    fill = ""
+    )
+  
+```
+
+
+On a progressé pas mal!  On a la richesse du ménage au 90e percentile au Québec.  
+C'est pas encore ça qu'on veut!  
+On veut la richesse de l'individu au 95e percentile des 55-64 ans au Québec.
+On va devoir continuer à travailler.
+
+Pour ce faire, on va télécharger les [donnes du PUMF de l'Enquête sur la Sécurité Financière](https://www150.statcan.gc.ca/n1/pub/13m0006x/13m0006x2021001-fra.htm) (prononcé poumf, pour public use microdata file) et on va faire notre tableau nous même!
+
+J'ai donc suivi le lien et cliqué "Télécharger période de référence 2019" pour avoir un fichier zip
+
+Le fichier zip contient les fichiers suivants qui sont intéressants:
+`SFS2019_EFAM_PUMF.txt` est un fichier texte de type "fixed width". Ça va être chiant à importer
+`SAS/SFS2019_EFAM_PUMF_i.SAS` explique les caractéristique du fichier à importer (largeur et type des colonnes dans le fichier texte)
+`SFS2019_PUMF_F.pdf` contient le dictionnaire des données (c'est quoi la colonne province? c'est PPVRES.  C'est quoi le code de la province de Québec? c'est 24.)
+
+Ok, let's go, j'importe ça dans R.
+
+
+```{r}
+pumf <- read_fwf(here::here("posts/2022-09-06-taxer-les-ultras-riches-ou-taxer-les-retrait-s/data/SFS2019_PUMF_F/SFS2019_EFAM_PUMF.txt"),
+                 col_types = list(
+                   PEFAMID  = col_character(),
+                   PAGEMIEG   = col_character(),
+                   PASRINTG   = col_character(),
+                   PDWTYP     = col_character(),
+                   PEDUCMIE   = col_character(),
+                   PEFMJSIF   = col_character(),
+                   PFCRN      = col_character(),
+                   PFMTYPG    = col_character(),
+                   PFRSPST    = col_character(),
+                   PFSZ0017   = col_character(),
+                   PFSZ1824   = col_character(),
+                   PFSZ2544   = col_character(),
+                   PFSZ4564   = col_character(),
+                   PFSZ65UP   = col_character(),
+                   PLFCHRME   = col_character(),
+                   PLFFPTME   = col_character(),
+                   PLFPDMEG   = col_character(),
+                   PPVRES     = col_character(),
+                   PREGION    = col_character(),
+                   PRETIRME   = col_character(),
+                   VERDATE    = col_character(),
+                   .default = col_double()
+                 ),
+                 fwf_positions(
+                   c(
+                     1,
+                     6,
+                     18,
+                     20,
+                     21,
+                     22,
+                     23,
+                     31,
+                     32,
+                     34,
+                     35,
+                     36,
+                     44,
+                     46,
+                     47,
+                     48,
+                     49,
+                     50,
+                     51,
+                     53,
+                     54,
+                     55,
+                     57,
+                     58,
+                     60,
+                     64,
+                     65,
+                     66,
+                     67,
+                     73,
+                     74,
+                     75,
+                     76,
+                     77,
+                     78,
+                     79,
+                     80,
+                     81,
+                     82,
+                     83,
+                     84,
+                     85,
+                     86,
+                     94,
+                     95,
+                     96,
+                     97,
+                     105,
+                     113,
+                     115,
+                     123,
+                     128,
+                     129,
+                     130,
+                     131,
+                     132,
+                     133,
+                     134,
+                     135,
+                     136,
+                     137,
+                     138,
+                     139,
+                     148,
+                     149,
+                     150,
+                     151,
+                     152,
+                     154,
+                     155,
+                     156,
+                     157,
+                     169,
+                     181,
+                     193,
+                     205,
+                     217,
+                     229,
+                     241,
+                     253,
+                     265,
+                     277,
+                     289,
+                     301,
+                     313,
+                     325,
+                     337,
+                     349,
+                     361,
+                     373,
+                     385,
+                     397,
+                     409,
+                     421,
+                     433,
+                     445,
+                     457,
+                     469,
+                     481,
+                     493
+                   ),
+                   c(
+                     5,
+                     17,
+                     19,
+                     20,
+                     21,
+                     22,
+                     30,
+                     31,
+                     33,
+                     34,
+                     35,
+                     43,
+                     45,
+                     46,
+                     47,
+                     48,
+                     49,
+                     50,
+                     52,
+                     53,
+                     54,
+                     56,
+                     57,
+                     59,
+                     63,
+                     64,
+                     65,
+                     66,
+                     72,
+                     73,
+                     74,
+                     75,
+                     76,
+                     77,
+                     78,
+                     79,
+                     80,
+                     81,
+                     82,
+                     83,
+                     84,
+                     85,
+                     93,
+                     94,
+                     95,
+                     96,
+                     104,
+                     112,
+                     114,
+                     122,
+                     127,
+                     128,
+                     129,
+                     130,
+                     131,
+                     132,
+                     133,
+                     134,
+                     135,
+                     136,
+                     137,
+                     138,
+                     147,
+                     148,
+                     149,
+                     150,
+                     151,
+                     153,
+                     154,
+                     155,
+                     156,
+                     168,
+                     180,
+                     192,
+                     204,
+                     216,
+                     228,
+                     240,
+                     252,
+                     264,
+                     276,
+                     288,
+                     300,
+                     312,
+                     324,
+                     336,
+                     348,
+                     360,
+                     372,
+                     384,
+                     396,
+                     408,
+                     420,
+                     432,
+                     444,
+                     456,
+                     468,
+                     480,
+                     492,
+                     502
+                   ),
+                   c(
+                     "PEFAMID",
+                     "PWEIGHT",
+                     "PAGEMIEG",
+                     "PAS1MRAG",
+                     "PAS1MRG1",
+                     "PAS1MRG2",
+                     "PASR1MFA",
+                     "PASR1MR" ,
+                     "PASRBUYG",
+                     "PASRCNMG",
+                     "PASRCON" ,
+                     "PASRCST" ,
+                     "PASRCURG",
+                     "PASRDPO1",
+                     "PASRDPO2",
+                     "PASRDPO3",
+                     "PASRDPO4",
+                     "PASRDPO5",
+                     "PASRDWNG",
+                     "PASRFNMG",
+                     "PASRINT" ,
+                     "PASRINTG",
+                     "PASRMOAG",
+                     "PASRMPFG",
+                     "PASRMRYG",
+                     "PASRRNTG",
+                     "PASRSKP" ,
+                     "PATTCRC" ,
+                     "PATTCRLM",
+                     "PATTCRR" ,
+                     "PATTCRU" ,
+                     "PATTDIF" ,
+                     "PATTLCP" ,
+                     "PATTLCR" ,
+                     "PATTPAYD",
+                     "PATTRSA" ,
+                     "PATTRSH" ,
+                     "PATTRSL" ,
+                     "PATTRSP" ,
+                     "PATTRSR" ,
+                     "PATTSTIN",
+                     "PATTSKP" ,
+                     "PATTLMLC",
+                     "PBUSIND" ,
+                     "PDWTYP"  ,
+                     "PEDUCMIE",
+                     "PEFATINC",
+                     "PEFGTR"  ,
+                     "PEFMJSIF",
+                     "PEFMTINC",
+                     "PEXMG1A" ,
+                     "PEXMG1F" ,
+                     "PFCRN"   ,
+                     "PFMTYPG" ,
+                     "PFRSPST" ,
+                     "PFSZ"    ,
+                     "PFSZ0017",
+                     "PFSZ1824",
+                     "PFSZ2544",
+                     "PFSZ4564",
+                     "PFSZ65UP",
+                     "PFTENUR" ,
+                     "PINHERT" ,
+                     "PLFCHRME",
+                     "PLFFPTME",
+                     "PLFPDMEG",
+                     "PNBEARG" ,
+                     "PPVRES"  ,
+                     "PREGION" ,
+                     "PRETIRME",
+                     "PGDRMIE" ,
+                     "PWAOTPEN",
+                     "PWAPRVAL",
+                     "PWARPPG" ,
+                     "PWARPPT" ,
+                     "PWARRIF" ,
+                     "PWARRSPL",
+                     "PWASTBND",
+                     "PWASTDEP",
+                     "PWASTMUI",
+                     "PWASTOIN",
+                     "PWASTONF",
+                     "PWASTRST",
+                     "PWASTSTK",
+                     "PWASTVHE",
+                     "PWATFS"  ,
+                     "PWATOTPG",
+                     "PWATOTPT",
+                     "PWBUSEQ" ,
+                     "PWDPRMOR",
+                     "PWDSLOAN",
+                     "PWDSTCRD",
+                     "PWDSTLOC",
+                     "PWDSTODB",
+                     "PWDSTOMR",
+                     "PWDSTVHN",
+                     "PWDTOTAL",
+                     "PWNETWPG",
+                     "PWNETWPT",
+                     "VERDATE"
+                   )
+                 )
+
+)
+```
+
+
+Voici les 10 premières lignes du dataset.  On a 10 442 lignes et une centaine de colonnes.
+Les variables d'intérêt sont:  
+* PWEIGHT , le poids de l'observation.  
+* PWNETWPG, la valeur nette de l'unité familiale selon la base de long terme.    
+* PWNETWPT, la valeur nette de l'unité familiale selon la base de la terminaison  (je ne sais pas quelle est la bonne base à utiliser, mais les chiffres se ressemblent)  
+* PAGEMIEG, la catégorie d'âge   
+* PPVRES, la province de résidence    
+* PFMTYPG, le type de famille    
+
+```{r}
+pumf %>% print(n=10)
+```
+
+C'est quoi la valeur médiane de la valeur nette au Canada.
+On va utiliser la fonction Hmisc::wtd.quantile(),  car on doit utiliser les poids d'échantillonnage.
+
+```{r}
+Hmisc::wtd.quantile(pumf$PWNETWPT, pumf$PWEIGHT, probs = 0.50)
+```
+
+338 450!!  C'est proche  du chiffre officiel de 329 900$ qu'on avait dans les tableaux.  On ne s'attendait pas à avoir qqch d'identique car nous avons seulement un échantillon des données qui ont été utilisées pour calculer les chiffres officiels. Ça ne semble donc pas trop brisé.   Qu'en est-il des autres percentiles qu'on connait (10, 30, 50, 70, 90) ?
+
+
+```{r}
+
+my_percentiles <- c(0.10, 0.30, 0.5, 0.7, 0.9)
+percentiles_canada_pumf <- tibble(percentile  = as.character(100 * my_percentiles),
+      avoir_net =  Hmisc::wtd.quantile(pumf$PWNETWPT, pumf$PWEIGHT, probs = my_percentiles),
+      type_variable = "canada_pumf"
+)
+percentiles_canada_pumf %>% bind_rows(percentiles_canada) %>% 
+  ggplot(aes(x=percentile, y = avoir_net, fill = type_variable ))+
+  geom_col(position = "dodge")+ 
+    scale_y_continuous(labels = scales::label_dollar(suffix = "$", prefix ="", big.mark = " ") ) + 
+  labs(
+    title = "Avoir net médian selon le percentile pour les unités familiales canadiennes\n selon tableaux canada et selon nos calculs dans pumf",
+    subtitle = "YES! on peut reproduire les chiffres canadiens par percentile avec notre échantillon!",
+    caption = "Données PUMF ESF Statcan, calculs @coulsm",
+    x = "Percentile",
+    y = "Avoir net",
+    fill = ""
+    )
+```
+ok , on est vraiment proches!!  
+
+
+
+Juste pour être sûrs, est-ce qu'on est capable de reproduire les chiffres par groupe d'âge aussi?
+
+```{r}
+my_pumf <- pumf  %>%
+  mutate(gr_age =
+           case_when
+         ( PAGEMIEG %in% c("01","02","03","04") ~ "34-moins",
+           PAGEMIEG %in% c("05","06") ~ "35-44",
+           PAGEMIEG %in% c("07","08") ~ "45-54",
+           PAGEMIEG %in% c("09","10") ~ "55-64",
+           PAGEMIEG %in% c("11","12","13","14") ~ "65-plus",
+         )
+  ) %>%
+  ungroup()
+
+age_canada_pumf <- my_pumf %>% group_by(gr_age) %>%
+  summarise(avoir_net = Hmisc::wtd.quantile(PWNETWPT, PWEIGHT, probs = 0.50), .groups = "drop") %>%
+  mutate(percentile = "50", type_variable = "canada_pumf")
+
+age_canada_pumf %>% bind_rows(age_canada) %>% 
+  ggplot(aes(x=gr_age, y = avoir_net, fill = type_variable ))+
+  geom_col(position = "dodge")+ 
+    scale_y_continuous(labels = scales::label_dollar(suffix = "$", prefix ="", big.mark = " ") ) + 
+  labs(
+    title = "Avoir net médian selon l'âge pour les unités familiales canadiennes\n selon tableaux canada et selon nos calculs dans pumf",
+    subtitle = "YES! on peut reproduire les chiffres canadiens par âge avec notre échantillon!",
+    caption = "Données PUMF ESF Statcan, calculs @coulsm",
+    x = "Groupe d'âge",
+    y = "Avoir net",
+    fill = ""
+    )
+
+```
+
+What about les percentiles du Québec?
+
+
+```{r}
+my_percentiles <- c(0.10, 0.30, 0.5, 0.7, 0.9)
+pumf_qc <- pumf %>% filter(PPVRES == "24")
+
+percentiles_quebec_pumf <- tibble(percentile  = as.character(100 * my_percentiles),
+      avoir_net =  Hmisc::wtd.quantile(pumf_qc$PWNETWPT, pumf_qc$PWEIGHT, probs = my_percentiles),
+      type_variable = "quebec_pumf"
+)
+percentiles_quebec_pumf %>% bind_rows(percentiles_quebec) %>% 
+  ggplot(aes(x=percentile, y = avoir_net, fill = type_variable ))+
+  geom_col(position = "dodge")+ 
+    scale_y_continuous(labels = scales::label_dollar(suffix = "$", prefix ="", big.mark = " ") ) + 
+  labs(
+    title = "Avoir net médian selon le percentile pour les unités familiales québécoises\n selon tableaux quebec et selon nos calculs dans pumf",
+    subtitle = "YES! on peut reproduire les chiffres officiels québécois avec notre échantillon!",
+    caption = "Données PUMF ESF Statcan, calculs @coulsm",
+    x = "Percentile",
+    y = "Avoir net",
+    fill = ""
+    )
+  
+```
+
+Ok, ça veut dire qu'on est vraiment capables de reproduire les chiffres officiels à peu de chose près.  On n'aurait pas pu espérer mieux sachant qu'on travaille avec un échantillon de ce qui est utilisé pour les chiffres officiels.
+
+Maintenant qu'on a confirmé que l'on sait comment travailler avec le PUMF, nous allons enfin pouvoir créer des données "originales" 
+
+
+
+here we gooooooooooooo
+
+quel est le pourcentage de ménages québécois dont l'avoir net est supérieur à 1M (tout type de ménage confondu)
+```{r}
+pumf_qc <- pumf %>% filter(PPVRES == "24")
+pumf_qc %>%   summarise(pct_over_1_million = sum((PWNETWPT > 1e6) * PWEIGHT) / sum(PWEIGHT))  %>% knitr::kable()
+```
+15.57% des ménages québécois ont un avoir net supérieur à 1 million.  
+C'est vastement supérieur au 5% annoncé par QS, mais plusieurs de ces ménages sont composés de 2 adultes.  On va avoir besoin de séparer tout ça plus tard.  
+
+Tant qu'à être ici, quel pourcentage des ménages ont plus de 2 millions d'actif net?
+```{r}
+pumf_qc <- pumf %>% filter(PPVRES == "24")
+pumf_qc %>%   summarise(pct_over_2_million = sum((PWNETWPT > 2e6) * PWEIGHT) / sum(PWEIGHT))  %>% knitr::kable()
+```
+4.6% des ménages (toutes tailles confondues)  ont un avoir net de plus de 2 millions. 
+
+
+Tant qu'à être ici, quel est l'avoir net du top 5%  des ménages? 
+```{r}
+my_many_percentiles <- c(0.01, 0.05, 0.10, 0.30, 0.5, 0.7, 0.8, 0.9, 0.95, 0.99)
+
+
+percentiles_quebec_pumf <- tibble(percentile  = stringr::str_pad(as.character(100 * my_many_percentiles), side = "left", width = 2, pad ="0" ),
+      avoir_net =  Hmisc::wtd.quantile(pumf_qc$PWNETWPT, pumf_qc$PWEIGHT, probs = my_many_percentiles),
+      type_variable = "quebec_pumf"
+)
+percentiles_quebec_pumf %>% 
+  ggplot(aes(x=percentile, y = avoir_net, fill = type_variable ))+
+  geom_col(position = "dodge")+ 
+    scale_y_continuous(labels = scales::label_dollar(suffix = "$", prefix ="", big.mark = " ") ) + 
+  labs(
+    title = "Le 95e percentile des ménages Québécois avait un avoir net de 1 941 500$.",
+    subtitle = "mais parfois ils sont 2 adultes..",
+    caption = "Données PUMF ESF Statcan, calculs @coulsm",
+    x = "Percentile",
+    y = "Avoir net",
+    fill = ""
+    )
+  
+```
+Le 95e percentile de Québécois avait un avoir net de 1 941 500$.
+Est-ce que QS a juste pris le chiffre de 2 millions puis l'a divisé par 2 pour avoir un montant par individu en supposant que tous les ménages étaient composés d'un couple?  
+
+
+Peut-être. Mais il y a une autre option.  Il existe  a une variable dans l'enquête: le type de ménage (PFMTYPG). 
+
+Les options sont:  
+* personne seule  
+* couple sans enfant  
+* couple avec enfant ou famille monoparentale  
+* autre famille   
+- non déclaré  
+
+
+C'est weird, j'aurais aimé ça pouvoir connaître le nombre d'adultes, mais je ne peux pas à cause de la catégorie #3 qui peut compter 1 ou 2 adultes.  
+
+On va commencer par regarder le pourcentage de chaque type de ménage qui a plus d'1 million en avoir net.
+
+```{r}
+
+
+PFMTYPG_codes <-
+  tribble(
+    ~PFMTYPG, ~type_menage ,
+    "1", "Personne seule",
+    "2", "Couple, sans enfant",
+    "3", "Couple, avec des enfants et famille monoparentale",
+    "4", "Autres types de famille",
+    "9", "Non déclaré"
+  )
+
+pumf_qc %>%  left_join(PFMTYPG_codes)  %>% group_by( type_menage) %>% summarise(pct_over_1_million = sum((PWNETWPT > 1e6) * PWEIGHT) / sum(PWEIGHT)) %>% knitr::kable()
+
+```
+Ce sont 5.2% des personnes seules et 25% des couples sans enfants qui ont un actif net de plus d'un million.  Ce sont 12%  des couples avec enfants et des familles monoparentales  qui sont millionnaires.
+
+On se souvient que c'était 15.7% des ménages globalement qui avaient 1 million ou plus.
+
+
+On va regarder le pourcentage des familles qui ont plus de 2 millions de dollars d'actifs car les couples doivent partager l'actif entre 2 adultes.  
+
+```{r}
+pumf_qc %>%  left_join(PFMTYPG_codes)  %>% group_by( type_menage) %>% summarise(pct_over_2_million = sum((PWNETWPT > 2e6) * PWEIGHT) / sum(PWEIGHT))  %>% knitr::kable()
+
+```
+Seulement 1.3% des personnes seules sont doublement millionnaires.  C'est cependant le cas de 6.8% des couples sans enfants et de 2.8% des couples avec enfants et des familles monoparentales.  
+
+
+Tant qu'à être là, on va regarder le 95e percentile de revenu dans chacun des types de ménages.
+```{r}
+
+
+PFMTYPG_quebec_pumf <- my_pumf %>% 
+  filter(PPVRES == "24") %>%
+  group_by(PFMTYPG) %>%
+  summarise(avoir_net = Hmisc::wtd.quantile(PWNETWPT, PWEIGHT, probs = 0.95), .groups = "drop") %>%
+  mutate(percentile = "95", type_variable = "quebec_pumf") %>%
+  left_join(PFMTYPG_codes)
+
+PFMTYPG_quebec_pumf %>% knitr::kable()
+```
+
+Le 95e percentile des personnes seules au Québec est de 1044800$, tout âge confondu.
+C'est peut-être juste ça.  un peu plus de 5% des personnes seules valent plus d'un million.
+
+
+Pour les couples sans enfants, le top 5% vaut 2.3 million.  Donc si on divise par 2 adultes, c'est aussi un peu plus de 5% des personnes qui valent plus d'un million.  
+
+Pour les familles (1 ou 2 parents), le top 5% vaut 1.5 million
+
+Il existe une autre variable intéressante : PFSZ, soit le nombre de personnes dans l'unité familiale. Mais là je suis fatigué.
+
+
+
+```{r}
+my_pumf %>%
+  filter(PPVRES == "24") %>%
+  group_by(gr_age) %>%
+  summarise(pct_over_2_million = sum((PWNETWPT > 2e6) * PWEIGHT) / sum(PWEIGHT)) %>%
+  gt(rowname_col = "gr_age")  %>%
+  tab_header(
+    title = "Pourcentage des ménages québécois avec un avoir net de plus de 2 millions (tout type de ménage confondus)",
+    subtitle = "data: PUMF ESF 2019, calculs @coulsim"
+  ) %>% 
+  fmt_percent(columns = starts_with("pct"), decimals = 1, sep_mark = " ")  %>%
+   cols_label(
+    pct_over_2_million = "Pourcentage"
+  )
+  
+```
+
+
+
+```{r}
+my_pumf %>%
+  filter(PPVRES == "24", PFMTYPG== "1") %>%
+  group_by(gr_age) %>%
+  summarise(pct_over_1_million = sum((PWNETWPT > 1e6) * PWEIGHT) / sum(PWEIGHT)) %>%
+  gt(rowname_col = "gr_age")  %>%
+  tab_header(
+    title = "Pourcentage des ménages québécois composés d'une personne seule avec un avoir net de plus de *1* millions",
+    subtitle = "data: PUMF ESF 2019, calculs @coulsim"
+  ) %>% 
+  fmt_percent(columns = starts_with("pct"), decimals = 1, sep_mark = " ")  %>%
+   cols_label(
+    pct_over_1_million = "Pourcentage"
+  )
+  
+```
+
+
+
+```{r}
+my_pumf %>%
+  filter(PPVRES == "24", PFMTYPG== "2") %>%
+  group_by(gr_age) %>%
+  summarise(pct_over_2_million = sum((PWNETWPT > 2e6) * PWEIGHT) / sum(PWEIGHT)) %>%
+  gt(rowname_col = "gr_age")  %>%
+  tab_header(
+    title = "Pourcentage des ménages québécois composés d'un couple sans enfant avec un avoir net de plus de *2* millions",
+    subtitle = "data: PUMF ESF 2019, calculs @coulsim"
+  ) %>% 
+  fmt_percent(columns = starts_with("pct"), decimals = 1, sep_mark = " ")  %>%
+   cols_label(
+    pct_over_2_million = "Pourcentage"
+  )
+  
+```
+
+```{r}
+my_pumf %>%
+  filter(PPVRES == "24", PFMTYPG== "3") %>%
+  group_by(gr_age) %>%
+  summarise(pct_over_2_million = sum((PWNETWPT > 2e6) * PWEIGHT) / sum(PWEIGHT)) %>%
+  gt(rowname_col = "gr_age")  %>%
+  tab_header(
+    title = "Pourcentage des ménages québécois composés d'un couple avec  enfant ou d'une famille monoparentale avec un avoir net de plus de *2* millions",
+    subtitle = "data: PUMF ESF 2019, calculs @coulsim"
+  ) %>% 
+  fmt_percent(columns = starts_with("pct"), decimals = 1, sep_mark = " ")  %>%
+   cols_label(
+    pct_over_2_million = "Pourcentage"
+  )
+  
+```
+
+Tiens, tant qu'à faire, voici plusieurs percentiles par groupe d'âge, tout type de ménages confondus.
+
+
+```{r}
+
+my_many_percentiles <- c(0.01, 0.05, 0.10, 0.30, 0.5, 0.7, 0.9, 0.95,  0.99)
+avoirs_nets_quebec_par_age_pumf <- my_pumf %>%
+  filter(PPVRES == "24") %>%
+  group_nest(gr_age)  %>%
+  mutate(avoir_nets = purrr::map2(data, gr_age, ~
+      tibble(percentile  = stringr::str_pad(as.character(100 * my_many_percentiles), side="left", pad  = "0", width = 2),
+      #  tibble(percentile  = as.character(100 * my_many_percentiles), 
+      avoir_net =  Hmisc::wtd.quantile(.x$PWNETWPT, .x$PWEIGHT, probs = my_many_percentiles),
+      gr_age = .y,
+      type_variable = "quebec_pumf"
+)
+    
+   ) ) %>%
+  pull(avoir_nets) %>% 
+  bind_rows(.)
+
+
+avoirs_nets_quebec_par_age_pumf %>% 
+  ggplot(aes(x=percentile, y = avoir_net ))+
+  geom_col(position = "dodge")+ 
+  facet_wrap(~gr_age) + 
+  scale_y_continuous(labels = scales::label_dollar(suffix = "$", prefix ="", big.mark = " ") ) + 
+  labs(
+    title = "Avoir net des ménages québécois selon le groupe d'âge et le percentile de richesse.",
+    subtitle = "10% des ménages de 55-64 ans et plus ont un avoir net de 2 million et plus",
+    caption = "Données PUMF ESF Statcan, calculs @coulsm",
+    x = "Percentile",
+    y = "Avoir net"
+    )
+```
+
+# Conclusion
+
+Juste pour être clair:  
+
+Je ne suis pas contre le concept de l'impôt sur la fortune.  
+
+Je suis juste un peu outré par le qualificatif de "ultra riche" pour 10-11% des retraités.  
+Je suis aussi un peu outré qu'on alourdirait la charge de travail au moment de préparer les impôt pour  10-15% du monde qui va devoir passer 2 jours à estimer la valeur de sa maison et obtenir la valeur estimée de son fond de pention chaque année pour payer au final peut-être 100$ d'impôt supplémentaire.
+
+Bref, on pourrait peut-être commencer à un niveau plus élevé (mettons 2 millions, chiffre au pif), mais avec un taux plus élevé pour compenser.
+
+Voici nos findings:  
+
+* On n'a pas réussi à trouver la source de données utilisée par Québec Solidaire.  En effet, l'Enquête sur la sécurité des ménages a comme unité de sondage le ménage plutôt que l'individu.  
+* On a trouvé des chiffres qui pourraient expliquer leur barême:   
+     * 5.2% des personnes seules ont plus de 1 million.
+     * 6.8% des couples sans enfants ont plus de *2* millions.
+     * Pour les couples avec enfants et les familles monoparentales, c'est 12.8% au dessus de 1 million et 2.8% au dessus de 2 millions.  
+     * Sans égard à la taille, ce sont 15.5% des ménages québécois ont un avoir net supérieur à 1 million de dollars. Évidemment, certains de ces ménages ont 2 adultes.
+* Le top 5% des ménages québécois ont un avoir net supérieur à 1 941 500$ , sans égard à la taille.
+* Chez les 55-64 à l'aube de la retraite ce sont:   
+      * 9.6% des personnes seules qui ont plus de 1 million, 
+      * 13.3% des couples sans enfants qui ont 2 millions, 
+      * 12.9% des couples avec enfants ou des familles monoparentales ont plus de 2 millions.
+      * Chez les 55-64, on ne parle donc plus de "We are de 99%" mais plutôt de "We are the 89%-ish".  Mon hypothèse de we are the 80% est donc infirmée, mais c'était un bel effort.
+      
+
+
+

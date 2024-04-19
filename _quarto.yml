@@ -1,8 +1,9 @@
 project:
   type: website
-  render:
+  render: # DO NOT RENDER OLD .Rmd files!
     - "*.qmd"
     - "*.markdown"
+    - "!R/"
 
 website:
   title: "Simon Coulombe"
@@ -40,6 +41,8 @@ website:
   reader-mode: true # allow users to hide side nav and table of content
   open-graph: true # richer sharing of links to articles on the web (better preview of links pasted on linkedin etc..)
 lang: fr    
+language: 
+  title-block-author-single: "Auteur" #  i know my gender..https://github.com/quarto-dev/quarto-cli/discussions/2796#discussioncomment-3851669
 format:
   html:
     theme: cerulean
