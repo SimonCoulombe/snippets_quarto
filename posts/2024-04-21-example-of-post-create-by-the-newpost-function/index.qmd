@@ -9,16 +9,52 @@ lang: fr
 ---
 
 
+
 :::{.callout-tip}
 ## Pourquoi est-ce qu'on est ici?  
 :::
 
 ```{r, echo = FALSE}
+
+
+
+
 cerulean_blue <- "#2fa4e7"
 cerulean_gray <- "#495057"
+dark_text <- monochromeR::generate_palette(cerulean_gray, "go_both_ways", n_colours =7 )[5]
+mid_text <- cerulean_gray
+light_text <- monochromeR::generate_palette(cerulean_gray, "go_both_ways", n_colours =7 )[3]
+
+library(ggplot2)
+theme_nhsr_demo <- function(base_size = 12, 
+                            dark_text = "#1A242F",
+                            mid_text = NULL,
+                            light_text = NULL) {
+  
+  if(is.null(mid_text)){ mid_text <- monochromeR::generate_palette(dark_text, "go_lighter", n_colours = 5)[2]}
+  if(is.null(light_text)){light_text <- monochromeR::generate_palette(dark_text, "go_lighter", n_colours = 5)[3]}
+  
+  theme_minimal(base_size = base_size) +
+    theme(text = element_text(colour = mid_text, family = "BrandonText", lineheight = 1.1),
+          plot.title = element_text(colour = dark_text, family = "EnriquetaSB", size = rel(1.6), margin = margin(12, 0, 8, 0)),
+          plot.subtitle = element_text(size = rel(1.1), margin = margin(4, 0, 0, 0)),
+          axis.title.x = element_text(size = rel(1),margin = margin(8, 0, 0, 0)),
+          axis.title.y = element_text(size = rel(1), margin = margin(0, 4, 0, 0)),
+          axis.text.x = element_text(colour = light_text, size = rel(0.8)),
+          axis.text.y = element_text(colour = light_text, size = rel(0.8)),
+          legend.position = "top",
+          legend.justification = 1,
+          panel.grid = element_line(colour = "#F3F4F5"),
+          plot.caption = element_text(size = rel(0.8), margin = margin(8, 0, 0, 0)),
+          plot.margin = margin(0.25, 0.25, 0.25, 0.25,"cm"))
+}
+
+
+
+
 #install.packages("ggokabeito")
 library(ggokabeito)
-ggplot2::theme_set(ggplot2::theme_minimal()) # this ggplot2 theme uses roboto condensed font, which works well with the font used for the whole document.
+ggplot2::theme_set(theme_nhsr_demo(base_size = 11,dark_text =  dark_text, mid_text = mid_text, light_text = light_text)) 
 options(ggplot2.discrete.fill  = function() scale_fill_viridis_d() )
 options(ggplot2.continuous.fill  = function() scale_fill_okabe_ito)
 options(ggplot2.discrete.colour = function() scale_color_okabe_ito())
@@ -32,7 +68,14 @@ library(ggplot2)
 library(dplyr)
 library(palmerpenguins)
 library(leaflet)
+
+
+
+
+
 ```
+
+
 
 First,  I cross reference @fig-charts for fun.  
 
@@ -97,16 +140,19 @@ penguins %>%
   ggplot(aes(x=body_mass_g, y = flipper_length_mm, color = species)) +
   geom_point() + 
   labs(
-    title = "This plot uses the okabe-ito scale for color"
+    title = "This plot uses the okabe-ito scale for color",
+    subtitle = "Subtitle",
+    caption = "caption"
   )
-  
+
 penguins %>% 
   ggplot(aes(x=body_mass_g, y = flipper_length_mm)) +
   geom_point() + 
-  labs(title = "This plot uses the default color for geom_point")
-  
-```
+  labs(title = "This plot uses the default color for geom_point",
+       subtitle = "Subtitle",
+       caption = "caption")
 
+```
 
 
 # toutes les largeurs   
@@ -215,6 +261,8 @@ ggplot(mtcars2, aes(hp, mpg, color = am)) +
   geom_smooth(formula = y ~ x, method = "loess") +
   theme(legend.position = 'bottom')
 ```
+
+
 
 <!-- :::{.callout-note collapse="true"} -->
 ## Reproductibilité  {.unnumbered .unlisted}     

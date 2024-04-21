@@ -11,6 +11,7 @@ lang: fr
 
 
 
+
 :::{.callout-tip}
 ## Pourquoi est-ce qu'on est ici?  
 :::
@@ -19,6 +20,8 @@ lang: fr
 ::: {.cell}
 
 :::
+
+
 
 
 First,  I cross reference @fig-charts for fun.  
@@ -94,7 +97,6 @@ mes charts
 
 
 
-
 # toutes les largeurs   
 (source: https://quarto.org/docs/authoring/article-layout.html#page-column)
 on peut insérer du stock avec le paramètre `#| column : xxx` ou bien avec les trucs funky de quarto:
@@ -155,8 +157,8 @@ leaflet() %>%
 
 
 ```{=html}
-<div class="leaflet html-widget html-fill-item" id="htmlwidget-1728e2f734f928d591ba" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-1728e2f734f928d591ba">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org/copyright/\">OpenStreetMap<\/a>,  <a href=\"https://opendatacommons.org/licenses/odbl/\">ODbL<\/a>"}]},{"method":"addMarkers","args":[-36.852,174.768,null,null,null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},"The birthplace of R",null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[-36.852,-36.852],"lng":[174.768,174.768]}},"evals":[],"jsHooks":[]}</script>
+<div class="leaflet html-widget html-fill-item" id="htmlwidget-5f0829d05b97789bb945" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-5f0829d05b97789bb945">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org/copyright/\">OpenStreetMap<\/a>,  <a href=\"https://opendatacommons.org/licenses/odbl/\">ODbL<\/a>"}]},{"method":"addMarkers","args":[-36.852,174.768,null,null,null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},"The birthplace of R",null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[-36.852,-36.852],"lng":[174.768,174.768]}},"evals":[],"jsHooks":[]}</script>
 ```
 
 
@@ -246,11 +248,13 @@ screen content...
 :::
 
 
+
+
 <!-- :::{.callout-note collapse="true"} -->
 ## Reproductibilité  {.unnumbered .unlisted}     
 <!-- unlisted doesnt appear in table of contents -->
 
-Ce document a été généré le 21 avril 2024 à 02:10:27 .    par le programme index.rmarkdown.  Note: les fichiers `.qmd` voient leur extension remplacée par rmarkdown ici.  
+Ce document a été généré le 21 avril 2024 à 02:44:58 .    par le programme index.rmarkdown.  Note: les fichiers `.qmd` voient leur extension remplacée par rmarkdown ici.  
 
 
 ::: {.cell}
@@ -259,7 +263,7 @@ Ce document a été généré le 21 avril 2024 à 02:10:27 .    par le programme
 ```
 Local:    main C:/Users/simon/OneDrive/Documents/snippets_quarto
 Remote:   main @ origin (git@github.com:SimonCoulombe/snippets_quarto.git)
-Head:     [1f37957] 2024-04-20: hey ça marche ahah
+Head:     [1f12a57] 2024-04-21: cool template
 ```
 
 
