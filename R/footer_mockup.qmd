@@ -1,5 +1,6 @@
-:::{.callout-note collapse="true"}
-## Reproductibilité  
+<!-- :::{.callout-note collapse="true"} -->
+## Reproductibilité  {.unnumbered .unlisted}     
+<!-- unlisted doesnt appear in table of contents -->
 
 Ce document a été généré le `r format(Sys.time(),"%e %B %Y à %T ")`.    par le programme `r knitr::current_input()`.  Note: les fichiers `.qmd` voient leur extension remplacée par rmarkdown ici.  
 
@@ -25,4 +26,4 @@ pkg_sesh$platform$quarto <- paste(
 # print it out
 pkg_sesh
 ```
-:::
+<!-- ::: -->

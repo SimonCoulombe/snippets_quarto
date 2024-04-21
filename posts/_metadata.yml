@@ -9,9 +9,9 @@ title-block-banner: true
 
 # Default knitr options
 execute:
-  echo: true
-  message: true
-  warning: true
+  echo: false
+  message: false
+  warning: false
 
 code-tools: 
   source: repo

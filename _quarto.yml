@@ -1,9 +1,11 @@
 project:
   type: website
-  render: # DO NOT RENDER OLD .Rmd files!
-    - "*.qmd"
-    - "*.markdown"
-    - "!R/"
+  render: 
+    - "*.qmd"  
+    - "*.markdown"  
+    - "*.md"      
+    - "!R/"     # do not render functions and templates in the R/ folder
+    - "!*.Rmd"  # DO NOT RENDER OLD .Rmd files!
 
 website:
   title: "Simon Coulombe"
@@ -40,7 +42,8 @@ website:
   cookie-consent: false # dont request cookie consent  https://quarto.org/docs/websites/website-tools.html#cookie-consent
   reader-mode: true # allow users to hide side nav and table of content
   open-graph: true # richer sharing of links to articles on the web (better preview of links pasted on linkedin etc..)
-lang: fr    
+lang: fr    # default post language is french
+lightbox: auto    # allows clicking on images to enlarge them
 language: 
   title-block-author-single: "Auteur" #  i know my gender..https://github.com/quarto-dev/quarto-cli/discussions/2796#discussioncomment-3851669
 format:
@@ -49,9 +52,9 @@ format:
     css: styles.css
     code-overflow: wrap
     code-fold: true
-    code-folding: hide
-    code-summary: "\\<code\\>"
-    code-copy: hover
+    code-folding: show
+    code-summary: "\\<code\\>" 
+    code-copy: hover # the copy code icon appears when hovering above code chunk
     email-obfuscation: javascript
 editor: source
 execute:

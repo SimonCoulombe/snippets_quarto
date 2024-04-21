@@ -1,0 +1,89 @@
+---
+title: "Quick and dirty way to get colors from a bootswatch theme using thematic_rmd and thematic_get_option"
+output: 
+  html_document:
+    keep_md: yes
+    theme: 
+      version: 5  
+      bootswatch: cerulean
+      base_font: bslib::font_google("Inter")
+date: "2024-04-21"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+here is the content of the yaml header of my markdown file that sets the bootswatch cerulean theme:
+```{r, eval = FALSE, echo = TRUE}
+---
+title: "Quick and dirty way to get colors from a bootswatch theme using thematic_rmd and thematic_get_option"
+output: 
+  html_document:
+    keep_md: yes
+    theme: 
+      version: 5  
+      bootswatch: cerulean
+      base_font: bslib::font_google("Inter")
+date: "2024-04-21"
+---
+
+```
+
+
+```{r, echo = TRUE}
+library(bslib)
+library(thematic)
+library(scales)
+thematic_rmd() 
+```
+
+```{r, echo = TRUE}
+thematic_get_option("bg")
+```
+
+```{r, echo = TRUE}
+scales::show_col(thematic_get_option("bg"))
+```
+
+```{r, echo = TRUE}
+thematic_get_option("fg")
+```
+
+
+```{r, echo = TRUE}
+scales::show_col(thematic_get_option("fg"))
+```
+
+```{r, echo = TRUE}
+thematic_get_option("accent")
+```
+
+
+```{r, echo = TRUE}
+scales::show_col(thematic_get_option("accent"))
+```
+
+
+```{r, echo = TRUE}
+thematic_get_option("sequential")
+```
+
+
+```{r, echo = TRUE}
+scales::show_col(thematic_get_option("sequential"))
+```
+
+```{r, echo = TRUE}
+thematic_get_option("qualitative")
+```
+
+
+```{r, echo = TRUE}
+scales::show_col(thematic_get_option("qualitative"))
+```
+
+
+```{r, echo = TRUE}
+thematic_get_option("font")
+```

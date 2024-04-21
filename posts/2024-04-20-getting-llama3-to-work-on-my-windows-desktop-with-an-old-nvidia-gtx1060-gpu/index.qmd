@@ -26,7 +26,19 @@ Hardware: Un CPU Ryzen 5500, 32 GB de RAM et une vieille NVidia GTX1060 que j'ai
 Software: Windows 11 pro.  Les drivers nvidia sont à jour (Right-click on your desktop and select NVIDIA Control Panel. From the NVIDIA Control Panel menu, select Help \> System Information. ):\
 ![](nvidiadrivers.png){.lightbox height="1.5in"}
 
-## WSL
+#  new:  ollama windows preview   
+
+Finalement c'est encore plus simple que je pensais...
+
+Sur le [github de ollama](https://github.com/ollama/ollama) il y a un lien vers le "windows preview".. je download, j'installe, je  pars u ncommand prompt et j'écris "ollama run llama3".
+
+that's it.
+
+
+# old: WSL   
+
+Au début, j'avais essayé WSL, mais ça semble pas nécessaire.  Je note quand même les étapes ici.   
+
 
 J'ai installé WSL en suivant les [instructions sur le site de microsoft](https://learn.microsoft.com/en-us/windows/wsl/install). Simplement, tu ouvres le power shell en mode administrator puis tu tapes
 
