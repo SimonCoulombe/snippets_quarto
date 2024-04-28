@@ -1,0 +1,147 @@
+---
+title: "Peut-on se fier à Sylvain Charlebois?"
+description: |
+  iiiiish
+author: Simon Coulombe
+date: 2024-04-28
+categories: []
+lang: fr
+---
+
+
+
+```{r, echo = FALSE}
+cerulean_blue <- "#2fa4e7"
+cerulean_gray <- "#495057"
+dark_text <- monochromeR::generate_palette(cerulean_gray, "go_both_ways", n_colours =7 )[5]
+mid_text <- cerulean_gray
+light_text <- monochromeR::generate_palette(cerulean_gray, "go_both_ways", n_colours =7 )[3]
+
+library(ggplot2)
+
+# alternativement le theme penguins https://www.cararthompson.com/posts/2024-03-14-parameterising-a-multi-part-plot/
+theme_nhsr_demo <- function(base_size = 12, 
+                            dark_text = "#1A242F",
+                            mid_text = NULL,
+                            light_text = NULL) {
+  
+  if(is.null(mid_text)){ mid_text <- monochromeR::generate_palette(dark_text, "go_lighter", n_colours = 5)[2]}
+  if(is.null(light_text)){light_text <- monochromeR::generate_palette(dark_text, "go_lighter", n_colours = 5)[3]}
+  
+  theme_minimal(base_size = base_size) +
+    theme(text = element_text(colour = mid_text,  lineheight = 1.1),
+          plot.title = element_text(colour = dark_text,  size = rel(1.6), margin = margin(12, 0, 8, 0)),
+          plot.subtitle = element_text(size = rel(1.1), margin = margin(4, 0, 0, 0)),
+          axis.title.x = element_text(size = rel(1),margin = margin(8, 0, 0, 0)),
+          axis.title.y = element_text(size = rel(1), margin = margin(0, 4, 0, 0)),
+          axis.text.x = element_text(colour = light_text, size = rel(0.8)),
+          axis.text.y = element_text(colour = light_text, size = rel(0.8)),
+          legend.position = "top",
+          legend.justification = 1,
+          panel.grid = element_line(colour = "#F3F4F5"),
+          plot.caption = element_text(size = rel(0.8), margin = margin(8, 0, 0, 0)),
+          plot.margin = margin(0.25, 0.25, 0.25, 0.25,"cm"))
+}
+
+
+
+
+#install.packages("ggokabeito")
+library(ggokabeito)
+ggplot2::theme_set(theme_nhsr_demo(base_size = 11,dark_text =  dark_text, mid_text = mid_text, light_text = light_text)) 
+options(ggplot2.discrete.fill  = function() scale_fill_viridis_d() )
+options(ggplot2.continuous.fill  = function() scale_fill_okabe_ito)
+options(ggplot2.discrete.colour = function() scale_color_okabe_ito())
+options(ggplot2.continuous.colour = function() scale_color_viridis_c())
+ggplot2::update_geom_defaults("point", ggplot2::aes(color = cerulean_gray))
+ggplot2::update_geom_defaults("line", ggplot2::aes(color = cerulean_gray))
+ggplot2::update_geom_defaults("rect", ggplot2::aes(color = cerulean_gray, fill = cerulean_gray))
+options(scipen=999)
+
+library(ggplot2)
+library(dplyr)
+library(cansim)
+library(gt)
+library(janitor)
+library(stringr)
+library(tidyr)
+library(lubridate)
+
+les_produits <- c("orange", "fraise", "pommes de terre", "cantaloup", "avocat", "saumon", "soupe en conserve", "oignon", "frite",
+             "poire", "tomate", "café", "brocoli", "houmous", "pâtes sèches")
+```
+
+
+:::{.callout-tip}
+## Pourquoi est-ce qu'on est ici?  
+
+Petite chicane d'économistes sur linkedin tantôt à propos d'[un article dans la presse d'un prof de dalhousie qui parle de bouffe](https://www.lapresse.ca/affaires/chroniques/2024-04-18/panier-d-epicerie/peut-on-vraiment-se-fier-a-statistique-canada.php).  Il compare son ipc qu'il a calculé personnellement à celui de statistique canada et évidemment toute différence entre son chiffre et celui par publié par statcan est une erreur de statcan.  Tout ça sans partager sa méthodologie et ses données.   
+
+Avant de critiquer les chiffres de statcan, je me suis dit que ce serait fun de voir quels sont les chiffres de statcan directement de la source.   Pas facile de savoir exactement où, car l'article parle simplement de source "statistique canada".  
+
+Fak, je me suis attaqué à la liste des tableaux de statcan à l'aide du toujours excellent package {cansim} de @vb_jens afin, je l'espère de trouver la source utilisée.  
+
+:::   
+
+
+Voici les noms de quelques tableux prometteurs de Statcan:  
+```{r}
+liste_des_cubes <- list_cansim_cubes() %>% janitor::clean_names()
+liste_des_cubes %>%  filter(str_detect(tolower(cube_title_en), "average retail price")) %>% 
+  select(cansim_table_number, cube_title_fr) %>% 
+  knitr::kable()
+```
+
+
+Note: le tableau "18-10-0004" était prometteur aussi, mais n'a pas de cantaloupe.   
+
+J'ai regardé ces 4 tableaux et le seul qui contenait le mot "cantalope" est [18-10-0245](https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=1810024501&pickMembers%5B0%5D=1.11&request_locale=fr).  J'imagine que c'est à celui-là que fait référence l'article de la presse.  Ça a du sens, parce que le "prix de détail" c'est ce qu'un citoyen peut mesurer et à quoi il peut se comparer.  
+
+Bref, j'ai downloadé les chiffres, j'ai pitché ça dans un tableau.   Voici l'évolution des prix des aliments de février 2023 à février 2024 au Canada et au Québec selon Statcan.  
+
+
+Ça "fitte" vraiment pas avec les chiffres dans l'article de La presse.  PAr exemple, pour les avocats, je vois +9.1% (Canada) ou -7.8%(Québec), alors que le chiffre attribué à Statcan dans la presse est de -4%.
+
+Possible que j'ai pas regardé le bon vecteur chez statcan.  Possible aussi que les calculs en face ne soient pas bons.   
+
+a+
+
+
+
+
+```{r}
+#| column: screen
+tableau  <- get_cansim("18-10-0245", language = "French") %>% 
+  janitor::clean_names() %>% filter(geo %in% c("Québec", "Canada")) %>%  
+  filter(str_detect(tolower(produits), paste(les_produits, collapse = "|")), lubridate::month(date)== 2, lubridate::year(date) %in% c(2023,2024)) %>%
+  mutate(year = lubridate::year(date)) %>% 
+  select(year, geo, produits,  valeur) %>% 
+  pivot_wider(names_from = year, values_from = valeur, names_prefix = "prix_an_") %>%
+  mutate(pct_diff = (prix_an_2024 - prix_an_2023)/ prix_an_2023) %>%
+  pivot_wider(names_from = geo, values_from = c("prix_an_2023", "prix_an_2024", "pct_diff"), names_prefix = "geo_") %>%
+  mutate(produits = factor(produits, levels = sort(unique(as.character(produits))))) %>%
+  arrange(produits)
+
+tableau %>% 
+  gt(  ) %>% 
+  tab_header (
+    title = "Évolution du prix de détail moyens mensuels pour certains produits",
+    subtitle = "Mais quel source de données Sylvain Charlebois a-t-il utilisé? ") %>% 
+  tab_footnote("Source : Statistique Canada, Tableau 18-10-0245, via package {cansim} par @vb_jens ") %>% 
+  gt::tab_spanner(columns = contains("Canada"), label = "Canada",gather = TRUE) %>% 
+  gt::tab_spanner(columns = contains("Québec"), label = "Québec",gather = TRUE) %>%
+  fmt_percent( columns = contains("pct_diff"), decimals = 1) %>%
+  fmt_currency(columns = contains("prix"), decimals = 2) %>%
+  cols_label(
+    contains("2023") ~ "Prix Février 2023",
+    contains("2024") ~ "Prix Février 2024",
+    contains("pct_diff") ~ "Différence en %"
+  )
+```
+
+
+
+
+![](charlebois.png)
+
+
