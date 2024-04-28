@@ -95,7 +95,10 @@ liste_des_cubes %>%  filter(str_detect(tolower(cube_title_en), "average retail p
 
 Note: le tableau "18-10-0004" était prometteur aussi, mais n'a pas de cantaloupe.   
 
-J'ai regardé ces 4 tableaux et le seul qui contenait le mot "cantalope" est [18-10-0245](https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=1810024501&pickMembers%5B0%5D=1.11&request_locale=fr).  J'imagine que c'est à celui-là que fait référence l'article de la presse.  Ça a du sens, parce que le "prix de détail" c'est ce qu'un citoyen peut mesurer et à quoi il peut se comparer.  
+J'ai regardé ces 4 tableaux et le seul qui contenait le mot "cantalope" est [18-10-0245](https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=1810024501&pickMembers%5B0%5D=1.11&request_locale=fr).  J'imagine que c'est à celui-là que fait référence l'article de la presse.  Ça a du sens, parce que le "prix de détail" c'est ce qu'un citoyen peut mesurer et à quoi il peut se comparer.    
+D'une part, j'Aurais aimé un beau tableau avec des données "désaisonnalisées" car on parle quand même du prix des fruits frais. d'un autre, c'est quand même cool de regarder quelque chose en "prix de détail" et pouvoir comparer avec le prix à l'épicerie.
+
+L'article de la presse ne spécifie pas si la hausse de prix est celle de janvier 2024 à février 2024 (1 mois) ou celle de février 2023 à février 2024.  Comme on a des données non-désaisonnalisées, je vais supposer qu'il a fait le seul choix judicieux possible et a comparé février 2023  à février 204.. 
 
 Bref, j'ai downloadé les chiffres, j'ai pitché ça dans un tableau.   Voici l'évolution des prix des aliments de février 2023 à février 2024 au Canada et au Québec selon Statcan.  
 

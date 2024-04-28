@@ -121,6 +121,9 @@ make sure you have python 3.10. i think at some point i created a python 3.10 ve
 `setup.bat`
   
 
+# image to image - controlnet        
+
+installed the controlnet extension  from the [Mikubill/sd-webui-controlnet](https://github.com/Mikubill/sd-webui-controlnet) github.
 
 
 
