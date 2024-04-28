@@ -1,7 +1,7 @@
 ---
-title: "Peut-on se fier à Sylvain Charlebois?"
+title: "Du prix des patates frites"
 description: |
-  iiiiish
+  iiiiish  
 author: Simon Coulombe
 date: 2024-04-28
 categories: []
@@ -20,7 +20,9 @@ lang: fr
 
 Petite chicane d'économistes sur linkedin tantôt à propos d'[un article dans la presse d'un prof de dalhousie qui parle de bouffe](https://www.lapresse.ca/affaires/chroniques/2024-04-18/panier-d-epicerie/peut-on-vraiment-se-fier-a-statistique-canada.php).  Il compare son ipc qu'il a calculé personnellement à celui de statistique canada et évidemment toute différence entre son chiffre et celui par publié par statcan est une erreur de statcan.  Tout ça sans partager sa méthodologie et ses données.   
 
-Avant de critiquer les chiffres de statcan, je me suis dit que ce serait fun de voir quels sont les chiffres de statcan directement de la source.   Pas facile de savoir exactement où, car l'article parle simplement de source "statistique canada".  
+Avant de critiquer les chiffres de statcan, je me suis dit que ce serait fun de voir quels sont les chiffres de statcan directement de la source au lieu de juste voir "le % d'augmentation".  
+
+.   Pas facile de savoir exactement où, car l'article parle simplement de source "statistique canada".  On ne parle pas de numéro de tableau de stascan, ni de géographie (canada? québec?), ni de période de référence (1 an? 1 mois?)
 
 Fak, je me suis attaqué à la liste des tableaux de statcan à l'aide du toujours excellent package {cansim} de @vb_jens afin, je l'espère de trouver la source utilisée.  
 
@@ -47,17 +49,15 @@ Voici les noms de quelques tableux prometteurs de Statcan:
 
 Note: le tableau "18-10-0004" était prometteur aussi, mais n'a pas de cantaloupe.   
 
-J'ai regardé ces 4 tableaux et le seul qui contenait le mot "cantalope" est [18-10-0245](https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=1810024501&pickMembers%5B0%5D=1.11&request_locale=fr).  J'imagine que c'est à celui-là que fait référence l'article de la presse.  Ça a du sens, parce que le "prix de détail" c'est ce qu'un citoyen peut mesurer et à quoi il peut se comparer.    
-D'une part, j'Aurais aimé un beau tableau avec des données "désaisonnalisées" car on parle quand même du prix des fruits frais. d'un autre, c'est quand même cool de regarder quelque chose en "prix de détail" et pouvoir comparer avec le prix à l'épicerie.
+J'ai regardé ces 4 tableaux et le seul qui contenait le mot "cantaloupe" est [18-10-0245](https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=1810024501&pickMembers%5B0%5D=1.11&request_locale=fr).  J'imagine que c'est à celui-là que fait référence l'article de la presse.  Ça a du sens, parce que le "prix de détail" c'est ce qu'un citoyen peut mesurer et à quoi il peut se comparer.    
+D'une part, j'aurais aimé un beau tableau avec des données "désaisonnalisées" car on parle quand même du prix des fruits frais. d'un autre, c'est quand même cool de regarder quelque chose en "prix de détail" et pouvoir comparer avec le prix à l'épicerie.
 
-L'article de la presse ne spécifie pas si la hausse de prix est celle de janvier 2024 à février 2024 (1 mois) ou celle de février 2023 à février 2024.  Comme on a des données non-désaisonnalisées, je vais supposer qu'il a fait le seul choix judicieux possible et a comparé février 2023  à février 204.. 
+L'article de la presse ne spécifie pas si la hausse de prix est celle de janvier 2024 à février 2024 (1 mois) ou celle de février 2023 à février 2024.  Comme on a des données non-désaisonnalisées, une version initiale de ce blog poste faisait l'hypothèse qu'il comparait février 2023  à février 2024.  J'ai enfin réussi à reproduire ses chiffres en comparant janvier 2024 à février 2024.
 
-Bref, j'ai downloadé les chiffres, j'ai pitché ça dans un tableau.   Voici l'évolution des prix des aliments de février 2023 à février 2024 au Canada et au Québec selon Statcan.  
+Bref, j'ai downloadé les chiffres, j'ai pitché ça dans un tableau.   Voici l'évolution des prix des aliments de janvier2024 à février 2024 au Canada et au Québec selon Statcan.  
 
 
-Ça "fitte" vraiment pas avec les chiffres dans l'article de La presse.  PAr exemple, pour les avocats, je vois +9.1% (Canada) ou -7.8%(Québec), alors que le chiffre attribué à Statcan dans la presse est de -4%.
-
-Possible que j'ai pas regardé le bon vecteur chez statcan.  Possible aussi que les calculs en face ne soient pas bons.   
+Ça "fitte" avec les chiffres de la presse quand on regarde la géographie "canada".     
 
 a+
 
@@ -70,23 +70,23 @@ a+
 
 
 ```{=html}
-<div id="ubznwmcton" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#ubznwmcton table {
+<div id="hdihneeyjz" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#hdihneeyjz table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#ubznwmcton thead, #ubznwmcton tbody, #ubznwmcton tfoot, #ubznwmcton tr, #ubznwmcton td, #ubznwmcton th {
+#hdihneeyjz thead, #hdihneeyjz tbody, #hdihneeyjz tfoot, #hdihneeyjz tr, #hdihneeyjz td, #hdihneeyjz th {
   border-style: none;
 }
 
-#ubznwmcton p {
+#hdihneeyjz p {
   margin: 0;
   padding: 0;
 }
 
-#ubznwmcton .gt_table {
+#hdihneeyjz .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -112,12 +112,12 @@ a+
   border-left-color: #D3D3D3;
 }
 
-#ubznwmcton .gt_caption {
+#hdihneeyjz .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#ubznwmcton .gt_title {
+#hdihneeyjz .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -129,7 +129,7 @@ a+
   border-bottom-width: 0;
 }
 
-#ubznwmcton .gt_subtitle {
+#hdihneeyjz .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -141,7 +141,7 @@ a+
   border-top-width: 0;
 }
 
-#ubznwmcton .gt_heading {
+#hdihneeyjz .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -153,13 +153,13 @@ a+
   border-right-color: #D3D3D3;
 }
 
-#ubznwmcton .gt_bottom_border {
+#hdihneeyjz .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#ubznwmcton .gt_col_headings {
+#hdihneeyjz .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -174,7 +174,7 @@ a+
   border-right-color: #D3D3D3;
 }
 
-#ubznwmcton .gt_col_heading {
+#hdihneeyjz .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -194,7 +194,7 @@ a+
   overflow-x: hidden;
 }
 
-#ubznwmcton .gt_column_spanner_outer {
+#hdihneeyjz .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -206,15 +206,15 @@ a+
   padding-right: 4px;
 }
 
-#ubznwmcton .gt_column_spanner_outer:first-child {
+#hdihneeyjz .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#ubznwmcton .gt_column_spanner_outer:last-child {
+#hdihneeyjz .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#ubznwmcton .gt_column_spanner {
+#hdihneeyjz .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -226,11 +226,11 @@ a+
   width: 100%;
 }
 
-#ubznwmcton .gt_spanner_row {
+#hdihneeyjz .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#ubznwmcton .gt_group_heading {
+#hdihneeyjz .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -256,7 +256,7 @@ a+
   text-align: left;
 }
 
-#ubznwmcton .gt_empty_group_heading {
+#hdihneeyjz .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -271,15 +271,15 @@ a+
   vertical-align: middle;
 }
 
-#ubznwmcton .gt_from_md > :first-child {
+#hdihneeyjz .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#ubznwmcton .gt_from_md > :last-child {
+#hdihneeyjz .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#ubznwmcton .gt_row {
+#hdihneeyjz .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -298,7 +298,7 @@ a+
   overflow-x: hidden;
 }
 
-#ubznwmcton .gt_stub {
+#hdihneeyjz .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -311,7 +311,7 @@ a+
   padding-right: 5px;
 }
 
-#ubznwmcton .gt_stub_row_group {
+#hdihneeyjz .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -325,15 +325,15 @@ a+
   vertical-align: top;
 }
 
-#ubznwmcton .gt_row_group_first td {
+#hdihneeyjz .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#ubznwmcton .gt_row_group_first th {
+#hdihneeyjz .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#ubznwmcton .gt_summary_row {
+#hdihneeyjz .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -343,16 +343,16 @@ a+
   padding-right: 5px;
 }
 
-#ubznwmcton .gt_first_summary_row {
+#hdihneeyjz .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#ubznwmcton .gt_first_summary_row.thick {
+#hdihneeyjz .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#ubznwmcton .gt_last_summary_row {
+#hdihneeyjz .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -362,7 +362,7 @@ a+
   border-bottom-color: #D3D3D3;
 }
 
-#ubznwmcton .gt_grand_summary_row {
+#hdihneeyjz .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -372,7 +372,7 @@ a+
   padding-right: 5px;
 }
 
-#ubznwmcton .gt_first_grand_summary_row {
+#hdihneeyjz .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -382,7 +382,7 @@ a+
   border-top-color: #D3D3D3;
 }
 
-#ubznwmcton .gt_last_grand_summary_row_top {
+#hdihneeyjz .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -392,11 +392,11 @@ a+
   border-bottom-color: #D3D3D3;
 }
 
-#ubznwmcton .gt_striped {
+#hdihneeyjz .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#ubznwmcton .gt_table_body {
+#hdihneeyjz .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -405,7 +405,7 @@ a+
   border-bottom-color: #D3D3D3;
 }
 
-#ubznwmcton .gt_footnotes {
+#hdihneeyjz .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -419,7 +419,7 @@ a+
   border-right-color: #D3D3D3;
 }
 
-#ubznwmcton .gt_footnote {
+#hdihneeyjz .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -428,7 +428,7 @@ a+
   padding-right: 5px;
 }
 
-#ubznwmcton .gt_sourcenotes {
+#hdihneeyjz .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -442,7 +442,7 @@ a+
   border-right-color: #D3D3D3;
 }
 
-#ubznwmcton .gt_sourcenote {
+#hdihneeyjz .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -450,63 +450,63 @@ a+
   padding-right: 5px;
 }
 
-#ubznwmcton .gt_left {
+#hdihneeyjz .gt_left {
   text-align: left;
 }
 
-#ubznwmcton .gt_center {
+#hdihneeyjz .gt_center {
   text-align: center;
 }
 
-#ubznwmcton .gt_right {
+#hdihneeyjz .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#ubznwmcton .gt_font_normal {
+#hdihneeyjz .gt_font_normal {
   font-weight: normal;
 }
 
-#ubznwmcton .gt_font_bold {
+#hdihneeyjz .gt_font_bold {
   font-weight: bold;
 }
 
-#ubznwmcton .gt_font_italic {
+#hdihneeyjz .gt_font_italic {
   font-style: italic;
 }
 
-#ubznwmcton .gt_super {
+#hdihneeyjz .gt_super {
   font-size: 65%;
 }
 
-#ubznwmcton .gt_footnote_marks {
+#hdihneeyjz .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#ubznwmcton .gt_asterisk {
+#hdihneeyjz .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#ubznwmcton .gt_indent_1 {
+#hdihneeyjz .gt_indent_1 {
   text-indent: 5px;
 }
 
-#ubznwmcton .gt_indent_2 {
+#hdihneeyjz .gt_indent_2 {
   text-indent: 10px;
 }
 
-#ubznwmcton .gt_indent_3 {
+#hdihneeyjz .gt_indent_3 {
   text-indent: 15px;
 }
 
-#ubznwmcton .gt_indent_4 {
+#hdihneeyjz .gt_indent_4 {
   text-indent: 20px;
 }
 
-#ubznwmcton .gt_indent_5 {
+#hdihneeyjz .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -528,183 +528,183 @@ a+
       </th>
     </tr>
     <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Prix Février 2023">Prix Février 2023</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Prix Février 2024">Prix Février 2024</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Prix janvier 2024">Prix janvier 2024</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Prix février 2024">Prix février 2024</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Différence en %">Différence en %</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Prix Février 2023">Prix Février 2023</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Prix Février 2024">Prix Février 2024</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Prix janvier 2024">Prix janvier 2024</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Prix février 2024">Prix février 2024</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Différence en %">Différence en %</th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
     <tr><td headers="produits" class="gt_row gt_center">Avocat, unité</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$1.65</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$1.80</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">9.1%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$1.66</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$1.53</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−7.8%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$1.88</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$1.80</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−4.3%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$1.70</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$1.53</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−10.0%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Brocoli surgelé, 500 grammes</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$3.87</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$3.98</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">2.8%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$3.68</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$4.13</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">12.2%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$3.85</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$3.98</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">3.4%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$4.01</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$4.13</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">3.0%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Brocoli, unité</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$3.11</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$2.27</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−27.0%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$3.06</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$2.01</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−34.3%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$2.49</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$2.27</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−8.8%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$2.20</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$2.01</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−8.6%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Café torréfié ou moulu, 340 grammes</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$6.58</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$6.38</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−3.0%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$6.40</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$6.57</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">2.7%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$6.16</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$6.38</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">3.6%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$6.21</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$6.57</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">5.8%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Cantaloup, unité</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$3.86</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$3.27</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−15.3%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$3.82</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$3.11</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−18.6%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$3.83</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$3.27</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−14.6%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$3.98</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$3.11</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−21.9%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Fraises surgelé, 600 grammes</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$5.36</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$4.83</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−9.9%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$5.25</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$4.74</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−9.7%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$5.14</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$4.83</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−6.0%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$5.40</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$4.74</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−12.2%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Fraises, 454 grammes</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$4.49</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$3.89</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−13.4%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$4.31</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$3.39</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−21.3%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$5.25</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$3.89</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−25.9%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$4.57</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$3.39</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−25.8%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Houmous, 227 grammes</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$3.85</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$3.66</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−4.9%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$3.76</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$3.55</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−5.6%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$3.86</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$3.66</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−5.2%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$4.10</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$3.55</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−13.4%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Jus d’orange, 2 litres</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$4.23</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$5.26</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">24.3%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$4.55</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$5.41</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">18.9%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$4.93</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$5.26</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">6.7%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$4.96</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$5.41</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">9.1%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Oignons, 1,36 kilogrammes</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$4.37</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$4.72</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">8.0%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$3.53</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$4.38</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">24.1%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$4.36</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$4.72</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">8.3%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$3.59</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$4.38</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">22.0%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Oignons, par kilogramme</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$5.41</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$5.64</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">4.3%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$4.48</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$5.75</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">28.3%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$5.39</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$5.64</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">4.6%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$5.14</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$5.75</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">11.9%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Oranges, 1,36 kilogrammes</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$5.28</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$4.77</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−9.7%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$5.06</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$4.40</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−13.0%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$5.24</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$4.77</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−9.0%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$5.64</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$4.40</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−22.0%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Oranges, par kilogramme</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$3.61</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$3.17</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−12.2%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$6.32</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$3.55</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−43.8%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$3.38</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$3.17</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−6.2%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$3.70</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$3.55</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−4.1%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Pâtes sèches ou fraîches, 500 grammes</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$3.67</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$3.08</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−16.1%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$3.56</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$3.23</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−9.3%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$3.25</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$3.08</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−5.2%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$3.28</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$3.23</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−1.5%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Poire en conserve, 398 millilitres</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$2.69</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$2.73</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">1.5%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$2.92</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$2.78</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−4.8%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$2.72</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$2.73</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">0.4%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$2.81</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$2.78</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−1.1%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Poires, par kilogramme</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$6.02</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$5.69</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−5.5%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$6.60</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$6.02</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−8.8%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$4.66</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$5.69</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">22.1%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$4.33</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$6.02</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">39.0%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Pommes de terre frites surgelées, 750 grammes</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$2.99</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$3.58</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">19.7%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$3.19</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$3.69</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">15.7%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$3.43</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$3.58</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">4.4%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$3.54</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$3.69</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">4.2%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Pommes de terre, 4,54 kilogrammes</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$4.83</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$4.34</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−10.1%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$4.10</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$3.99</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−2.7%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$5.57</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$4.34</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−22.1%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$5.03</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$3.99</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−20.7%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Pommes de terre, par kilogramme</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$4.76</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$4.86</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">2.1%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$4.71</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$4.61</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−2.1%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$4.94</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$4.86</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−1.6%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$4.61</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$4.61</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">0.0%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Saumon en conserve, 213 grammes</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$4.42</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$4.54</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">2.7%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$4.70</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$4.67</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−0.6%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$4.59</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$4.54</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−1.1%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$4.43</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$4.67</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">5.4%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Saumon, par kilogramme</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$28.32</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$26.37</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−6.9%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$28.34</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$25.63</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−9.6%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$27.11</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$26.37</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−2.7%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$27.35</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$25.63</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−6.3%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Soupe en conserve, 284 millilitres</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$1.63</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$1.32</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−19.0%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$1.37</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$1.27</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−7.3%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$1.41</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$1.32</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−6.4%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$1.17</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$1.27</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">8.5%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Tomates en conserve, 796 millilitres</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$1.88</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$2.03</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">8.0%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$1.74</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$2.04</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">17.2%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$2.05</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$2.03</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−1.0%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$2.06</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$2.04</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−1.0%</td></tr>
     <tr><td headers="produits" class="gt_row gt_center">Tomates, par kilogramme</td>
-<td headers="prix_an_2023_geo_Canada" class="gt_row gt_right">$5.85</td>
-<td headers="prix_an_2024_geo_Canada" class="gt_row gt_right">$5.94</td>
-<td headers="pct_diff_geo_Canada" class="gt_row gt_right">1.5%</td>
-<td headers="prix_an_2023_geo_Québec" class="gt_row gt_right">$6.80</td>
-<td headers="prix_an_2024_geo_Québec" class="gt_row gt_right">$6.88</td>
-<td headers="pct_diff_geo_Québec" class="gt_row gt_right">1.2%</td></tr>
+<td headers="prix_month_1_geo_Canada" class="gt_row gt_right">$6.51</td>
+<td headers="prix_month_2_geo_Canada" class="gt_row gt_right">$5.94</td>
+<td headers="pct_diff_geo_Canada" class="gt_row gt_right">−8.8%</td>
+<td headers="prix_month_1_geo_Québec" class="gt_row gt_right">$7.45</td>
+<td headers="prix_month_2_geo_Québec" class="gt_row gt_right">$6.88</td>
+<td headers="pct_diff_geo_Québec" class="gt_row gt_right">−7.7%</td></tr>
   </tbody>
   
   <tfoot class="gt_footnotes">

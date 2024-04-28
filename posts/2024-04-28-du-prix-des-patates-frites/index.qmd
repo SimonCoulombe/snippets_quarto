@@ -1,7 +1,7 @@
 ---
-title: "Peut-on se fier à Sylvain Charlebois?"
+title: "Du prix des patates frites"
 description: |
-  iiiiish
+  iiiiish  
 author: Simon Coulombe
 date: 2024-04-28
 categories: []
@@ -43,9 +43,6 @@ theme_nhsr_demo <- function(base_size = 12,
           plot.margin = margin(0.25, 0.25, 0.25, 0.25,"cm"))
 }
 
-
-
-
 #install.packages("ggokabeito")
 library(ggokabeito)
 ggplot2::theme_set(theme_nhsr_demo(base_size = 11,dark_text =  dark_text, mid_text = mid_text, light_text = light_text)) 
@@ -77,7 +74,9 @@ les_produits <- c("orange", "fraise", "pommes de terre", "cantaloup", "avocat", 
 
 Petite chicane d'économistes sur linkedin tantôt à propos d'[un article dans la presse d'un prof de dalhousie qui parle de bouffe](https://www.lapresse.ca/affaires/chroniques/2024-04-18/panier-d-epicerie/peut-on-vraiment-se-fier-a-statistique-canada.php).  Il compare son ipc qu'il a calculé personnellement à celui de statistique canada et évidemment toute différence entre son chiffre et celui par publié par statcan est une erreur de statcan.  Tout ça sans partager sa méthodologie et ses données.   
 
-Avant de critiquer les chiffres de statcan, je me suis dit que ce serait fun de voir quels sont les chiffres de statcan directement de la source.   Pas facile de savoir exactement où, car l'article parle simplement de source "statistique canada".  
+Avant de critiquer les chiffres de statcan, je me suis dit que ce serait fun de voir quels sont les chiffres de statcan directement de la source au lieu de juste voir "le % d'augmentation".  
+
+.   Pas facile de savoir exactement où, car l'article parle simplement de source "statistique canada".  On ne parle pas de numéro de tableau de stascan, ni de géographie (canada? québec?), ni de période de référence (1 an? 1 mois?)
 
 Fak, je me suis attaqué à la liste des tableaux de statcan à l'aide du toujours excellent package {cansim} de @vb_jens afin, je l'espère de trouver la source utilisée.  
 
@@ -95,17 +94,15 @@ liste_des_cubes %>%  filter(str_detect(tolower(cube_title_en), "average retail p
 
 Note: le tableau "18-10-0004" était prometteur aussi, mais n'a pas de cantaloupe.   
 
-J'ai regardé ces 4 tableaux et le seul qui contenait le mot "cantalope" est [18-10-0245](https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=1810024501&pickMembers%5B0%5D=1.11&request_locale=fr).  J'imagine que c'est à celui-là que fait référence l'article de la presse.  Ça a du sens, parce que le "prix de détail" c'est ce qu'un citoyen peut mesurer et à quoi il peut se comparer.    
-D'une part, j'Aurais aimé un beau tableau avec des données "désaisonnalisées" car on parle quand même du prix des fruits frais. d'un autre, c'est quand même cool de regarder quelque chose en "prix de détail" et pouvoir comparer avec le prix à l'épicerie.
+J'ai regardé ces 4 tableaux et le seul qui contenait le mot "cantaloupe" est [18-10-0245](https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=1810024501&pickMembers%5B0%5D=1.11&request_locale=fr).  J'imagine que c'est à celui-là que fait référence l'article de la presse.  Ça a du sens, parce que le "prix de détail" c'est ce qu'un citoyen peut mesurer et à quoi il peut se comparer.    
+D'une part, j'aurais aimé un beau tableau avec des données "désaisonnalisées" car on parle quand même du prix des fruits frais. d'un autre, c'est quand même cool de regarder quelque chose en "prix de détail" et pouvoir comparer avec le prix à l'épicerie.
 
-L'article de la presse ne spécifie pas si la hausse de prix est celle de janvier 2024 à février 2024 (1 mois) ou celle de février 2023 à février 2024.  Comme on a des données non-désaisonnalisées, je vais supposer qu'il a fait le seul choix judicieux possible et a comparé février 2023  à février 204.. 
+L'article de la presse ne spécifie pas si la hausse de prix est celle de janvier 2024 à février 2024 (1 mois) ou celle de février 2023 à février 2024.  Comme on a des données non-désaisonnalisées, une version initiale de ce blog poste faisait l'hypothèse qu'il comparait février 2023  à février 2024.  J'ai enfin réussi à reproduire ses chiffres en comparant janvier 2024 à février 2024.
 
-Bref, j'ai downloadé les chiffres, j'ai pitché ça dans un tableau.   Voici l'évolution des prix des aliments de février 2023 à février 2024 au Canada et au Québec selon Statcan.  
+Bref, j'ai downloadé les chiffres, j'ai pitché ça dans un tableau.   Voici l'évolution des prix des aliments de janvier2024 à février 2024 au Canada et au Québec selon Statcan.  
 
 
-Ça "fitte" vraiment pas avec les chiffres dans l'article de La presse.  PAr exemple, pour les avocats, je vois +9.1% (Canada) ou -7.8%(Québec), alors que le chiffre attribué à Statcan dans la presse est de -4%.
-
-Possible que j'ai pas regardé le bon vecteur chez statcan.  Possible aussi que les calculs en face ne soient pas bons.   
+Ça "fitte" avec les chiffres de la presse quand on regarde la géographie "canada".     
 
 a+
 
@@ -116,12 +113,13 @@ a+
 #| column: screen
 tableau  <- get_cansim("18-10-0245", language = "French") %>% 
   janitor::clean_names() %>% filter(geo %in% c("Québec", "Canada")) %>%  
-  filter(str_detect(tolower(produits), paste(les_produits, collapse = "|")), lubridate::month(date)== 2, lubridate::year(date) %in% c(2023,2024)) %>%
-  mutate(year = lubridate::year(date)) %>% 
-  select(year, geo, produits,  valeur) %>% 
-  pivot_wider(names_from = year, values_from = valeur, names_prefix = "prix_an_") %>%
-  mutate(pct_diff = (prix_an_2024 - prix_an_2023)/ prix_an_2023) %>%
-  pivot_wider(names_from = geo, values_from = c("prix_an_2023", "prix_an_2024", "pct_diff"), names_prefix = "geo_") %>%
+  #filter(str_detect(tolower(produits), paste(les_produits, collapse = "|")), lubridate::month(date)== 2, lubridate::year(date) %in% c(2023,2024)) %>%
+  filter(str_detect(tolower(produits), paste(les_produits, collapse = "|")), lubridate::month(date) %in% c(1,2), lubridate::year(date) %in% c(2024)) %>%
+  mutate(month = lubridate::month(date)) %>% 
+  select(month, geo, produits,  valeur) %>% 
+  pivot_wider(names_from = month, values_from = valeur, names_prefix = "prix_month_") %>%
+  mutate(pct_diff = (prix_month_2 - prix_month_1)/ prix_month_1) %>%
+  pivot_wider(names_from = geo, values_from = c("prix_month_1", "prix_month_2", "pct_diff"), names_prefix = "geo_") %>%
   mutate(produits = factor(produits, levels = sort(unique(as.character(produits))))) %>%
   arrange(produits)
 
@@ -136,8 +134,8 @@ tableau %>%
   fmt_percent( columns = contains("pct_diff"), decimals = 1) %>%
   fmt_currency(columns = contains("prix"), decimals = 2) %>%
   cols_label(
-    contains("2023") ~ "Prix Février 2023",
-    contains("2024") ~ "Prix Février 2024",
+    contains("month_1") ~ "Prix janvier 2024",
+    contains("month_2") ~ "Prix février 2024",
     contains("pct_diff") ~ "Différence en %"
   )
 ```
