@@ -104,6 +104,12 @@ Bref, j'ai downloadé les chiffres, j'ai pitché ça dans un tableau.   Voici l'
 
 Ça "fitte" avec les chiffres de la presse quand on regarde la géographie "canada".     
 
+
+Un rappel quand même, Statistique Canada utilisent les [données des lecteurs optiques de milliers de magasins pour des millions de transactions](https://www150.statcan.gc.ca/n1/pub/62f0014m/62f0014m2022007-fra.htm
+
+).  D'après moi ils sont pas pires pour avoir une idée du prix des cantalopes.  
+
+
 a+
 
 
