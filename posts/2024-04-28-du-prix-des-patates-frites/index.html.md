@@ -1,7 +1,7 @@
 ---
-title: "Du prix des patates frites"
+title: "Peut-on vraiment se fier à Sylvain Charlebois?"
 description: |
-  iiiiish  
+  réponse:  iiiiiiish  
 author: Simon Coulombe
 date: 2024-04-28
 categories: []
@@ -18,16 +18,22 @@ lang: fr
 :::{.callout-tip}
 ## Pourquoi est-ce qu'on est ici?  
 
-Petite chicane d'économistes sur linkedin tantôt à propos d'[un article dans la presse d'un prof de dalhousie qui parle de bouffe](https://www.lapresse.ca/affaires/chroniques/2024-04-18/panier-d-epicerie/peut-on-vraiment-se-fier-a-statistique-canada.php).  Il compare son ipc qu'il a calculé personnellement à celui de statistique canada et évidemment toute différence entre son chiffre et celui par publié par statcan est une erreur de statcan.  Tout ça sans partager sa méthodologie et ses données.   
+Yo!  
 
-Avant de critiquer les chiffres de statcan, je me suis dit que ce serait fun de voir quels sont les chiffres de statcan directement de la source au lieu de juste voir "le % d'augmentation".  
+Petite chicane d'économistes sur linkedin tantôt à propos d'[un article dans la presse d'un prof de dalhousie qui parle du prix de la bouffe](https://www.lapresse.ca/affaires/chroniques/2024-04-18/panier-d-epicerie/peut-on-vraiment-se-fier-a-statistique-canada.php).  Il compare son IPC qu'il a calculé *personnellement* à celui de statistique canada et évidemment toute différence entre son chiffre et celui par publié par statcan s'explique par une erreur de statcan de 5.59% en moyenne.  Tout ça sans partager sa méthodologie et ses données.  C'est fucking hilarant.   
 
-.   Pas facile de savoir exactement où, car l'article parle simplement de source "statistique canada".  On ne parle pas de numéro de tableau de stascan, ni de géographie (canada? québec?), ni de période de référence (1 an? 1 mois?)
+Anyway, je me suis demandé si j'étais capable de : 
 
-Fak, je me suis attaqué à la liste des tableaux de statcan à l'aide du toujours excellent package {cansim} de @vb_jens afin, je l'espère de trouver la source utilisée.  
+1)  Iidentifier la source de données chez statcan  (spoiler:  [18-10-0245](https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=1810024501&pickMembers%5B0%5D=1.11&request_locale=fr))  
+2)  (todo)Me faire un beau grahique interactif automatiquement mis à jour du prix des aliments sur mon blog avec observable js     
+3)  Trouver la [méthodo de Statscan](https://www150.statcan.gc.ca/n1/pub/62f0014m/62f0014m2022007-fra.htm)      
+4)  Trouver la méthodo de Dalhousie (lol)  
+
 
 :::   
 
+
+## Les Données    
 
 Voici les noms de quelques tableux prometteurs de Statcan:  
 
@@ -49,23 +55,15 @@ Voici les noms de quelques tableux prometteurs de Statcan:
 
 Note: le tableau "18-10-0004" était prometteur aussi, mais n'a pas de cantaloupe.   
 
-J'ai regardé ces 4 tableaux et le seul qui contenait le mot "cantaloupe" est [18-10-0245](https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=1810024501&pickMembers%5B0%5D=1.11&request_locale=fr).  J'imagine que c'est à celui-là que fait référence l'article de la presse.  Ça a du sens, parce que le "prix de détail" c'est ce qu'un citoyen peut mesurer et à quoi il peut se comparer.    
-D'une part, j'aurais aimé un beau tableau avec des données "désaisonnalisées" car on parle quand même du prix des fruits frais. d'un autre, c'est quand même cool de regarder quelque chose en "prix de détail" et pouvoir comparer avec le prix à l'épicerie.
+J'ai regardé ces 4 tableaux et le seul qui contenait le mot "cantaloupe" est [18-10-0245](https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=1810024501&pickMembers%5B0%5D=1.11&request_locale=fr).  J'imagine que c'est à celui-là que fait référence l'article de la presse, ce qui aurait du sens parce que le "prix de détail" c'est la seule chose qu'un citoyen peut mesurer anyway.
 
-L'article de la presse ne spécifie pas si la hausse de prix est celle de janvier 2024 à février 2024 (1 mois) ou celle de février 2023 à février 2024.  Comme on a des données non-désaisonnalisées, une version initiale de ce blog poste faisait l'hypothèse qu'il comparait février 2023  à février 2024.  J'ai enfin réussi à reproduire ses chiffres en comparant janvier 2024 à février 2024.
+L'article de la presse ne spécifie pas si la hausse de prix est celle de janvier 2024 à février 2024 (1 mois) ou celle de février 2023 à février 2024.  On ne spécifie pas non plus la géographie (Canada? Québec?).  
 
-Bref, j'ai downloadé les chiffres, j'ai pitché ça dans un tableau.   Voici l'évolution des prix des aliments de janvier2024 à février 2024 au Canada et au Québec selon Statcan.  
+Bref, j'ai downloadé les chiffres, j'ai pitché ça dans un tableau et j'ai calculé moi-même une différence en % afin de voir si je réussis à retrouver les chiffres de l'article de la presse. 
 
+Après un peu trop d'aller-retour, j'ai déterminé que ce sont les chiffres de janvier2024 à février 2024 pour la géographique "Canada" qui sont cités dans l'article de la presse pour statscan.
 
-Ça "fitte" avec les chiffres de la presse quand on regarde la géographie "canada".     
-
-
-Un rappel quand même, Statistique Canada utilisent les [données des lecteurs optiques de milliers de magasins pour des millions de transactions](https://www150.statcan.gc.ca/n1/pub/62f0014m/62f0014m2022007-fra.htm
-
-).  D'après moi ils sont pas pires pour avoir une idée du prix des cantalopes.  
-
-
-a+
+Voici donc les chiffres que j'avais envie de voir:
 
 
 
@@ -76,23 +74,23 @@ a+
 
 
 ```{=html}
-<div id="uptkxevggl" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#uptkxevggl table {
+<div id="kpxidoffvg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#kpxidoffvg table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#uptkxevggl thead, #uptkxevggl tbody, #uptkxevggl tfoot, #uptkxevggl tr, #uptkxevggl td, #uptkxevggl th {
+#kpxidoffvg thead, #kpxidoffvg tbody, #kpxidoffvg tfoot, #kpxidoffvg tr, #kpxidoffvg td, #kpxidoffvg th {
   border-style: none;
 }
 
-#uptkxevggl p {
+#kpxidoffvg p {
   margin: 0;
   padding: 0;
 }
 
-#uptkxevggl .gt_table {
+#kpxidoffvg .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -118,12 +116,12 @@ a+
   border-left-color: #D3D3D3;
 }
 
-#uptkxevggl .gt_caption {
+#kpxidoffvg .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#uptkxevggl .gt_title {
+#kpxidoffvg .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -135,7 +133,7 @@ a+
   border-bottom-width: 0;
 }
 
-#uptkxevggl .gt_subtitle {
+#kpxidoffvg .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -147,7 +145,7 @@ a+
   border-top-width: 0;
 }
 
-#uptkxevggl .gt_heading {
+#kpxidoffvg .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -159,13 +157,13 @@ a+
   border-right-color: #D3D3D3;
 }
 
-#uptkxevggl .gt_bottom_border {
+#kpxidoffvg .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#uptkxevggl .gt_col_headings {
+#kpxidoffvg .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -180,7 +178,7 @@ a+
   border-right-color: #D3D3D3;
 }
 
-#uptkxevggl .gt_col_heading {
+#kpxidoffvg .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -200,7 +198,7 @@ a+
   overflow-x: hidden;
 }
 
-#uptkxevggl .gt_column_spanner_outer {
+#kpxidoffvg .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -212,15 +210,15 @@ a+
   padding-right: 4px;
 }
 
-#uptkxevggl .gt_column_spanner_outer:first-child {
+#kpxidoffvg .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#uptkxevggl .gt_column_spanner_outer:last-child {
+#kpxidoffvg .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#uptkxevggl .gt_column_spanner {
+#kpxidoffvg .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -232,11 +230,11 @@ a+
   width: 100%;
 }
 
-#uptkxevggl .gt_spanner_row {
+#kpxidoffvg .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#uptkxevggl .gt_group_heading {
+#kpxidoffvg .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -262,7 +260,7 @@ a+
   text-align: left;
 }
 
-#uptkxevggl .gt_empty_group_heading {
+#kpxidoffvg .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -277,15 +275,15 @@ a+
   vertical-align: middle;
 }
 
-#uptkxevggl .gt_from_md > :first-child {
+#kpxidoffvg .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#uptkxevggl .gt_from_md > :last-child {
+#kpxidoffvg .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#uptkxevggl .gt_row {
+#kpxidoffvg .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -304,7 +302,7 @@ a+
   overflow-x: hidden;
 }
 
-#uptkxevggl .gt_stub {
+#kpxidoffvg .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -317,7 +315,7 @@ a+
   padding-right: 5px;
 }
 
-#uptkxevggl .gt_stub_row_group {
+#kpxidoffvg .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -331,15 +329,15 @@ a+
   vertical-align: top;
 }
 
-#uptkxevggl .gt_row_group_first td {
+#kpxidoffvg .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#uptkxevggl .gt_row_group_first th {
+#kpxidoffvg .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#uptkxevggl .gt_summary_row {
+#kpxidoffvg .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -349,16 +347,16 @@ a+
   padding-right: 5px;
 }
 
-#uptkxevggl .gt_first_summary_row {
+#kpxidoffvg .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#uptkxevggl .gt_first_summary_row.thick {
+#kpxidoffvg .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#uptkxevggl .gt_last_summary_row {
+#kpxidoffvg .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -368,7 +366,7 @@ a+
   border-bottom-color: #D3D3D3;
 }
 
-#uptkxevggl .gt_grand_summary_row {
+#kpxidoffvg .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -378,7 +376,7 @@ a+
   padding-right: 5px;
 }
 
-#uptkxevggl .gt_first_grand_summary_row {
+#kpxidoffvg .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -388,7 +386,7 @@ a+
   border-top-color: #D3D3D3;
 }
 
-#uptkxevggl .gt_last_grand_summary_row_top {
+#kpxidoffvg .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -398,11 +396,11 @@ a+
   border-bottom-color: #D3D3D3;
 }
 
-#uptkxevggl .gt_striped {
+#kpxidoffvg .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#uptkxevggl .gt_table_body {
+#kpxidoffvg .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -411,7 +409,7 @@ a+
   border-bottom-color: #D3D3D3;
 }
 
-#uptkxevggl .gt_footnotes {
+#kpxidoffvg .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -425,7 +423,7 @@ a+
   border-right-color: #D3D3D3;
 }
 
-#uptkxevggl .gt_footnote {
+#kpxidoffvg .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -434,7 +432,7 @@ a+
   padding-right: 5px;
 }
 
-#uptkxevggl .gt_sourcenotes {
+#kpxidoffvg .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -448,7 +446,7 @@ a+
   border-right-color: #D3D3D3;
 }
 
-#uptkxevggl .gt_sourcenote {
+#kpxidoffvg .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -456,63 +454,63 @@ a+
   padding-right: 5px;
 }
 
-#uptkxevggl .gt_left {
+#kpxidoffvg .gt_left {
   text-align: left;
 }
 
-#uptkxevggl .gt_center {
+#kpxidoffvg .gt_center {
   text-align: center;
 }
 
-#uptkxevggl .gt_right {
+#kpxidoffvg .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#uptkxevggl .gt_font_normal {
+#kpxidoffvg .gt_font_normal {
   font-weight: normal;
 }
 
-#uptkxevggl .gt_font_bold {
+#kpxidoffvg .gt_font_bold {
   font-weight: bold;
 }
 
-#uptkxevggl .gt_font_italic {
+#kpxidoffvg .gt_font_italic {
   font-style: italic;
 }
 
-#uptkxevggl .gt_super {
+#kpxidoffvg .gt_super {
   font-size: 65%;
 }
 
-#uptkxevggl .gt_footnote_marks {
+#kpxidoffvg .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#uptkxevggl .gt_asterisk {
+#kpxidoffvg .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#uptkxevggl .gt_indent_1 {
+#kpxidoffvg .gt_indent_1 {
   text-indent: 5px;
 }
 
-#uptkxevggl .gt_indent_2 {
+#kpxidoffvg .gt_indent_2 {
   text-indent: 10px;
 }
 
-#uptkxevggl .gt_indent_3 {
+#kpxidoffvg .gt_indent_3 {
   text-indent: 15px;
 }
 
-#uptkxevggl .gt_indent_4 {
+#kpxidoffvg .gt_indent_4 {
   text-indent: 20px;
 }
 
-#uptkxevggl .gt_indent_5 {
+#kpxidoffvg .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -731,5 +729,29 @@ a+
 
 
 ![](charlebois.png)
+
+
+## Les  Méthodos     
+
+Statistique Canada utilisent les [données des lecteurs optiques de milliers de magasins pour des millions de transactions](https://www150.statcan.gc.ca/n1/pub/62f0014m/62f0014m2022007-fra.htm).  D'après moi ils sont pas pires pour avoir une idée du prix des cantalopes.    
+
+Finalement, on a eu la méthodo du prof charlebois.  Sont équipe épluche les circulaires d'une coupe de magasin 3 fois par mois et fait une moyenne.  Ils ont 13 180 points.  Un travail de moine!  C'est aussimoins de 1% du total de statscan,  Surtout, ça ne tient pas compte du volume de vente de chaque magasin.  
+
+Ça s'invente pas.  Ils  ont vraiment juste regardé une couple de circulaires, fait une moyenne et décidé que leur chiffre était meilleure que littéralement regarder le prix sur la facture de presque chaque cantaloup vendu au canada? 😂   Ça prend du culot en tabarnak, chapeau.
+
+![](methodostatcan.png)
+![](methodocharlebois1.png)
+![](methodocharlebois2.png)
+
+## Todo : le graphique interactif cool   
+
+ouaip, donnez moi un break, faut j'Apprenne un langage là là.
+
+a+
+simon
+
+
+
+
 
 

@@ -1,7 +1,7 @@
 ---
-title: "Du prix des patates frites"
+title: "Peut-on vraiment se fier à Sylvain Charlebois?"
 description: |
-  iiiiish  
+  réponse:  iiiiiiish  
 author: Simon Coulombe
 date: 2024-04-28
 categories: []
@@ -72,16 +72,22 @@ les_produits <- c("orange", "fraise", "pommes de terre", "cantaloup", "avocat", 
 :::{.callout-tip}
 ## Pourquoi est-ce qu'on est ici?  
 
-Petite chicane d'économistes sur linkedin tantôt à propos d'[un article dans la presse d'un prof de dalhousie qui parle de bouffe](https://www.lapresse.ca/affaires/chroniques/2024-04-18/panier-d-epicerie/peut-on-vraiment-se-fier-a-statistique-canada.php).  Il compare son ipc qu'il a calculé personnellement à celui de statistique canada et évidemment toute différence entre son chiffre et celui par publié par statcan est une erreur de statcan.  Tout ça sans partager sa méthodologie et ses données.   
+Yo!  
 
-Avant de critiquer les chiffres de statcan, je me suis dit que ce serait fun de voir quels sont les chiffres de statcan directement de la source au lieu de juste voir "le % d'augmentation".  
+Petite chicane d'économistes sur linkedin tantôt à propos d'[un article dans la presse d'un prof de dalhousie qui parle du prix de la bouffe](https://www.lapresse.ca/affaires/chroniques/2024-04-18/panier-d-epicerie/peut-on-vraiment-se-fier-a-statistique-canada.php).  Il compare son IPC qu'il a calculé *personnellement* à celui de statistique canada et évidemment toute différence entre son chiffre et celui par publié par statcan s'explique par une erreur de statcan de 5.59% en moyenne.  Tout ça sans partager sa méthodologie et ses données.  C'est fucking hilarant.   
 
-.   Pas facile de savoir exactement où, car l'article parle simplement de source "statistique canada".  On ne parle pas de numéro de tableau de stascan, ni de géographie (canada? québec?), ni de période de référence (1 an? 1 mois?)
+Anyway, je me suis demandé si j'étais capable de : 
 
-Fak, je me suis attaqué à la liste des tableaux de statcan à l'aide du toujours excellent package {cansim} de @vb_jens afin, je l'espère de trouver la source utilisée.  
+1)  Iidentifier la source de données chez statcan  (spoiler:  [18-10-0245](https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=1810024501&pickMembers%5B0%5D=1.11&request_locale=fr))  
+2)  (todo)Me faire un beau grahique interactif automatiquement mis à jour du prix des aliments sur mon blog avec observable js     
+3)  Trouver la [méthodo de Statscan](https://www150.statcan.gc.ca/n1/pub/62f0014m/62f0014m2022007-fra.htm)      
+4)  Trouver la méthodo de Dalhousie (lol)  
+
 
 :::   
 
+
+## Les Données    
 
 Voici les noms de quelques tableux prometteurs de Statcan:  
 ```{r}
@@ -94,23 +100,15 @@ liste_des_cubes %>%  filter(str_detect(tolower(cube_title_en), "average retail p
 
 Note: le tableau "18-10-0004" était prometteur aussi, mais n'a pas de cantaloupe.   
 
-J'ai regardé ces 4 tableaux et le seul qui contenait le mot "cantaloupe" est [18-10-0245](https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=1810024501&pickMembers%5B0%5D=1.11&request_locale=fr).  J'imagine que c'est à celui-là que fait référence l'article de la presse.  Ça a du sens, parce que le "prix de détail" c'est ce qu'un citoyen peut mesurer et à quoi il peut se comparer.    
-D'une part, j'aurais aimé un beau tableau avec des données "désaisonnalisées" car on parle quand même du prix des fruits frais. d'un autre, c'est quand même cool de regarder quelque chose en "prix de détail" et pouvoir comparer avec le prix à l'épicerie.
+J'ai regardé ces 4 tableaux et le seul qui contenait le mot "cantaloupe" est [18-10-0245](https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=1810024501&pickMembers%5B0%5D=1.11&request_locale=fr).  J'imagine que c'est à celui-là que fait référence l'article de la presse, ce qui aurait du sens parce que le "prix de détail" c'est la seule chose qu'un citoyen peut mesurer anyway.
 
-L'article de la presse ne spécifie pas si la hausse de prix est celle de janvier 2024 à février 2024 (1 mois) ou celle de février 2023 à février 2024.  Comme on a des données non-désaisonnalisées, une version initiale de ce blog poste faisait l'hypothèse qu'il comparait février 2023  à février 2024.  J'ai enfin réussi à reproduire ses chiffres en comparant janvier 2024 à février 2024.
+L'article de la presse ne spécifie pas si la hausse de prix est celle de janvier 2024 à février 2024 (1 mois) ou celle de février 2023 à février 2024.  On ne spécifie pas non plus la géographie (Canada? Québec?).  
 
-Bref, j'ai downloadé les chiffres, j'ai pitché ça dans un tableau.   Voici l'évolution des prix des aliments de janvier2024 à février 2024 au Canada et au Québec selon Statcan.  
+Bref, j'ai downloadé les chiffres, j'ai pitché ça dans un tableau et j'ai calculé moi-même une différence en % afin de voir si je réussis à retrouver les chiffres de l'article de la presse. 
 
+Après un peu trop d'aller-retour, j'ai déterminé que ce sont les chiffres de janvier2024 à février 2024 pour la géographique "Canada" qui sont cités dans l'article de la presse pour statscan.
 
-Ça "fitte" avec les chiffres de la presse quand on regarde la géographie "canada".     
-
-
-Un rappel quand même, Statistique Canada utilisent les [données des lecteurs optiques de milliers de magasins pour des millions de transactions](https://www150.statcan.gc.ca/n1/pub/62f0014m/62f0014m2022007-fra.htm
-
-).  D'après moi ils sont pas pires pour avoir une idée du prix des cantalopes.  
-
-
-a+
+Voici donc les chiffres que j'avais envie de voir:
 
 
 
@@ -150,5 +148,29 @@ tableau %>%
 
 
 ![](charlebois.png)
+
+
+## Les  Méthodos     
+
+Statistique Canada utilisent les [données des lecteurs optiques de milliers de magasins pour des millions de transactions](https://www150.statcan.gc.ca/n1/pub/62f0014m/62f0014m2022007-fra.htm).  D'après moi ils sont pas pires pour avoir une idée du prix des cantalopes.    
+
+Finalement, on a eu la méthodo du prof charlebois.  Sont équipe épluche les circulaires d'une coupe de magasin 3 fois par mois et fait une moyenne.  Ils ont 13 180 points.  Un travail de moine!  C'est aussimoins de 1% du total de statscan,  Surtout, ça ne tient pas compte du volume de vente de chaque magasin.  
+
+Ça s'invente pas.  Ils  ont vraiment juste regardé une couple de circulaires, fait une moyenne et décidé que leur chiffre était meilleure que littéralement regarder le prix sur la facture de presque chaque cantaloup vendu au canada? 😂   Ça prend du culot en tabarnak, chapeau.
+
+![](methodostatcan.png)
+![](methodocharlebois1.png)
+![](methodocharlebois2.png)
+
+## Todo : le graphique interactif cool   
+
+ouaip, donnez moi un break, faut j'Apprenne un langage là là.
+
+a+
+simon
+
+
+
+
 
 
