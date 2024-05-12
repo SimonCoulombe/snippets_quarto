@@ -157,8 +157,8 @@ leaflet() %>%
 
 
 ```{=html}
-<div class="leaflet html-widget html-fill-item" id="htmlwidget-5f0829d05b97789bb945" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-5f0829d05b97789bb945">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org/copyright/\">OpenStreetMap<\/a>,  <a href=\"https://opendatacommons.org/licenses/odbl/\">ODbL<\/a>"}]},{"method":"addMarkers","args":[-36.852,174.768,null,null,null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},"The birthplace of R",null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[-36.852,-36.852],"lng":[174.768,174.768]}},"evals":[],"jsHooks":[]}</script>
+<div class="leaflet html-widget html-fill-item" id="htmlwidget-6318d300e02f42b57dd0" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-6318d300e02f42b57dd0">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org/copyright/\">OpenStreetMap<\/a>,  <a href=\"https://opendatacommons.org/licenses/odbl/\">ODbL<\/a>"}]},{"method":"addMarkers","args":[-36.852,174.768,null,null,null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},"The birthplace of R",null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[-36.852,-36.852],"lng":[174.768,174.768]}},"evals":[],"jsHooks":[]}</script>
 ```
 
 
@@ -250,11 +250,35 @@ screen content...
 
 
 
+# observable js   
+
+
+https://quarto.org/docs/interactive/ojs/
+
+
+
+
+:::{.cell}
+
+```{.js .cell-code .hidden code-fold="undefined" startFrom="-1" source-offset="0"}
+data = FileAttachment("palmer-penguins.csv").csv({ typed: true })
+```
+
+:::{.cell-output .cell-output-display}
+
+:::{#ojs-cell-1 nodetype="declaration"}
+:::
+:::
+:::
+
+
+
+
 <!-- :::{.callout-note collapse="true"} -->
 ## Reproductibilité  {.unnumbered .unlisted}     
 <!-- unlisted doesnt appear in table of contents -->
 
-Ce document a été généré le 21 avril 2024 à 02:44:58 .    par le programme index.rmarkdown.  Note: les fichiers `.qmd` voient leur extension remplacée par rmarkdown ici.  
+Ce document a été généré le 28 avril 2024 à 20:51:45 .    par le programme index.rmarkdown.  Note: les fichiers `.qmd` voient leur extension remplacée par rmarkdown ici.  
 
 
 ::: {.cell}
@@ -263,7 +287,7 @@ Ce document a été généré le 21 avril 2024 à 02:44:58 .    par le programme
 ```
 Local:    main C:/Users/simon/OneDrive/Documents/snippets_quarto
 Remote:   main @ origin (git@github.com:SimonCoulombe/snippets_quarto.git)
-Head:     [1f12a57] 2024-04-21: cool template
+Head:     [0b2dbd8] 2024-04-28: trouvé!
 ```
 
 
@@ -284,7 +308,7 @@ Head:     [1f12a57] 2024-04-21: cool template
  collate  French_Canada.utf8
  ctype    French_Canada.utf8
  tz       America/Toronto
- date     2024-04-21
+ date     2024-04-28
  pandoc   3.1.1 @ C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/ (via rmarkdown)
  quarto   1.4.553 @ C:\\Users\\simon\\AppData\\Local\\Programs\\Quarto\\bin\\quarto.exe
 

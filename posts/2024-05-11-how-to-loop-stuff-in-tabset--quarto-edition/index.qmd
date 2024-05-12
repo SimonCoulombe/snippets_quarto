@@ -15,7 +15,7 @@ lang: fr
 La façon d'intégrer les outputs dépend de leur type  (ggpot2, plotly, leaflet, kable, gt, datatable) et me rend fou.  J'essaie de centraliser ça ici.  
 :::
 
-```{r, echo = FALSE}
+```{r libraries, echo = FALSE}
 library(ggplot2)
 library(dplyr)
 library(palmerpenguins)
@@ -23,80 +23,75 @@ data(penguins)
 library(leaflet)
 library(gt)
 library(plotly)
+library(htmltools)
+library(htmlwidgets)
 library(DT)
-```
-
-```{r}
-make_tab <- function(title, expr, envir = parent.frame(), print = TRUE) {
-  #https://github.com/quarto-dev/quarto-cli/issues/7602
-  text = c(
-    paste("###", title),
-    "",
-    "```{r}",
-    "#| cache: false",
-    deparse(substitute(expr)),
-    "```"
-  )
-  res <- knitr::knit_child(text = text, envir = envir, quiet = TRUE)
-  if (print) {
-    cat(res)
-  } else {
-    res
-  }
-}
+library(mapview)
+data(breweries)
+library(dplyr)
 ```
 
 
 ## kable    
 
-```{r tabset-kable}
-#| results: asis
-#| panel: tabset
-for (pouet  in levels(penguins$island)) {
-  make_tab("Table `r pouet`", {
-    knitr::kable(penguins %>% 
-                   filter(island == pouet) %>%
-                   head(5)
-    )
-  })
-}
-```
+kable needs to be wrapped inside print().
 
-
-# ggplot  
-
-:::: {.column-screen}
 ::: {.panel-tabset}
-```{r}
+```{r kable}
 #| results: asis
 for(i  in as.character(levels(penguins$island))) {
-  cat(  glue::glue("### ggplot {i}   \n\n"))
+  cat(  glue::glue("### kable {i}   \n\n"))
   cat("\n \n")
   
   print(
-      penguins %>%
-        filter(island == i) %>%
-        ggplot(aes(x=bill_length_mm,  y= bill_depth_mm, color = species)) +
-        geom_point() + 
-        labs(title = i)
+    penguins %>%
+      filter(island == i) %>%
+      head(5) %>%
+      knitr::kable()
   )
   cat(' \n \n')
 }
 ```
 :::
-::::
 
 
-# datatable   
-https://stackoverflow.com/questions/74707808/programatically-generate-tabset-panels-of-datatables-in-quarto
+## gt     
 
-```{r, include=FALSE}
+gt needs to be wrapped inside print(tagList()).
+
+::: {.panel-tabset}
+```{r gt }
+#| results: asis
+for(i  in as.character(levels(penguins$island))) {
+  cat(  glue::glue("### gt {i}   \n\n"))
+  cat("\n \n")
+  
+  print(
+    tagList(
+      penguins %>%
+        filter(island == i) %>%
+        head(5) %>%
+        gt::gt()
+    )
+  )
+  cat(' \n \n')
+}
+```
+:::
+
+
+## datatable   
+
+datatable needs to be wrapped inside print(tagList()) AND having initialized the datatable library before (really!).  
+See the answer by Stefan here:   https://stackoverflow.com/questions/74707808/programatically-generate-tabset-panels-of-datatables-in-quarto
+
+```{r datatableinit, include=FALSE, echo = TRUE}
 # Init Step to make sure that the dependencies are loaded
-htmltools::tagList(datatable(mtcars))
+htmltools::tagList(datatable(mtcars %>% head(0)))
 ```
 
 ::: {.panel-tabset}
-```{r}
+```{r datatable}
 #| results: asis
 for(i  in levels(penguins$island)) {
   cat(  glue::glue("\n### table {i}  \n\n"))
@@ -106,10 +101,160 @@ for(i  in levels(penguins$island)) {
 :::
 
 
-# plotly    
 
-```{r, include = FALSE}
-htmltools::tagList(plot_ly())
+## ggplot    
+gplot needs to be wrapped inside print().
+
+::: {.panel-tabset}
+```{r ggplot}
+#| results: asis
+for(i  in as.character(levels(penguins$island))) {
+  cat(  glue::glue("### ggplot {i}   \n\n"))
+  cat("\n \n")
+  
+  print(
+    penguins %>%
+      filter(island == i) %>%
+      ggplot(aes(x=bill_length_mm,  y= bill_depth_mm, color = species)) +
+      geom_point() + 
+      labs(title = i)
+  )
+  cat(' \n \n')
+}
 ```
+:::
+
+
+
+## plotly    
+
+plotly needs to be wrapped inside print(tagList()) AND be initialized by running plot_ly() before hand, similar to datatable:  
+
+```{r plotlyinit, include = FALSE, echo= TRUE}
+htmltools::tagList(plot_ly()) #  initialize plot_ly because fuck you
+```
+
+
+::: {.panel-tabset}
+```{r plotly}
+#| results: asis
+for(i  in as.character(levels(penguins$island))) {
+  cat(  glue::glue("### plotly {i}   \n\n"))
+  cat("\n \n")
+  my_plot <- penguins %>%
+    filter(island == i) %>%
+    ggplot(aes(x=bill_length_mm,  y= bill_depth_mm, color = species)) +
+    geom_point() + 
+    labs(title = i)
+  print(
+    tagList(
+      ggplotly(my_plot)
+    )
+  )
+  cat(' \n \n')
+}
+```
+:::
+
+
+
+## leaflet    
+
+::: {.panel-tabset}
+```{r leaflet}
+#| results: asis
+for(i  in as.character(levels(penguins$island))) {
+  
+  mymap <-  leaflet() %>%
+    addTiles()   %>% 
+    setView(-93.65, 42.0285, zoom = 17)  %>%
+    addPopups(-93.65, 42.0285, 'Here is the <b>Department of Statistics</b>, ISU')
+  
+  
+  cat(  glue::glue("### leaflet {i}   \n\n"))
+  cat("\n \n")
+  
+  print(tagList(mymap))
+  
+  cat(' \n \n')
+}
+```
+:::
+
+## mapview     
+
+mapview needs to be wrapped inside print(tagList()) AND be initialized by running plot_ly() before hand, similar to datatable.
+You also need to extract the @map from the mapview object before printing it.
+
+```{r mapviewinit, include = FALSE}
+mapview()
+```
+
+
+::: {.panel-tabset}
+```{r mapview}
+#| results: asis
+for(i  in as.character(levels(penguins$island))) {
+  mymap <- mapview(breweries, zcol="number.of.types")
+  cat(  glue::glue("### mapview {i}   \n\n"))
+  cat("\n \n")
+  
+  print(tagList(mymap@map))
+  
+  cat(' \n \n')
+}
+```
+:::
+
+
+## all in one   
+
+you cal absolutely put everything together   ..
+
+
+
+::: {.panel-tabset}
+```{r allinone}
+#| results: asis
+for(i  in as.character(levels(penguins$island))) {
+  mymap <- mapview(breweries, zcol="number.of.types")
+  cat(  glue::glue("### all in one {i}   \n\n"))
+  cat("\n \n")
+  
+  print(
+    penguins %>%
+      filter(island == i) %>%
+      head(5) %>%
+      knitr::kable()
+  )
+  print(
+    tagList(
+      penguins %>%
+        filter(island == i) %>%
+        head(5) %>%
+        gt::gt()
+    )
+  )
+  print(
+    penguins %>%
+      filter(island == i) %>%
+      ggplot(aes(x=bill_length_mm,  y= bill_depth_mm, color = species)) +
+      geom_point() + 
+      labs(title = i)
+  )
+    my_plot <- penguins %>%
+    filter(island == i) %>%
+    ggplot(aes(x=bill_length_mm,  y= bill_depth_mm, color = species)) +
+    geom_point() + 
+    labs(title = i)
+  print(
+    tagList(
+      ggplotly(my_plot)
+    )
+  )
+  cat(' \n \n')
+}
+```
+:::
 
 
