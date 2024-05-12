@@ -9,7 +9,7 @@ project:
 
 website:
   title: "Simon Coulombe"
-  site-url: https://simonssnippets.netlify.app/
+  site-url: https://www.simoncoulombe.com
   repo-url: https://github.com/simoncoulombe/snippets_quarto
   favicon: images/favicon.ico
   description: "apprendre des trucs en public dans l'espoir de les oublier moins rapidement."
