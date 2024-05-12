@@ -1,0 +1,115 @@
+---
+title: "How to loop stuff in tabset - quarto edition"
+description: ish
+author: Simon Coulombe  
+date: 2024-05-11
+categories: []
+lang: fr
+---
+
+
+:::{.callout-tip}
+## Pourquoi est-ce qu'on est ici?    
+
+À toutes les fois que je veux faire un rapport je me retrouve avec des tabsets que je dois créer automatiquement.  
+La façon d'intégrer les outputs dépend de leur type  (ggpot2, plotly, leaflet, kable, gt, datatable) et me rend fou.  J'essaie de centraliser ça ici.  
+:::
+
+```{r, echo = FALSE}
+library(ggplot2)
+library(dplyr)
+library(palmerpenguins)
+data(penguins)
+library(leaflet)
+library(gt)
+library(plotly)
+library(DT)
+```
+
+```{r}
+make_tab <- function(title, expr, envir = parent.frame(), print = TRUE) {
+  #https://github.com/quarto-dev/quarto-cli/issues/7602
+  text = c(
+    paste("###", title),
+    "",
+    "```{r}",
+    "#| cache: false",
+    deparse(substitute(expr)),
+    "```"
+  )
+  res <- knitr::knit_child(text = text, envir = envir, quiet = TRUE)
+  if (print) {
+    cat(res)
+  } else {
+    res
+  }
+}
+```
+
+
+## kable    
+
+```{r tabset-kable}
+#| results: asis
+#| panel: tabset
+for (pouet  in levels(penguins$island)) {
+  make_tab("Table `r pouet`", {
+    knitr::kable(penguins %>% 
+                   filter(island == pouet) %>%
+                   head(5)
+    )
+  })
+}
+```
+
+
+# ggplot  
+
+:::: {.column-screen}
+::: {.panel-tabset}
+```{r}
+#| results: asis
+for(i  in as.character(levels(penguins$island))) {
+  cat(  glue::glue("### ggplot {i}   \n\n"))
+  cat("\n \n")
+  
+  print(
+      penguins %>%
+        filter(island == i) %>%
+        ggplot(aes(x=bill_length_mm,  y= bill_depth_mm, color = species)) +
+        geom_point() + 
+        labs(title = i)
+  )
+  cat(' \n \n')
+}
+```
+:::
+::::
+
+
+# datatable   
+https://stackoverflow.com/questions/74707808/programatically-generate-tabset-panels-of-datatables-in-quarto
+
+```{r, include=FALSE}
+# Init Step to make sure that the dependencies are loaded
+htmltools::tagList(datatable(mtcars))
+```
+
+::: {.panel-tabset}
+```{r}
+#| results: asis
+for(i  in levels(penguins$island)) {
+  cat(  glue::glue("\n### table {i}  \n\n"))
+  print(htmltools::tagList(datatable(penguins %>% filter(island==i))))
+}
+```
+:::
+
+
+# plotly    
+
+```{r, include = FALSE}
+htmltools::tagList(plot_ly())
+```
+
+
