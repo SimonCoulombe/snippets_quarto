@@ -40,6 +40,8 @@ Je suis  en processus de migration vers Quarto à partir de mon blog `blogdown`+
 
 J'ai donc 2 types de blogs posts ci-dessous: la première série sera celle des articles créés sur Quarto, la seconde de ceux récupérés tant bien que mal à partir des `.html` de mon vieux blog.  
 
+My old blog is still available at https://old.simoncoulombe.com
+
 
 ## Articles quarto   
 
