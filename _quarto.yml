@@ -35,6 +35,8 @@ website:
         href: mailto:janedoe@amazing.net    
       - icon: rss
         href: blog.xml        # https://quarto.org/docs/websites/website-blog.html
+      - icon: rewind-btn-fill
+        href: https://old.simoncoulombe.com
   google-analytics:  
     tracking-id: "UA-112244835-1" 
     anonymize-ip: true
