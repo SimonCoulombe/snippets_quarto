@@ -4,15 +4,27 @@ description: ish
 author: Simon Coulombe  
 date: 2024-05-11
 categories: []
-lang: fr
+lang: en
+execute: 
+  echo: true
 ---
 
 
 :::{.callout-tip}
-## Pourquoi est-ce qu'on est ici?    
+## Objective   
 
-À toutes les fois que je veux faire un rapport je me retrouve avec des tabsets que je dois créer automatiquement.  
-La façon d'intégrer les outputs dépend de leur type  (ggpot2, plotly, leaflet, kable, gt, datatable) et me rend fou.  J'essaie de centraliser ça ici.  
+Every time I build a new report I want to put something in programatically-generated tabs.  Every time, I have to dig old code somewhere because I don't remember how I did it last time.  With the move the quarto (I'm 2 years late), I decided to try and save it all in the same spot.  
+
+Here is my guide on how to add  the following type of outputs inside tabsets in quarto:   
+  * knitr::kable()  
+  * gt::gt()   
+  * datatable::DT()  
+  * ggplot2   
+  * plotly::ggplotly()   
+  * leaflet::leaflet()  
+  * mapview::mapview()    
+  
+Do click the </> icon next to the title to jump to the source code on github.  
 :::
 
 ```{r libraries, echo = FALSE}
