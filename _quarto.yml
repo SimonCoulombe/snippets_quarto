@@ -38,7 +38,7 @@ website:
       - icon: rewind-btn-fill
         href: https://old.simoncoulombe.com
   google-analytics:  
-    tracking-id: "UA-112244835-1" 
+    tracking-id: "G-PGZMQZ1589" 
     anonymize-ip: true
     storage: "none" # no tracking of user between sesision # https://quarto.org/docs/websites/website-tools.html#google-analytics
   cookie-consent: false # dont request cookie consent  https://quarto.org/docs/websites/website-tools.html#cookie-consent
