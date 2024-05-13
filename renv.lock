@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.3.3",
+    "Version": "4.4.0",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -560,8 +560,8 @@
       "Package": "cangetpop",
       "Version": "0.1.0",
       "Source": "GitHub",
-      "Remotes": "github::mountainMath/tongfen",
       "RemoteType": "github",
+      "Remotes": "github::mountainMath/tongfen",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "cangetpop",
       "RemoteUsername": "simoncoulombe",
@@ -1132,7 +1132,7 @@
       "Package": "fasterize",
       "Version": "1.0.5",
       "Source": "Repository",
-      "Repository": "https://packagemanager.posit.co/cran/2023-12-06",
+      "Repository": "RSPM",
       "Requirements": [
         "R",
         "Rcpp",
@@ -2900,12 +2900,14 @@
     "proj4": {
       "Package": "proj4",
       "Version": "1.0-14",
-      "Source": "Repository",
+      "Source": "Local",
       "Repository": "CRAN",
+      "RemoteType": "local",
+      "RemoteUrl": "c:/Users/simon/Downloads/proj4_1.0-14.zip",
       "Requirements": [
         "R"
       ],
-      "Hash": "1e3f9f3e86ddcb8542794fec82eee6e2"
+      "Hash": "118a15767416932181b12ee53ec5b2f4"
     },
     "promises": {
       "Package": "promises",
@@ -3219,37 +3221,6 @@
         "proj4"
       ],
       "Hash": "35bffc8308f82594dcf28e374488d0cb"
-    },
-    "rgdal": {
-      "Package": "rgdal",
-      "Version": "1.6-7",
-      "Source": "Repository",
-      "Repository": "https://packagemanager.posit.co/cran/2023-10-16",
-      "Requirements": [
-        "R",
-        "grDevices",
-        "graphics",
-        "methods",
-        "sp",
-        "stats",
-        "utils"
-      ],
-      "Hash": "10b777236c9e7855bc9dea8e347e30b7"
-    },
-    "rgeos": {
-      "Package": "rgeos",
-      "Version": "0.6-4",
-      "Source": "Repository",
-      "Repository": "https://packagemanager.posit.co/cran/2023-10-16",
-      "Requirements": [
-        "R",
-        "graphics",
-        "methods",
-        "sp",
-        "stats",
-        "utils"
-      ],
-      "Hash": "2eab4e0f0b131f018bfb3e81857f9767"
     },
     "rlang": {
       "Package": "rlang",
@@ -3665,8 +3636,8 @@
       "Package": "snapbox",
       "Version": "0.2.2",
       "Source": "GitHub",
-      "Remotes": "anthonynorth/stylebox",
       "RemoteType": "github",
+      "Remotes": "anthonynorth/stylebox",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "snapbox",
       "RemoteUsername": "anthonynorth",
