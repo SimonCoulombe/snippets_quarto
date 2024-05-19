@@ -1,0 +1,301 @@
+---
+title: "Enquête sur les dépenses des ménages"
+description: "Devinez quelles catégories ont moins de dépense en 2021 qu'en 2010 au Québec"
+author: Simon Coulombe
+date: 2024-05-18
+categories: []
+lang: fr
+---
+
+Pourquoi on est ici déjà?
+
+J'ai été "déclenché" par un reel stupide sur facebook qui ne citait pas ses sources.  Ils disaient que ça coûterait peut-être moins cher d'habiter dans un resort tout-inclus parce que la vie au Canada pour une personne seule coûte en moyenne 4000$ par mois.   
+
+J'ai regardé rapidement les tableaux de "Enquête sur les dépenses des ménages" et j'Ai vu que le *ménage* canadien moyen dépensait 92 000\$ par année (ou 7 666 \$ par mois).  C'est pas trop off si on suppose une taille des ménages moyenne de 2, mais j'Ai pas regardé très longemps pour trouver les données pour les personnes seules.   
+
+Pendant que j'y étais, j'ai vu une catégorie où les ménages canadiens dépensaient beaucoup moins en 2021 qu'en 2010 et ça a piqué ma curiosité.  J'ai donc téléchargé toutes les données pour essayer d'en trouver d'autres.  
+
+Hang on for code on how to access the "Survey of Household Spending Data"  et connaître la catégorie en question.   :)   
+
+note: gros code dégueux fait avant d'aller me coucher. bien sûr, ce devrait être des fonctions au lieu de copy-paste, mais c'est ça ou rien.  
+
+
+```{r setup, echo = FALSE}
+library(ggplot2)
+library(dplyr)
+library(cansim)
+library(ggokabeito)
+library(tidyr)
+library(gt)
+library(gtExtras)
+cerulean_blue <- "#2fa4e7"
+cerulean_gray <- "#495057"
+dark_text <- monochromeR::generate_palette(cerulean_gray, "go_both_ways", n_colours =7 )[5]
+mid_text <- cerulean_gray
+light_text <- monochromeR::generate_palette(cerulean_gray, "go_both_ways", n_colours =7 )[3]
+
+# alternativement le theme penguins https://www.cararthompson.com/posts/2024-03-14-parameterising-a-multi-part-plot/
+theme_nhsr_demo <- function(base_size = 12, 
+                            dark_text = "#1A242F",
+                            mid_text = NULL,
+                            light_text = NULL) {
+  
+  if(is.null(mid_text)){ mid_text <- monochromeR::generate_palette(dark_text, "go_lighter", n_colours = 5)[2]}
+  if(is.null(light_text)){light_text <- monochromeR::generate_palette(dark_text, "go_lighter", n_colours = 5)[3]}
+  
+  theme_minimal(base_size = base_size) +
+    theme(text = element_text(colour = mid_text, family = "BrandonText", lineheight = 1.1),
+          plot.title = element_text(colour = dark_text, family = "EnriquetaSB", size = rel(1.6), margin = margin(12, 0, 8, 0)),
+          plot.subtitle = element_text(size = rel(1.1), margin = margin(4, 0, 0, 0)),
+          axis.title.x = element_text(size = rel(1),margin = margin(8, 0, 0, 0)),
+          axis.title.y = element_text(size = rel(1), margin = margin(0, 4, 0, 0)),
+          axis.text.x = element_text(colour = light_text, size = rel(0.8)),
+          axis.text.y = element_text(colour = light_text, size = rel(0.8)),
+          legend.position = "top",
+          legend.justification = 1,
+          panel.grid = element_line(colour = "#F3F4F5"),
+          plot.caption = element_text(size = rel(0.8), margin = margin(8, 0, 0, 0)),
+          plot.margin = margin(0.25, 0.25, 0.25, 0.25,"cm"))
+}
+
+ggplot2::theme_set(theme_nhsr_demo(base_size = 14,dark_text =  dark_text, mid_text = mid_text, light_text = light_text)) 
+options(ggplot2.discrete.fill  = function()  scale_fill_okabe_ito())
+options(ggplot2.continuous.fill  = function() scale_fill_viridis_c())
+options(ggplot2.discrete.colour = function() scale_color_okabe_ito())
+options(ggplot2.continuous.colour = function() scale_color_viridis_c())
+ggplot2::update_geom_defaults("point", ggplot2::aes(color = cerulean_gray))
+ggplot2::update_geom_defaults("line", ggplot2::aes(color = cerulean_gray))
+ggplot2::update_geom_defaults("rect", ggplot2::aes(color = cerulean_gray, fill = cerulean_gray))
+options(scipen=999)
+```
+
+# Download les tables pour  2010, 2019 et 2021  au Québec    
+
+Merci package Cansim de Jens Von Bergmann :)
+
+```{r data, echo = FALSE}
+tableau  <- get_cansim("11-10-0222", language = "French") %>% 
+  janitor::clean_names() 
+
+
+tableau_wide <- tableau %>% 
+  filter(geo == "Québec", periode_de_reference %in% c("2010","2019", "2021")) %>%
+  select(periode_de_reference, hierarchie_pour_depenses_des_menages_categories_de_niveau_sommaire,depenses_des_menages_categories_de_niveau_sommaire, val_norm)  %>%
+  mutate(profondeur = stringr::str_count(hierarchie_pour_depenses_des_menages_categories_de_niveau_sommaire, "\\."),
+         last_profondeur = hierarchie_pour_depenses_des_menages_categories_de_niveau_sommaire !=stringr::str_sub(lead(hierarchie_pour_depenses_des_menages_categories_de_niveau_sommaire),1, stringr::str_length(hierarchie_pour_depenses_des_menages_categories_de_niveau_sommaire))
+  )%>% 
+  pivot_wider(names_from = periode_de_reference, values_from = val_norm, names_prefix = "an") %>% 
+  mutate(
+    diff_abs2019 = an2019 - an2010,
+    diff_abs2021 = an2021 - an2010,
+    diff_rel2019 = diff_abs2019 / an2010,    
+    diff_rel2021 = diff_abs2021 / an2010
+  )  %>%
+  arrange(hierarchie_pour_depenses_des_menages_categories_de_niveau_sommaire)
+
+
+# ça c'est les labels  que je veux mettre dans le tableau
+###  this is clever af simon!! quick tip to replace all "_" with " " in the column labels
+names_with_spaces <- stringr::str_replace_all(
+  names(tableau_wide %>% select(-profondeur, -last_profondeur)), 
+  "_", " ")
+```
+# profondeur 0   
+
+Les dépenses sont ventilées par catégories, et ensuite chaque catégorie  est ventilées parmi ses  "enfants".  Voici les dépenses à la profondeur 0 (total) pour les 3 années retenues:  
+Augmentation de 29.23% en 11 ans de 2010 à 2021 au Québec.  
+```{r}
+#| column: screen-inset  
+#| echo: fenced  
+tableau_wide %>% 
+  filter(profondeur== 0) %>%
+  select(-profondeur, -last_profondeur) %>% 
+  gt::gt() %>%
+  gt::cols_label(.list= setNames(as.list(names_with_spaces),names(tableau_wide%>% select(-profondeur, -last_profondeur)) )) %>%  
+  fmt_number(columns = c(an2010, an2019, an2021, diff_abs2019, diff_abs2021), decimals = 0) %>%
+  fmt_percent(columns = c(diff_rel2019, diff_rel2021)) %>% 
+  gt::grand_summary_rows(columns = c(an2010, an2019, an2021, diff_abs2019, diff_abs2021), 
+                         fns = list(Total ~ sum(.,na.rm = TRUE)) ,
+                         fmt = ~fmt_number(., decimals = 0)) %>%
+  gt_plt_bar(column = diff_rel2019, keep_column = TRUE, color = cerulean_blue )
+
+```
+
+# profondeur 1     
+
+Quand on ventile un peu (profondeur = 1 ), on peut séparer les dépenses courantes des impôts et des assurances/pensions ainsi que des cadeaux.   
+
+Première réaction de votre dévoué serviteur:  **WTF IMPOT SUR LE REVENU + 61%**  !!!  
+
+Il a suffit de quelques secondes et d'une note de bas de page pour comprendre que les Québécois ne sont pas soudainment pas plus taxés qu'avant.  C'est juste que les primes d'Assurance-maladie provinciales (médicament?) sont passées de dépenses de santé à dépenses d'impôt:  
+
+```
+Note de bas de page 8
+https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=1110022201&request_locale=fr
+À partir de 2014, les estimations de dépenses pour les primes d'assurance-maladie provinciale sont incluses dans l'impôt sur le revenu. Ces estimations sont basées sur de l'information provenant des données d'impôt des particuliers (T1). Précédemment, les primes d'assurance-maladie provinciale étaient incluses dans les dépenses de soins de santé
+```
+
+```{r}
+#| column: screen-inset  
+#| echo: fenced  
+tableau_wide %>% 
+  filter(profondeur== 1 ) %>%
+  select(-profondeur, -last_profondeur) %>% 
+  gt::gt() %>%
+  gt::cols_label(.list= setNames(as.list(names_with_spaces),names(tableau_wide%>% select(-profondeur, -last_profondeur)) )) %>%  ###  this is clever af simon!! quick tip to replace all "_" with " " in the column labels
+  fmt_number(columns = c(an2010, an2019, an2021, diff_abs2019, diff_abs2021), decimals = 0) %>%
+  fmt_percent(columns = c(diff_rel2019, diff_rel2021)) %>% 
+  gt::grand_summary_rows(columns = c(an2010, an2019, an2021, diff_abs2019, diff_abs2021), 
+                         fns = list(Total ~ sum(.,na.rm = TRUE)) ,
+                         fmt = ~fmt_number(., decimals = 0)) %>%
+  gt_plt_bar(column = diff_rel2019, keep_column = TRUE, color = cerulean_blue ) %>% 
+  gt::sub_missing(missing_text = "-")
+
+```
+
+
+# profondeur 2    
+
+Bon, c'est rendu ici que je me suis rendu compte que je ne peux pas juste garder "profondeur ==2" car le total ne balancerait  plus (total prodondeur 2 = 52 127 vs  vrai total de 62 257 en 2010). Pour compenser ça, à partir de la profondeur 2 je garde les ligne de profondeur 2 *ainsi que les lignes de profondeur <2 et qui n'ont pas d'"enfants"*.
+
+```{r}
+#| column: screen-inset  
+#| echo: fenced  
+tableau_wide %>%
+  group_by(profondeur ) %>% 
+  summarise(total = sum(an2010, na.rm = TRUE))
+```
+
+
+Bon voici le tableau.   
+
+LE transport est plus bas en 2021 qu'en 2010 (-5 % duh confinement), mais il était déjà pas vraiment beaucoup plus haut en 2019 (+5%), ce que j'ai trouvé étonnant.     
+
+Même chose pour les vêtements, ils ont absolument été dévastés en 2021 (-31% vs 2010 duh, remote work) , mais ils étaient déjà moins important en 2019 qu'en 2010 (-5%).  
+
+Matériel de lecture aussi est amusant.  C'est un petit poste de dépenses ( 189$ en 2010), qui avait chûté en 2019 (138\$), mais qui a remonté en 2021 (178 \$).  Est-ce que c'est un boom de lecture de livres et de revues? Il me semble que j'en ai pas vraiment entendu parler.  
+
+Le logement, très cher, on sait..
+
+```{r}
+#| column: screen-inset  
+#| echo: fenced  
+tableau_wide %>%
+  filter(profondeur == 2 |( profondeur<2 & last_profondeur==TRUE) )%>%
+  select(-profondeur, -last_profondeur) %>% 
+  gt::gt() %>%
+  gt::cols_label(.list= setNames(as.list(names_with_spaces),names(tableau_wide%>% select(-profondeur, -last_profondeur)) )) %>%  ###  this is clever af simon!! quick tip to replace all "_" with " " in the column labels
+  fmt_number(columns = c(an2010, an2019, an2021, diff_abs2019, diff_abs2021), decimals = 0) %>%
+  fmt_percent(columns = c(diff_rel2019, diff_rel2021)) %>% 
+  gt::grand_summary_rows(columns = c(an2010, an2019, an2021, diff_abs2019, diff_abs2021), 
+                         fns = list(Total ~ sum(.,na.rm = TRUE)) ,
+                         fmt = ~fmt_number(., decimals = 0)) %>%
+  gt_plt_bar(column = diff_rel2019, keep_column = TRUE, color = cerulean_blue ) %>% 
+  gt::sub_missing(missing_text = "-")
+```
+
+
+
+voici aussi le top 5 "plus gross hausse" et "plus petit hausse pour la route.  
+
+```{r}
+#| column: screen-inset  
+#| echo: fenced  
+
+bind_rows(
+  tableau_wide %>% 
+    filter(!is.na(diff_rel2019) & (profondeur == 2 | (profondeur < 2 & last_profondeur==TRUE )))%>%
+    arrange(diff_rel2019) %>%
+    head(5),
+  tableau_wide %>% 
+    filter(!is.na(diff_rel2019) & (profondeur == 2 | (profondeur < 2 & last_profondeur==TRUE )))%>%
+    arrange(diff_rel2019) %>%
+    tail(5)
+) %>% 
+  select(-profondeur, -last_profondeur) %>% 
+  gt::gt() %>%
+  gt::cols_label(.list= setNames(as.list(names_with_spaces),names(tableau_wide%>% select(-profondeur, -last_profondeur)) )) %>%  ###  this is clever af simon!! quick tip to replace all "_" with " " in the column labels
+  fmt_number(columns = c(an2010, an2019, an2021, diff_abs2019, diff_abs2021), decimals = 0) %>%
+  fmt_percent(columns = c(diff_rel2019, diff_rel2021)) %>% 
+  gt::grand_summary_rows(columns = c(an2010, an2019, an2021, diff_abs2019, diff_abs2021), 
+                         fns = list(Total ~ sum(.,na.rm = TRUE)) ,
+                         fmt = ~fmt_number(., decimals = 0)) %>%
+  gt_plt_bar(column = diff_rel2019, keep_column = TRUE, color = cerulean_blue ) %>% 
+  gt::sub_missing(missing_text = "-")
+
+
+```
+
+# profondeur 3    
+
+Bon là je vais me coucher, mais regardez bien transport.   Globalement c'est genre -5%, mais le transport public est à -40%.  yé covid  
+```{r}
+#| column: screen-inset  
+#| echo: fenced  
+tableau_wide %>% 
+  filter(profondeur == 3 | (profondeur < 3 & last_profondeur==TRUE ))%>%
+  select(-profondeur, -last_profondeur) %>% 
+  gt::gt() %>%
+  gt::cols_label(.list= setNames(as.list(names_with_spaces),names(tableau_wide%>% select(-profondeur, -last_profondeur)) )) %>%  ###  this is clever af simon!! quick tip to replace all "_" with " " in the column labels
+  fmt_number(columns = c(an2010, an2019, an2021, diff_abs2019, diff_abs2021), decimals = 0) %>%
+  fmt_percent(columns = c(diff_rel2019, diff_rel2021)) %>% 
+  gt::grand_summary_rows(columns = c(an2010, an2019, an2021, diff_abs2019, diff_abs2021), 
+                         fns = list(Total ~ sum(.,na.rm = TRUE)) ,
+                         fmt = ~fmt_number(., decimals = 0)) %>%
+  gt_plt_bar(column = diff_rel2019, keep_column = TRUE, color = cerulean_blue ) %>% 
+  gt::sub_missing(missing_text = "-")
+```
+
+
+
+voici aussi le top 5 "plus gross hausse" et "plus petit hausse pour la route.  
+
+```{r}
+#| column: screen-inset  
+#| echo: fenced  
+
+bind_rows(
+  tableau_wide %>% 
+    filter(!is.na(diff_rel2019) & (profondeur == 3 | (profondeur < 3 & last_profondeur==TRUE )))%>%
+    arrange(diff_rel2019) %>%
+    head(5),
+  tableau_wide %>% 
+    filter(!is.na(diff_rel2019) & (profondeur == 3 | (profondeur < 3 & last_profondeur==TRUE )))%>%
+    arrange(diff_rel2019) %>%
+    tail(5)
+) %>% 
+  select(-profondeur, -last_profondeur) %>% 
+  gt::gt() %>%
+  gt::cols_label(.list= setNames(as.list(names_with_spaces),names(tableau_wide%>% select(-profondeur, -last_profondeur)) )) %>%  ###  this is clever af simon!! quick tip to replace all "_" with " " in the column labels
+  fmt_number(columns = c(an2010, an2019, an2021, diff_abs2019, diff_abs2021), decimals = 0) %>%
+  fmt_percent(columns = c(diff_rel2019, diff_rel2021)) %>% 
+  gt::grand_summary_rows(columns = c(an2010, an2019, an2021, diff_abs2019, diff_abs2021), 
+                         fns = list(Total ~ sum(.,na.rm = TRUE)) ,
+                         fmt = ~fmt_number(., decimals = 0)) %>%
+  gt_plt_bar(column = diff_rel2019, keep_column = TRUE, color = cerulean_blue ) %>% 
+  gt::sub_missing(missing_text = "-")
+
+
+```
+
+
+# profondeur 4   
+
+J'ai même pas regardé, je génère au cas-où.  
+
+```{r}
+#| column: screen-inset  
+#| echo: fenced  
+tableau_wide %>% 
+  filter(profondeur == 4 | (profondeur < 4 & last_profondeur==TRUE) )%>%
+  select(-profondeur, -last_profondeur) %>% 
+  gt::gt() %>%
+  gt::cols_label(.list= setNames(as.list(names_with_spaces),names(tableau_wide %>% select(-profondeur, -last_profondeur)) )) %>%  ###  this is clever af simon!! quick tip to replace all "_" with " " in the column labels
+  fmt_number(columns = c(an2010, an2019, an2021, diff_abs2019, diff_abs2021), decimals = 0) %>%
+  fmt_percent(columns = c(diff_rel2019, diff_rel2021)) %>% 
+  gt::grand_summary_rows(columns = c(an2010, an2019, an2021, diff_abs2019, diff_abs2021), 
+                         fns = list(Total ~ sum(.,na.rm = TRUE)) ,
+                         fmt = ~fmt_number(., decimals = 0)) %>%
+  gt_plt_bar(column = c(diff_rel2019), keep_column = TRUE, color = cerulean_blue )  %>% 
+  gt::sub_missing(missing_text = "-")
+```
