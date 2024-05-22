@@ -39,9 +39,6 @@ website:
         href: https://old.simoncoulombe.com
   google-analytics:  
     tracking-id: "G-PGZMQZ1589" 
-    anonymize-ip: true
-    storage: "none" # no tracking of user between sesision # https://quarto.org/docs/websites/website-tools.html#google-analytics
-  cookie-consent: false # dont request cookie consent  https://quarto.org/docs/websites/website-tools.html#cookie-consent
   reader-mode: true # allow users to hide side nav and table of content
   open-graph: true # richer sharing of links to articles on the web (better preview of links pasted on linkedin etc..)
 lang: fr    # default post language is french
