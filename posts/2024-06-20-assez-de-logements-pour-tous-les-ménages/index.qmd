@@ -24,6 +24,8 @@ Les chercheurs de l'IRIS sont au courant de cette définition, cette définition
 
 Toute personne normale va conclure à une pénurie importante de logement. Hors, lors du recensement, on trouvera que le nombre de ménage (maintenant 50 000) égale le nombre de logements et l'IRIS conclura que la construction est suffisante pour le nombre de ménage.
 
+![](moffat1.png)
+
 Ici, le nombre de personnes par ménage aurait doublé, ce qui serait révélateur du fait qu'il y a problement des ménages qui ont été "suppressed" et qui n'ont pas pu se former.  Voir [ce post de Jens Von Bergmann](https://doodles.mountainmath.ca/posts/2022-05-06-estimating-suppressed-household-formation/) pour une super méthode utilisant le "headship rate" afin de déterminer quel serait le nombre de ménages qui seraient formés "si les tendances du passé étaient maintenues".
 
 Mais peut-être que les maisons sont trop petites pour s'y entasser. Les 50 000 sinistrés n'auraient d'autre choix que de quitter la ville. 
