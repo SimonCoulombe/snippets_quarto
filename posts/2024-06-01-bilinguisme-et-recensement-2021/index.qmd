@@ -1,0 +1,413 @@
+---
+title: "Bilinguisme et Recensement 2021"
+description: canpumf!
+author: Simon Coulombe
+date: 2024-06-01
+categories: []
+lang: fr
+---
+
+
+## Pourquoi est-ce qu'on est ici?  
+
+Ce tweet de Frédéric Lacroix hier qui s'énerve le poil des jambes sur le fait que plus de gens soient bilingues à Québec qu'avant me fait un peu sourire.  Bien que la situation du français m'interpelle, je pense que ce n'est pas la bonne donnée à regarder et j'aurais plus paniqué si par exemple le pourcentage de "connait seulement l'anglais avait augmenté".   On travaille assez fort pour que nos gamisn apprennent l'anglais, ce serait con que ce pourcentage là ne monte pas.   
+
+
+Anyway, je me demande  à quoi ça ressemble par langue maternelle.  Est-ce que les "non francophones ne naissance" apprennent plus le français qu'il y a 25 ans?     On va jouer un peu avec le package R {canpumf} par le toujours excellent [Jens Von Bergmann](https://mountainmath.github.io/canpumf/) qui rend les microdonnées publiques de Statcan facilement accessibles.  
+
+
+spoiler: le "anglais seulement" a baissé chez les langues maternelles "anglais seulement" et est resté stable chez les "allophones".  Si j'ai une surprise, c'est ça:   je pensais que nos allophones auraient plus appris le français qu'il y a 25 ans.   
+
+Oui, je sais, c'est horrible que mes étiquettes de données soient en anglais.  J'ai pas eu le temps de retravailler ça (et je n'ai pas l'intention), je fais ça gratis dans mes heures d'insomnies.
+
+![](fred.png)
+
+
+```{r, echo = FALSE}
+cerulean_blue <- "#2fa4e7"
+cerulean_gray <- "#495057"
+library(ggplot2)
+library(dplyr)
+library(mapview)
+# remotes::install_github("mountainmath/canpumf")
+library(canpumf)
+library(janitor)
+library(ggokabeito)
+library(purrr)
+library(tidyr)
+library(qs)
+library(gt)
+# alternativement le theme penguins https://www.cararthompson.com/posts/2024-03-14-parameterising-a-multi-part-plot/
+couleurs <- c(
+  "French only" = "#0072b2",
+  "English only" = "#D55E00",
+  "Neither English nor French"= "#F0E442",  
+  "Both English and French"= "#009E73"
+)
+
+
+
+#install.packages("ggokabeito")
+
+ggplot2::theme_set(theme_minimal()) 
+options(ggplot2.discrete.fill  = function()  scale_fill_okabe_ito())
+options(ggplot2.continuous.fill  = function() scale_fill_viridis_c())
+options(ggplot2.discrete.colour = function() scale_color_okabe_ito())
+options(ggplot2.continuous.colour = function() scale_color_viridis_c())
+ggplot2::update_geom_defaults("point", ggplot2::aes(color = cerulean_gray))
+ggplot2::update_geom_defaults("line", ggplot2::aes(color = cerulean_gray))
+ggplot2::update_geom_defaults("rect", ggplot2::aes(color = cerulean_gray, fill = cerulean_gray))
+options(scipen=999)
+
+options(cansim.cache_path="C:/Users/simon/R/cansim_cache")
+options(cancensus.cache_path="C:/Users/simon/R/cancensus_cache")
+options(canpumf.cache_path="C:/Users/simon/R/canpumf_cache")
+
+
+```
+
+```{r purrr_data}
+years  <- c("1996", "2001", "2006", "2011", "2016", "2021")
+if(!file.exists("all_data.qs")){
+
+all_data <- purrr::map(years, ~ get_pumf("Census",.x)  %>% 
+                          label_pumf_data(rename_columns = TRUE)  %>% 
+                          janitor::clean_names() )
+
+names(all_data) <- years
+
+qs::qsave(all_data, "all_data.qs")
+} else{
+  all_data <- qs::qread(("all_data.qs"))
+}
+```
+
+```{r apply_mappings}
+apply_mappings <- function(df,year){
+  if (as.numeric(year) == 1996){
+    df %>%
+      mutate(
+        weight = weightp,
+        province = province_territory,
+        cma = census_metropltan_area,
+        age = age,
+        knowledge_of_official_languages = case_when(
+          knowofficiallanguage == "BothEnglishFrench" ~ "Both English and French",
+          knowofficiallanguage == "NeitherEnglishFrench" ~ "Neither English nor French",
+          TRUE ~knowofficiallanguage
+        ),
+        mother_tongue = case_when(
+          mother_tongue == "FrenchSinglResponse" ~ "French only",
+          mother_tongue == "EnglishSingResponse" ~ "English only",
+          mother_tongue == "EnglishAndFrench" ~ "Both English and French",
+          TRUE ~ "Neither English nor French"
+        )
+      )
+  }
+  else if (as.numeric(year) == 2001){
+    
+    df %>%
+      mutate(
+        weight = weightp,
+        province = province_or_territory,
+        cma = census_metropolitan_area_cma,
+        age = age,
+        knowledge_of_official_languages =   case_when(
+          knowledge_of_official_languages == "English" ~ "English only",
+          knowledge_of_official_languages == "French" ~ "French only",
+          TRUE ~ knowledge_of_official_languages
+        ),
+        mother_tongue = case_when(
+          mother_tongue_mtnp == "French single responses" ~ "French only",
+          mother_tongue_mtnp == "English single responses" ~ "English only",
+          mother_tongue_mtnp == "English and French" ~ "Both English and French",
+          TRUE ~ "Neither English nor French"
+        )
+      )
+  }
+  
+  else if (as.numeric(year) == 2006){
+    df %>%
+      mutate(
+        province = province,
+        cma = census_metropolitan_area,
+        age = age_groups,
+        knowledge_of_official_languages =   case_when(
+          knowledge_of_official_language == "English" ~ "English only",
+          knowledge_of_official_language == "French" ~ "French only",
+          TRUE ~ knowledge_of_official_language
+        ),
+        mother_tongue = case_when(
+          mother_tongue_french_component == "True – Respondent reported French as mother tongue" & mother_tongue_english_component == "False – Respondent did not report English as mother tongue" ~ "French only",
+          mother_tongue_french_component == "False – Respondent did not report French as mother tongue" & mother_tongue_english_component == "True – Respondent reported English as mother tongue"  ~ "English only",
+          mother_tongue_french_component == "True – Respondent reported French as mother tongue" & mother_tongue_english_component == "True – Respondent reported English as mother tongue"  ~ "Both English and French",
+          TRUE ~ "Neither English nor French"
+        )
+      )
+  }
+  
+  
+  else if (as.numeric(year) == 2011){
+    df %>%
+      mutate(
+        province = pr,
+        cma = cma,
+        age = agegrp,
+        knowledge_of_official_languages = kol,
+        mother_tongue = case_when(
+          mtnfr == "True – Respondent reported French as mother tongue" & mtnen == "False – Respondent did not report English as mother tongue" ~ "French only",
+          mtnfr == "False – Respondent did not report French as mother tongue" & mtnen == "True – Respondent reported English as mother tongue"  ~ "English only",
+          mtnfr == "True – Respondent reported French as mother tongue" & mtnen == "True – Respondent reported English as mother tongue"  ~ "Both English and French",
+          TRUE ~ "Neither English nor French"
+        )
+      )
+  }
+  
+  
+  else if (as.numeric(year) == 2016){
+    df %>%
+      mutate(
+        province = province_or_territory_of_current_residence_2016,
+        cma = census_metropolitan_area_or_census_agglomeration_of_current_residence_2016,
+        age = age,
+        knowledge_of_official_languages = language_knowledge_of_official_languages,
+        mother_tongue = case_when(
+          language_mother_tongue_french_component == "True - Respondent reported French as mother tongue" & language_mother_tongue_english_component == "False - Respondent did not report English as mother tongue" ~ "French only",
+          language_mother_tongue_french_component == "False - Respondent did not report French as mother tongue" & language_mother_tongue_english_component == "True - Respondent reported English as mother tongue"  ~ "English only",
+          language_mother_tongue_french_component == "True - Respondent reported French as mother tongue" & language_mother_tongue_english_component == "True - Respondent reported English as mother tongue"  ~ "Both English and French",
+          TRUE ~ "Neither English nor French"
+        )
+      )
+  }
+  
+  else if (as.numeric(year) == 2021){
+    df %>%
+      mutate(
+        province = province_or_territory_of_current_residence_2021,
+        cma = census_metropolitan_area_or_census_agglomeration_of_current_residence_2021,
+        age = age,
+        knowledge_of_official_languages = case_when(
+          
+          language_knowledge_of_official_languages == "English and French" ~ "Both English and French",
+          TRUE ~language_knowledge_of_official_languages
+        ),
+        mother_tongue = case_when(
+          language_mother_tongue_french_component == "True - Respondent reported French as mother tongue" & language_mother_tongue_english_component == "False - Respondent did not report English as mother tongue" ~ "French only",
+          language_mother_tongue_french_component == "False - Respondent did not report French as mother tongue" & language_mother_tongue_english_component == "True - Respondent reported English as mother tongue"  ~ "English only",
+          language_mother_tongue_french_component == "True - Respondent reported French as mother tongue" & language_mother_tongue_english_component == "True - Respondent reported English as mother tongue"  ~ "Both English and French",
+          TRUE ~ "Neither English nor French"
+        )
+      )
+  }
+}
+all_data_mapped <- purrr::map2(all_data, names(all_data), ~ apply_mappings(.x, .y))
+names(all_data_mapped) <- years
+
+
+```
+# quebec entier    
+
+## connaissances des langues   
+```{r}
+
+my_counts <- purrr::map(all_data_mapped,
+                        ~ .x %>%  
+                          filter(stringr::str_sub(province,1,2)=="Qu", knowledge_of_official_languages  != "Not available") %>% 
+                          summarise(across(c("weight"),sum), # across(matches("WEIGHT|WT\\d+")
+                                    .by=c(province,knowledge_of_official_languages)
+                          ) %>%
+                          mutate(across(c("weight"), list(pct = ~ .x / sum(.x))),
+                                 .by=c(province)
+                          ) 
+)
+
+total_quebec <- bind_rows(my_counts, .id = "year")   %>% 
+  select(-province) %>% 
+  rename(pop = weight, pct_pop = weight_pct) 
+
+
+total_quebec%>% 
+  pivot_wider(names_from = year, values_from = c("pop", "pct_pop")) %>%
+  arrange(knowledge_of_official_languages) %>% 
+  gt::gt(         caption = "Québec entier - Évolution de la répartition des personnes connaissant les langues officielles") %>% # rowname_col = "knowledge_of_official_languages",
+  gt::fmt_percent(decimals = 1, columns = starts_with("pct"))  %>% 
+  gt::fmt_number(decimals = 0, columns = starts_with("pop")) 
+  
+  
+```
+
+
+
+```{r}
+total_quebec %>% 
+  ggplot(aes(x = as.numeric(year), y = pct_pop, color= knowledge_of_official_languages)) +
+  geom_line() +  
+  geom_point() + 
+  scale_x_continuous(breaks = c(1996,2001,2006,2011,2016,2021)) + 
+  scale_y_continuous(labels = scales::percent_format())+ 
+  labs(
+    title = "Province de Québec -- Évolution de la connaissance des langues officielles",
+    x = "Année du recensement",
+    y = "Pourcentage connaissant la langue",
+    color = "Langue connue"
+  ) +
+  guides(colour = guide_legend(nrow = 1)) +
+  theme(legend.position = "bottom") + 
+   scale_colour_manual(values = couleurs)
+
+```
+
+
+##  connaissance des langues selon la langue maternelle  
+
+```{r}
+my_counts <- purrr::map(all_data_mapped,
+                        ~ .x %>%  
+                          filter(stringr::str_sub(province,1,2)=="Qu", knowledge_of_official_languages  != "Not available") %>% 
+                          summarise(across(c("weight"),sum), # across(matches("WEIGHT|WT\\d+")
+                                    .by=c(mother_tongue, province,knowledge_of_official_languages)
+                          ) %>%
+                          mutate(across(c("weight"), list(pct = ~ .x / sum(.x))),
+                                 .by=c(mother_tongue,province)
+                          ) 
+)
+
+total_quebec <- bind_rows(my_counts, .id = "year")  %>% 
+    select(-province) %>% 
+  filter(mother_tongue %in% c("French only", "English only", "Neither English nor French")) %>% 
+  rename(pop = weight, pct_pop = weight_pct) 
+
+
+total_quebec %>% 
+  pivot_wider(names_from = year, values_from = c("pop", "pct_pop")) %>%
+  arrange(mother_tongue, knowledge_of_official_languages) %>% 
+  gt::gt(         caption = "Québec entier - Évolution de la répartition des personnes connaissant les langues officielles selon la langue maternelle ( sauf langue maternelle bilingue") %>% # rowname_col = "knowledge_of_official_languages",
+  gt::fmt_percent(decimals = 1, columns = starts_with("pct"))  %>% 
+  gt::fmt_number(decimals = 0, columns = starts_with("pop")) 
+  
+  
+```
+
+```{r}
+total_quebec %>% 
+  ggplot(aes(x = as.numeric(year), y = pct_pop, color= knowledge_of_official_languages)) +
+  geom_line() +  
+  geom_point() + 
+  facet_wrap(~mother_tongue) +
+  scale_x_continuous(breaks = c(1996,2001,2006,2011,2016,2021)) + 
+  scale_y_continuous(labels = scales::percent_format())+ 
+  labs(
+    title = "Province de Québec -- Évolution de la connaissance des langues officielles\n**selon la langue maternelle**",
+    x = "Année du recensement",
+    y = "Pourcentage connaissant la langue",
+    color = "Langue connue"
+  ) +
+  guides(colour = guide_legend(nrow = 1)) +
+  theme(legend.position = "bottom") + 
+   scale_colour_manual(values = couleurs)
+
+```
+#  RMR de Québec      
+
+## connaissance des langues  
+
+
+```{r}
+
+my_counts <- purrr::map(all_data_mapped,
+                        ~ .x %>%  
+                          filter(stringr::str_sub(cma,1,2)=="Qu", knowledge_of_official_languages  != "Not available") %>% 
+                          summarise(across(c("weight"),sum), # across(matches("WEIGHT|WT\\d+")
+                                    .by=c(cma,knowledge_of_official_languages)
+                          ) %>%
+                          mutate(across(c("weight"), list(pct = ~ .x / sum(.x))),
+                                 .by=c(cma)
+                          ) 
+)
+
+total_quebec <- bind_rows(my_counts, .id = "year")   %>% 
+  select(-cma) %>% 
+  rename(pop = weight, pct_pop = weight_pct) 
+
+
+total_quebec%>% 
+  pivot_wider(names_from = year, values_from = c("pop", "pct_pop")) %>%
+  arrange(knowledge_of_official_languages) %>% 
+  gt::gt(         caption = "RMR Québec - Évolution de la répartition des personnes connaissant les langues officielles") %>% # rowname_col = "knowledge_of_official_languages",
+  gt::fmt_percent(decimals = 1, columns = starts_with("pct"))  %>% 
+  gt::fmt_number(decimals = 0, columns = starts_with("pop")) 
+  
+  
+```
+
+
+
+```{r}
+total_quebec %>% 
+  ggplot(aes(x = as.numeric(year), y = pct_pop, color= knowledge_of_official_languages)) +
+  geom_line() +  
+  geom_point() + 
+  scale_x_continuous(breaks = c(1996,2001,2006,2011,2016,2021)) + 
+  scale_y_continuous(labels = scales::percent_format())+ 
+  labs(
+    title = "Évolution de la connaissance des langues officielles (RMR de Québec)",
+    x = "Année du recensement",
+    y = "Pourcentage connaissant la langue",
+    color = "Langue connue"
+  ) +
+  guides(colour = guide_legend(nrow = 1)) +
+  theme(legend.position = "bottom") + 
+   scale_colour_manual(values = couleurs)
+
+```
+
+
+
+##  connaissance des langues selon la langue maternelle  
+
+```{r}
+my_counts <- purrr::map(all_data_mapped,
+                        ~ .x %>%  
+                          filter(stringr::str_sub(cma,1,2)=="Qu", knowledge_of_official_languages  != "Not available") %>% 
+                          summarise(across(c("weight"),sum), # across(matches("WEIGHT|WT\\d+")
+                                    .by=c(mother_tongue, cma,knowledge_of_official_languages)
+                          ) %>%
+                          mutate(across(c("weight"), list(pct = ~ .x / sum(.x))),
+                                 .by=c(mother_tongue,cma)
+                          ) 
+)
+
+total_quebec <- bind_rows(my_counts, .id = "year")  %>% 
+    select(-cma) %>% 
+  filter(mother_tongue %in% c("French only", "English only", "Neither English nor French")) %>% 
+  rename(pop = weight, pct_pop = weight_pct) 
+
+
+total_quebec %>% 
+  pivot_wider(names_from = year, values_from = c("pop", "pct_pop")) %>%
+  arrange(mother_tongue, knowledge_of_official_languages) %>% 
+  gt::gt(         caption = "RMR de Québec - Évolution de la répartition des personnes connaissant les langues officielles selon la langue maternelle ( sauf langue maternelle bilingue") %>% # rowname_col = "knowledge_of_official_languages",
+  gt::fmt_percent(decimals = 1, columns = starts_with("pct"))  %>% 
+  gt::fmt_number(decimals = 0, columns = starts_with("pop")) 
+  
+  
+```
+
+```{r}
+total_quebec %>% 
+  ggplot(aes(x = as.numeric(year), y = pct_pop, color= knowledge_of_official_languages)) +
+  geom_line() +  
+  geom_point() + 
+  facet_wrap(~mother_tongue) +
+  scale_x_continuous(breaks = c(1996,2001,2006,2011,2016,2021)) + 
+  scale_y_continuous(labels = scales::percent_format())+ 
+  labs(
+    title = "RMR de Québec -- Évolution de la connaissance des langues officielles\n **selon la langue maternelle**",
+    x = "Année du recensement",
+    y = "Pourcentage connaissant la langue",
+    color = "Langue connue"
+  ) +
+  guides(colour = guide_legend(nrow = 1)) +
+  theme(legend.position = "bottom") + 
+   scale_colour_manual(values = couleurs)
+```

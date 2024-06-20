@@ -1,0 +1,60 @@
+---
+title: "Assez de logements pour tous les ménages?"
+description: |
+  description
+author: Simon Coulombe
+date: 2024-06-20
+categories: []
+lang: fr
+---
+
+Je suis tombé en bas de ma chaise en lisant le [dernier rapport de l'IRIS](https://iris-recherche.qc.ca/publications/logement-2024/) sur la crise du logement. Je suis retombé quand j'ai vu que les médias rapportaient le même argument bidon sans le remettre en question.
+
+L'IRIS argumente que "la thèse d'un retard de la construction résidentielle par rapport à la croissance démographique est difficile à démontrer" et que le "faible taux d'innocupation sont une illustration de la faible construction de logements financièrement accessibles, plutôt que du logement en général".
+
+Pourquoi?
+
+Parce que "la croissance du nombre de logements a été égale à celle du nombre de ménages."
+![](iris.png)
+La définition d'un ménage de recensement c'est "un groupe de personnes qui occupent le même logement".  **Par définition**, le nombre de ménages ne peut pas dépasser le nombre de logements.
+
+Les chercheurs de l'IRIS sont au courant de cette définition, cette définition figurant est même en note de bas de page du screenshot.
+
+[Mike Moffatt (2022)](https://institute.smartprosperity.ca/sites/default/files/Ontario%27s%20Need%20for%201.5m%20More%20Homes-SPI%20August%202022.pdf) démolit l'argument par l'absurde: supposons une ville de 100 000 logements occupée par 100 000 ménages. Un désastre naturel frappe, détruisant la moitié des logements. Dans un élan de solidarité, les habitants des 50 000 logements restants invitent les sinistrés à vivre dans leurs salons. 
+
+Toute personne normale va conclure à une pénurie importante de logement. Hors, lors du recensement, on trouvera que le nombre de ménage (maintenant 50 000) égale le nombre de logements et l'IRIS conclura que la construction est suffisante pour le nombre de ménage.
+
+Ici, le nombre de personnes par ménage aurait doublé, ce qui serait révélateur du fait qu'il y a problement des ménages qui ont été "suppressed" et qui n'ont pas pu se former.  Voir [ce post de Jens Von Bergmann](https://doodles.mountainmath.ca/posts/2022-05-06-estimating-suppressed-household-formation/) pour une super méthode utilisant le "headship rate" afin de déterminer quel serait le nombre de ménages qui seraient formés "si les tendances du passé étaient maintenues".
+
+Mais peut-être que les maisons sont trop petites pour s'y entasser. Les 50 000 sinistrés n'auraient d'autre choix que de quitter la ville. 
+
+La pénurie de logement serait encore pire à l'oeil de n'importe qui. Mais: 
+*Le nombre de ménage et le nombre de logements est toujours égal. 
+*Le nombre de personnes par ménage est demeuré inchangé
+-> Le nombre de logements serait suffisant?
+
+La seule façon de voir qu'il y a pénurie de logement dans l'exemple ci-dessus, c'est de constater une hausse du prix réel (après inflation) des logements parce que les sinistrés vont probablement essayer de revenir et que la bonne vieille demande excède l'offre.
+
+Mais l'IRIS y voit plutôt un signe qu'on a construit trop de logements "chers" et pas assez de logements "abordables".
+
+Je suis pour les logements sociaux, mais c'est débile comme argument.
+
+
+Huge thanks to Jens Von Bergmann for his insights and tolerating my ramblings.
+
+
+--
+Couverture média citant l'argument sans le remettre en doute:
+
+La Presse: "La quantité de nouveaux logements a même augmenté plus vite que le nombre de ménages dans les 20 dernières année"
+![](lapresse.png)
+
+JdM: "À Montréal, par exemple, il s’est construit 434 293 logements entre 2001 et 2021, alors que la métropole comptait 418 340 nouveaux ménages durant cette période".
+![](jdm.png)
+
+La Presse Canadienne (lu dans Le Devoir, Les Affaires, Noovo) : "L’IRIS déboulonne aussi l’idée selon laquelle la construction résidentielle a eu du mal à suivre la croissance démographique. [...] le nombre de nouveaux logements achevés[...] a soit été supérieur ou à peu près équivalent à la croissance du nombre de ménages entre 2001 et 2021."
+![](lesaffaires.png)
+![](devoir.png)
+
+Radio Canada:
+![](radiocanada.png)
