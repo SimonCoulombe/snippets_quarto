@@ -22,15 +22,19 @@ website:
       - text: "Blog"
         file: blog.qmd
       - text: "Shiny"
-        file: shiny.qmd        
+        file: shiny.qmd
+      - text: "aide-mémoire"
+        href: https://aidememoire.netlify.app/                
 
     right:        
-      - icon: twitter
-        href: https://twitter.com/coulsim
       - icon: linkedin
         href: https://www.linkedin.com/in/simon-c-310547112/
       - icon: github
-        href: https://github.com/simoncoulombe
+        href: https://github.com/simoncoulombe    
+      - icon: chat
+        href: https://bsky.app/profile/coulsim.bsky.social
+      - icon: twitter
+        href: https://twitter.com/coulsim
       - icon: envelope   
         href: mailto:janedoe@amazing.net    
       - icon: rss
