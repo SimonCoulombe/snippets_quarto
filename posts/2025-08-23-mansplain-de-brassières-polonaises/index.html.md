@@ -1,0 +1,133 @@
+---
+title: "Mansplain de brassières polonaises"
+description: |
+  Parce que le ridicule ne tue pas :)
+author: Simon Coulombe
+date: 2025-08-24
+categories: [ewamichalak]
+lang: fr
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+
+
+
+
+
+
+::: callout-tip
+## Pourquoi est-ce qu'on est ici?
+
+Parce que le ridicule ne tue pas et parce que ça a été révolutionnaire
+chez nous, Simon te mansplain les brassières polonaises😁.
+:::
+
+**Contexte**: Ma blonde vient de traverser une crise de "ma taille
+existe pas" parce qu'à Québec les boutiques ne tiennent rien en haut de
+G de bonnet. Rendu là, tu te fais dire que ta seule option pour
+t’habiller c’est d’avoir une réduction mammaire. C'est rough. C’est un
+besoin essentiel. Spoiler: Ce post existe parce qu'il il y a des
+options. **En Pologne ça monte jusqu'à 32R, donc rassurez-vous.**
+
+**Objectif**: Aider la prochaine découragée,ou aider ma blonde si qqun
+devient distributeur au Québec. :)
+
+Je pense que la première étape c'est de clarifier qu'un "G" c'est
+probablement plus petit que le lecteur lambda pense, surtout si la fille
+a un petit "band". Par exemple, voici une photo d'à quoi ressemble un
+32G publié par
+[theirishbralady](https://www.instagram.com/p/CPWApmcHUMw/?img_index=2)sur
+instagram. Vous en vvoyez de cette taille là tous les jours, c'est rien
+qui justifie de dire "l'industrie ne peut rien produire pour soutenir
+votre poitrine".
+
+![](images/clipboard-4053219002.png)
+
+## Section se procurer a bra that fits qui a fonctionné chez nous(le mansplain):
+
+1- **Mesurer (6 mesures!) et déterminer la forme** selon le [guide
+reddit
+abrathatfits](https://www.reddit.com/r/ABraThatFits/wiki/beginners_guide)
+.
+
+On va défaire le procédé par lequel une boutique a utilisé les sister
+size essayer de vendre la 38D en stock alors que vous faites du 32FF.
+Tout ça pour garder moins d'inventaire. Maudit capitalisme.
+
+2-**Trouver un modèle qui fite votre taille et forme.** Suivre les
+recommandations de modèles de la section #3 du guide selon la taille et
+la forme.
+
+Option A; [poster ses mesures et sa forme sur reddit
+abrathatfits](https://www.reddit.com/r/ABraThatFits/wiki/ask_for_help)
+pour obtenir rapidement des recommandations de modèles à essayer. (merci
+les bénévoles).
+
+Option B, écrivez directement à Samantha de Broad Lingerie à Toronto,
+c'est une trésor national.
+
+3- **Achetez, puis retournez 20x**. Amazon fait la job pour les marques
+UK et offre les retours gratuits. Gênez vous pas pour commander 6 taille
+du même modèle (la taille selon le calculateur, plus ou moins un bonnet,
+et aussi essayer 3 autres bonnets avec une bande plus petite ou plus
+grande selon votre feeling. Aussi, commandez plusieurs modèles. À un
+moment donné on avait pour 2000\$ de brassières à retourner chez nous.
+
+4- **Go Polish!** Si on vous dit « Go Polish », on parle des marques Ewa
+Michalak , Comexim, Gorsenia, Samanta. Ces marques fabriquent des
+modèles jusqu’à des tailles insoupçonnées.
+
+Soudainement, c'est pas votre corps qui fait pas, c'est l'industrie qui
+était nulle.
+
+C'est libérateur. Mais c'est pas facile à acheter ces marques polonaises
+
+-   EWA MICHALAK (les préfs de ma blonde)
+
+    -   au Canada, il existe seulement 2 boutiques canadiennes avec
+        bonne politique de retour:
+
+        -   Broad Lingerie (Toronto). PS : Samantha est un trésor
+            national
+        -   Forever Yours (Vancouver)
+        -   💰Opportunité d’affaire, aucun concurrent au Québec!
+
+    -   en Pologne du fournisseur :80\$ shipping
+
+-   Comexim (un bon 2e choix si l'autre prend sa retraite)
+
+    -   💰Opportunité d’affaire, il n'y a rien au Canada!
+    -   Aux USA il y a BreakoutBras. Retours impliquent un formulaire de
+        douane.
+    -   En Pologne du fournisseur :10\$ shipping. (Alterations 10\$!).
+        Vraiment un bon deal, vous pouvez demander de mettre les
+        bretelles plus proches, rapetisser le "gore", etc..
+
+Les marques polonaises sont considérées parmi les meilleures, pourtant
+aucune boutique du Québec ne les distribue. Voir article NYT: "The Best
+Bras Might Be Made in Poland"
+
+Pour la petite histoire: L’URSS faisait toute sa lingerie à Lodz en
+Pologne et les dames qui travaillaient là on lancé leurs ateliers
+depuis.
+
+## Section opportunité d'affaires
+
+Le marché existe! «[A Sophisticated
+Pair](https://web.archive.org/web/20191105115714/http://sophisticatedpair.com/blog/year-4-stats-cup-size-distribution/)»
+a publié ses ventes (en Caroline du Nord) et les bonnets G+ représentent
+35% de ses ventes.
+
+![](images/Cup_sizes.jpg)
+
+## Section geek
+
+Les boutiques mentionnées utilisent "shopify". Il y a sur github un
+script python pour récolter l'inventaire. J'ai pensé partager l'app que
+j'ai fait à ma blonde qui envoie un email quand sa taille est en stock
+et en spécial, mais ce serait weird d'avoir les tailles de soutifs de
+mes contacts
+
+Voilà, have fun
