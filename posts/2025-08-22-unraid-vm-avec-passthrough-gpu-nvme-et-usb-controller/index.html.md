@@ -11,9 +11,6 @@ lang: fr
 
 
 
-
-
-
 ::: callout-tip
 ## Pourquoi est-ce qu'on est ici?
 
