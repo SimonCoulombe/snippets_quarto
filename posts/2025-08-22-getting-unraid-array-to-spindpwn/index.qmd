@@ -148,6 +148,16 @@ Find the **CD-ROM/ISO** section.
 
 **Detach the ISO** completely, or Change it to **“None”** (so no ISO is attached).
 
-# 
-
 Voilà, une fois ces 3 soucis réglés ma vie est plus belle!
+
+# Conclusion - Energy savings!!
+
+J'ai regardé la consommation du UPS sur lequel mon server unraid (et modem, router, switch, hilo gateway, POE wifi access point) est branché.
+
+Avant, j'avais au mieux environ 132W.
+
+Maintenant j'ai 108W, et ça monte à 120W quand j'ai un drive qui spin pour seeder un torrent.
+
+Ça coûtait cher écrire ces logs..
+
+![](images/clipboard-2888627781.png)
