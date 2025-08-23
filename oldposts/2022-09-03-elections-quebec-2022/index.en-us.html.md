@@ -17,6 +17,9 @@ keywords:
 
 
 
+
+
+
 <div id="work-in-progress-code-dégueux-jai-même-pas-atteit-mon-objectif-encore" class="section level2">
 <h2>WORK IN PROGRESS, CODE DÉGUEUX, J’AI MÊME PAS ATTEIT MON OBJECTIF ENCORE</h2>
 <p>Ok j’ai envie de sortir les données par bureau de scrutin et regarder le lift de quelques variables sur le pourcentage de vote de chaque parti.</p>

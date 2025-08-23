@@ -13,6 +13,9 @@ lang: fr
 
 
 
+
+
+
 # observable js   
 
 
@@ -21,20 +24,23 @@ https://quarto.org/docs/interactive/ojs/
 
 
 
-:::{.cell}
+
+
+
+:::::{.cell}
 
 ```{.js .cell-code .hidden code-fold="undefined" startFrom="19" source-offset="0"}
 penguins = FileAttachment("palmer-penguins.csv").csv({ typed: true })
 ```
 
-:::{.cell-output .cell-output-display}
+::::{.cell-output .cell-output-display}
 
 :::{#ojs-cell-1 nodetype="declaration"}
 :::
-:::
-:::
+::::
+:::::
 
-:::{.cell}
+::::::{.cell}
 
 ```{.js .cell-code .hidden code-fold="undefined" startFrom="24" source-offset="-0"}
 viewof bill_length_min = Inputs.range(
@@ -49,26 +55,26 @@ viewof islands = Inputs.checkbox(
 )
 ```
 
-:::{.cell-output .cell-output-display}
+:::::{.cell-output .cell-output-display}
 
-:::{}
+::::{}
 
 :::{#ojs-cell-2-1 nodetype="declaration"}
 :::
-:::
-:::
+::::
+:::::
 
-:::{.cell-output .cell-output-display}
+:::::{.cell-output .cell-output-display}
 
-:::{}
+::::{}
 
 :::{#ojs-cell-2-2 nodetype="declaration"}
 :::
-:::
-:::
-:::
+::::
+:::::
+::::::
 
-:::{.cell}
+:::::{.cell}
 
 ```{.js .cell-code .hidden code-fold="undefined" startFrom="36" source-offset="0"}
 filtered = penguins.filter(function(penguin) {
@@ -77,14 +83,14 @@ filtered = penguins.filter(function(penguin) {
 })
 ```
 
-:::{.cell-output .cell-output-display}
+::::{.cell-output .cell-output-display}
 
 :::{#ojs-cell-3 nodetype="declaration"}
 :::
-:::
-:::
+::::
+:::::
 
-:::{.cell}
+:::::{.cell}
 
 ```{.js .cell-code .hidden code-fold="undefined" startFrom="43" source-offset="0"}
 Plot.rectY(filtered, 
@@ -106,28 +112,28 @@ Plot.rectY(filtered,
 )
 ```
 
-:::{.cell-output .cell-output-display}
+::::{.cell-output .cell-output-display}
 
 :::{#ojs-cell-4 nodetype="expression"}
 :::
-:::
-:::
+::::
+:::::
 
-:::{.cell}
+:::::{.cell}
 
 ```{.js .cell-code .hidden code-fold="undefined" startFrom="63" source-offset="0"}
 <!-- d3 = require("d3@7") -->
 topojson = require("topojson")
 ```
 
-:::{.cell-output .cell-output-display}
+::::{.cell-output .cell-output-display}
 
 :::{#ojs-cell-5 nodetype="declaration"}
 :::
-:::
-:::
+::::
+:::::
 
-:::{.cell}
+:::::{.cell}
 
 ```{.js .cell-code .hidden code-fold="undefined" startFrom="69" source-offset="0"}
 vegalite({
@@ -180,14 +186,14 @@ vegalite({
   }]})
 ```
 
-:::{.cell-output .cell-output-display}
+::::{.cell-output .cell-output-display}
 
 :::{#ojs-cell-6 nodetype="expression"}
 :::
-:::
-:::
+::::
+:::::
 
-:::{.cell}
+::::::{.cell}
 
 ```{.js .cell-code .hidden code-fold="undefined" startFrom="122" source-offset="-0"}
 vectors = {return {
@@ -202,26 +208,26 @@ data = d3.json("https://www150.statcan.gc.ca/t1/wds/rest/getDataFromVectorsAndLa
 })
 ```
 
-:::{.cell-output .cell-output-display}
+:::::{.cell-output .cell-output-display}
 
-:::{}
+::::{}
 
 :::{#ojs-cell-7-1 nodetype="declaration"}
 :::
-:::
-:::
+::::
+:::::
 
-:::{.cell-output .cell-output-display}
+:::::{.cell-output .cell-output-display}
 
-:::{}
+::::{}
 
 :::{#ojs-cell-7-2 nodetype="declaration"}
 :::
-:::
-:::
-:::
+::::
+:::::
+::::::
 
-:::{.cell}
+::::::{.cell}
 
 ```{.js .cell-code .hidden code-fold="undefined" startFrom="135" source-offset="-0"}
 vegalite = require("@observablehq/vega-lite@0.1")
@@ -256,30 +262,30 @@ transformedData = [].concat.apply([], data.map(function(d){
 })
 ```
 
-:::{.cell-output .cell-output-display}
+:::::{.cell-output .cell-output-display}
 
-:::{}
+::::{}
 
 :::{#ojs-cell-8-1 nodetype="declaration"}
 :::
-:::
-:::
+::::
+:::::
 
-:::{.cell-output .cell-output-display}
+:::::{.cell-output .cell-output-display}
 
-:::{}
+::::{}
 
 :::{#ojs-cell-8-2 nodetype="declaration"}
 :::
-:::
-:::
+::::
+:::::
 
-:::{.cell-output .cell-output-display}
+:::::{.cell-output .cell-output-display}
 
-:::{}
+::::{}
 
 :::{#ojs-cell-8-3 nodetype="declaration"}
 :::
-:::
-:::
-:::
+::::
+:::::
+::::::

@@ -18,6 +18,9 @@ format:
 
 
 
+
+
+
 # Objective   
 
 I want to setup those cool things on my desktop.   I'm curious if my 8-year old GPU can be of any use.  If it is, I might be motivated to upgrade my GPU.   

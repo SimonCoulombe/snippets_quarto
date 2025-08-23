@@ -10,6 +10,9 @@ lang: fr
 
 
 
+
+
+
 Je suis tombé en bas de ma chaise en lisant le [dernier rapport de l'IRIS](https://iris-recherche.qc.ca/publications/logement-2024/) sur la crise du logement. Je suis retombé quand j'ai vu que les médias rapportaient le même argument bidon sans le remettre en question.
 
 L'IRIS argumente que "la thèse d'un retard de la construction résidentielle par rapport à la croissance démographique est difficile à démontrer" et que le "faible taux d'innocupation sont une illustration de la faible construction de logements financièrement accessibles, plutôt que du logement en général".
@@ -25,6 +28,8 @@ Les chercheurs de l'IRIS sont au courant de cette définition, cette définition
 [Mike Moffatt (2022)](https://institute.smartprosperity.ca/sites/default/files/Ontario%27s%20Need%20for%201.5m%20More%20Homes-SPI%20August%202022.pdf) démolit l'argument par l'absurde: supposons une ville de 100 000 logements occupée par 100 000 ménages. Un désastre naturel frappe, détruisant la moitié des logements. Dans un élan de solidarité, les habitants des 50 000 logements restants invitent les sinistrés à vivre dans leurs salons. 
 
 Toute personne normale va conclure à une pénurie importante de logement. Hors, lors du recensement, on trouvera que le nombre de ménage (maintenant 50 000) égale le nombre de logements et l'IRIS conclura que la construction est suffisante pour le nombre de ménage.
+
+![](moffat1.png)
 
 Ici, le nombre de personnes par ménage aurait doublé, ce qui serait révélateur du fait qu'il y a problement des ménages qui ont été "suppressed" et qui n'ont pas pu se former.  Voir [ce post de Jens Von Bergmann](https://doodles.mountainmath.ca/posts/2022-05-06-estimating-suppressed-household-formation/) pour une super méthode utilisant le "headship rate" afin de déterminer quel serait le nombre de ménages qui seraient formés "si les tendances du passé étaient maintenues".
 

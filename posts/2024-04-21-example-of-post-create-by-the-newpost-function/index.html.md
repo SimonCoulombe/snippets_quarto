@@ -258,18 +258,18 @@ https://quarto.org/docs/interactive/ojs/
 
 
 
-:::{.cell}
+:::::{.cell}
 
 ```{.js .cell-code .hidden code-fold="undefined" startFrom="-1" source-offset="0"}
 data = FileAttachment("palmer-penguins.csv").csv({ typed: true })
 ```
 
-:::{.cell-output .cell-output-display}
+::::{.cell-output .cell-output-display}
 
 :::{#ojs-cell-1 nodetype="declaration"}
 :::
-:::
-:::
+::::
+:::::
 
 
 
