@@ -1,0 +1,1588 @@
+---
+title: "Messing around crop data"
+description: |
+thanks @leandercampbell.bsky.social!
+author: Simon Coulombe
+date: 2025-08-31
+categories: []
+lang: fr
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup}
+#| include: false
+# Load required libraries
+library(tidyverse)
+library(sf)
+library(terra)
+library(DBI)
+library(RPostgres)
+library(cancensus)
+library(here)
+library(glue)
+library(httr)
+library(readr)
+library(janitor)
+options(scipen = 999)
+
+library(pool)
+# Set parameters
+TARGET_CSD <- "2423027"  # Quebec City CSD code - change this for other CSDs
+```
+
+# Initial setup, run once
+
+```{r download-data}
+# Create data directory
+
+data_dir <- here::here("posts/2025-08-31-messing-around-crop-data/data")
+if (!dir.exists(data_dir)) dir.create(data_dir, recursive = TRUE)
+
+# URLs for data files
+urls <- list(
+  tif_2024 = "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2024/aci_2024_qc_v1.zip",
+  tif_2011 = "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2011/aci_2011_qc_v4.zip",
+  classifications = "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/supportdocument_documentdesupport/aci_crop_classifications_iac_classifications_des_cultures.csv",
+  colormap_2014 = "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/colourmaps/colourmap_2014.clr",
+  colormap_2011 = "https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/colourmaps/colourmap_2011.clr"
+)
+
+# Function to download files if they don't exist
+download_if_needed <- function(url, dest_path) {
+  if (!file.exists(dest_path)) {
+    cat("Downloading:", basename(dest_path), "\n")
+    download.file(url, dest_path, mode = "wb")
+  } else {
+    cat("File already exists:", basename(dest_path), "\n")
+  }
+}
+
+
+# Download all files
+dest_paths <- list(
+  tif_2024 = file.path(data_dir, "aci_2024_qc_v1.zip"),
+  tif_2011 = file.path(data_dir, "aci_2011_qc_v4.zip"),
+  classifications = file.path(data_dir, "aci_crop_classifications.csv"),
+  colormap_2014 = file.path(data_dir, "colourmap_2014.clr"),
+  colormap_2011 = file.path(data_dir, "colourmap_2011.clr")
+)
+
+walk2(urls, dest_paths, download_if_needed)
+
+
+# Extract ZIP files
+zip_files <- list(
+  tif_2024 = dest_paths$tif_2024,
+  tif_2011 = dest_paths$tif_2011
+)
+
+extract_dir <- file.path(data_dir, "extracted")
+if (!dir.exists(extract_dir)) dir.create(extract_dir)
+
+for (year in names(zip_files)) {
+  message(year)
+  extract_path <- file.path(extract_dir, year)
+  if (!dir.exists(extract_path)) {
+    cat("Extracting:", basename(zip_files[[year]]), "\n")
+    unzip(zip_files[[year]], exdir = extract_path)
+  }
+}
+
+```
+
+## connect to postgres
+
+```{r}
+con <- dbPool(
+  RPostgres::Postgres(),
+  host = "192.168.2.15",
+  dbname = Sys.getenv("POSTGIS_DBNAME"),
+  user = Sys.getenv("POSTGIS_USER"),
+  password = Sys.getenv("POSTGIS_PASSWORD")
+)
+
+# Create schema for this analysis
+schema_name <- "crop_inventory"
+dbExecute(con, glue("CREATE SCHEMA IF NOT EXISTS {schema_name}"))
+
+```
+
+## Load Classification Data and colormap and upload to postgis
+
+```{r load-classifications}
+# Load crop classifications
+crop_classifications <- read_csv(dest_paths$classifications, locale = locale(encoding = "Windows-1252"))
+
+# Display first few rows
+head(crop_classifications, 10) %>% 
+  knitr::kable(caption = "Crop Classification Codes")
+
+
+# Upload crop classifications using DBI
+dbWriteTable(con, 
+             Id(schema = schema_name, table = "crop_classifications"),
+             crop_classifications, 
+             overwrite = TRUE)
+
+```
+
+## Upload CSD Boundary using ogr2ogr
+
+```{r upload-csd-boundary}
+# Save CSD boundary to temporary shapefile for ogr2ogr
+temp_shp_dir <- file.path(data_dir, "temp_shp")
+if (!dir.exists(temp_shp_dir)) dir.create(temp_shp_dir)
+
+csd_shp_path <- file.path(temp_shp_dir, "csd_boundary.shp")
+st_write(csd_boundary, csd_shp_path, delete_dsn = TRUE, quiet = TRUE)
+
+# Upload using ogr2ogr
+pgconn_string <- glue("PG:host=192.168.2.15 dbname={Sys.getenv('POSTGIS_DBNAME')} user={Sys.getenv('POSTGIS_USER')} password={Sys.getenv('POSTGIS_PASSWORD')}")
+
+ogr2ogr_path <- "C:/OSGeo4W/bin/ogr2ogr"
+ogr2ogr_path <- "C:/Program Files/QGIS 3.40.10/bin/ogr2ogr"
+ogr_cmd <- glue('{ogr2ogr_path} -f "PostgreSQL" "{pgconn_string}" "{csd_shp_path}" -nln {schema_name}.csd_boundary -overwrite')
+
+system(ogr_cmd, ignore.stdout = FALSE)
+cat("Uploaded CSD boundary using ogr2ogr\n")
+
+
+```
+
+# Upload Rasters using raster2pgsql
+
+I needed to get raster2pgsql, which is a tool included in the bin/
+folder of postgis. Didnt want to make a full install of PostGIS (which
+also requires a full install of Postgres), soI just download the zip
+file here :
+https://postgis.net/documentation/getting_started/install_windows/released_versions/
+I unzipped the zip files to c:\PostGIS as it contains the required
+c:\PostGIS\bin\raster2pgsql.exe file
+
+```{r}
+Sys.setenv(PATH = paste("C:/PostGIS/bin", "C:/PostGIS/bin/postgisgui", Sys.getenv("PATH"), sep=";"))
+Sys.setenv(PROJ_LIB = "C:/Program Files/QGIS 3.40.10/share/proj")  # to prevent Warning 1: PROJ: proj_create_from_database: Cannot find proj.db
+
+# -t is for tiling, otherwise we get a single 2GB large tile which slows down postgis
+# creating a sql file for loading into the remove server:  
+shell('raster2pgsql.exe -s 9999 -I -C -M -t 512x512 "D:/git/snippets_quarto/posts/2025-08-31-messing-around-crop-data/data/extracted/tif_2024/aci_2024_qc_v1.tif" public.aci_2024_qc > aci_2024_qc.sql')
+
+
+```
+
+```{r}
+# load the sql file into the remote server
+POSTGIS_USER <- Sys.getenv("POSTGIS_USER")
+POSTGIS_DBNAME <- Sys.getenv("POSTGIS_DBNAME")
+POSTGIS_PASSWORD <- 
+  
+  Sys.setenv(PGPASSWORD = Sys.getenv("POSTGIS_PASSWORD"))
+# -q c'est quiet pour pas printer des centaines de insert 0 1 dans la console
+shell('psql.exe -h 192.168.2.15 -U postgres -d postgres -q  -f "D:/git/snippets_quarto/posts/2025-08-31-messing-around-crop-data/aci_2024_qc.sql"')
+
+```
+
+if y ou get this error:
+
+"BEGIN
+psql:D:/git/snippets_quarto/posts/2025-08-31-messing-around-crop-data/aci_2024_qc.sql:2:
+ERROR: type "raster" does not exist LINE 1: ...lic"."aci_2024_qc" ("rid"
+serial PRIMARY KEY,"rast" raster); \^
+psql:D:/git/snippets_quarto/posts/2025-08-31-messing-around-crop-data/aci_2024_qc.sql:3:
+ERROR: current transaction is aborted, commands ignored until end of
+transaction block"
+
+![](images/clipboard-2165419604.png)
+
+then make sure that the postgis and postgis_raster extensions are
+installed on the psotgres server. personally, i was missing
+postgis_raster
+
+### **Summary**
+
+1.  Connect to the database:
+
+```         
+psql -h 192.168.2.15 -U postgres -d postgres
+```
+
+2.  check extensions
+
+```         
+\dx
+```
+
+3.  If `postgis_raster` is missing, run:
+
+CREATE EXTENSION postgis_raster;
+
+this indicates it worked :
+
+
+![](images/clipboard-425137138.png)
+
+# messing around   
+
+```{r}
+dbGetQuery(con, "SELECT count(*) FROM public.aci_2024_qc ;")
+
+```
+
+
+projection for my raster is unknown.. let's force it :
+```{r}
+# Update your raster to use standard Canada Albers
+dbExecute(con, "
+  SELECT UpdateRasterSRID('crop_inventory', 'aci_2024_qc', 'rast', 3978);
+")
+```
+
+## no wait, let's use the real custom projectio nthat was used..
+
+# first define the project
+```{r}
+# Step 1: Delete existing if it exists
+dbExecute(con, "DELETE FROM spatial_ref_sys WHERE srid = 9999;")
+
+# Step 2: Insert the custom projection
+proj4_string <- "+proj=aea +lat_0=40 +lon_0=-96 +lat_1=44.75 +lat_2=55.75 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"
+
+dbExecute(con, paste0("
+INSERT INTO spatial_ref_sys (srid, auth_name, auth_srid, proj4text) 
+VALUES (9999, 'CUSTOM', 9999, '", proj4_string, "');"))
+
+# Step 3: Verify it worked
+custom_srid_check <- dbGetQuery(con, "
+  SELECT srid, auth_name, proj4text 
+  FROM spatial_ref_sys 
+  WHERE srid = 9999;")
+print(custom_srid_check)
+
+```
+
+# then assign it to the raster  
+```{r}
+# Update the raster to use our properly defined SRID 9999
+dbExecute(con, "
+  SELECT UpdateRasterSRID('crop_inventory', 'aci_2024_qc', 'rast', 9999);
+")
+```
+
+```{r}
+# Test intersection again
+intersection_test <- dbGetQuery(con, "
+  WITH boundary_reprojected AS (
+    SELECT ST_Transform(wkb_geometry, 9999) as geom
+    FROM crop_inventory.csd_boundary
+  )
+  SELECT 
+    COUNT(*) as intersecting_tiles,
+    COUNT(DISTINCT r.rid) as unique_tiles_hit
+  FROM crop_inventory.aci_2024_qc r,
+       boundary_reprojected b
+  WHERE ST_Intersects(r.rast, b.geom);
+")
+print("Intersection test after SRID update:")
+print(intersection_test)
+```
+
+
+
+```{r}
+dbGetQuery(con, "SELECT DISTINCT ST_SRID(rast) FROM crop_inventory.aci_2024_qc;")
+dbGetQuery(con, "SELECT DISTINCT ST_SRID(wkb_geometry) FROM crop_inventory.csd_boundary;")
+
+z <- dbGetQuery(con, "SELECT ST_Clip(rast, ST_Transform(wkb_geometry, 9999)) AS clipped_raster
+FROM crop_inventory.aci_2024_qc, crop_inventory.csd_boundary
+WHERE ST_Intersects(rast, ST_Transform(wkb_geometry, 9999));")
+```
+```{r}
+
+# Step 1: Check projections/CRS of your tables
+check_projections <- function(con) {
+  cat("=== Checking Coordinate Reference Systems ===\n")
+  
+  # Check CSD boundary CRS
+  csd_crs <- dbGetQuery(con, "
+    SELECT ST_SRID(wkb_geometry) as srid, 
+           ST_GeometryType(wkb_geometry) as geom_type
+    FROM crop_inventory.csd_boundary 
+    LIMIT 1;
+  ")
+  
+  # Check raster CRS
+  raster_crs <- dbGetQuery(con, "
+    SELECT ST_SRID(rast) as srid,
+           ST_Width(rast) as width,
+           ST_Height(rast) as height,
+           ST_NumBands(rast) as num_bands
+    FROM crop_inventory.aci_2024_qc 
+    LIMIT 1;
+  ")
+  
+  cat("CSD Boundary - SRID:", csd_crs$srid, "Type:", csd_crs$geom_type, "\n")
+  cat("Raster - SRID:", raster_crs$srid, 
+      "Dimensions:", raster_crs$width, "x", raster_crs$height,
+      "Bands:", raster_crs$num_bands, "\n")
+  
+  return(list(csd_srid = csd_crs$srid, raster_srid = raster_crs$srid))
+}
+
+# Step 2: Get crop classifications lookup
+get_crop_classifications <- function(con) {
+  crop_classes <- dbGetQuery(con, "
+    SELECT \"Code\", \"Label\", \"Étiquette\", \"Red\", \"Green\", \"Blue\" 
+    FROM crop_inventory.crop_classifications
+    ORDER BY \"Code\";
+  ")
+  return(crop_classes)
+}
+
+# Step 3: Extract raster values within CSD boundary
+extract_crops_in_boundary <- function(con, target_srid = NULL) {
+  cat("=== Extracting crops within CSD boundary ===\n")
+  
+  # Check projections
+  projections <- check_projections(con)
+  
+  # Determine target SRID (use raster's SRID or specified one)
+  if (is.null(target_srid)) {
+    if (projections$raster_srid == 9999) {
+      # If raster is SRID 9999, assume it's the custom Canada Albers or use 3978
+      target_srid <- 9999  # or 3978 if you updated it
+      cat("Using raster SRID 9999 (custom Canada Albers)\n")
+    } else {
+      target_srid <- projections$raster_srid
+    }
+  }
+  
+  # Always reproject CSD boundary to match raster for Albers projection
+  crop_extraction_query <- sprintf("
+    WITH boundary_reprojected AS (
+      SELECT ST_Transform(wkb_geometry, %d) as geom
+      FROM crop_inventory.csd_boundary
+    ),
+    raster_clipped AS (
+      SELECT ST_Clip(r.rast, b.geom) as clipped_raster
+      FROM crop_inventory.aci_2024_qc r,
+           boundary_reprojected b
+      WHERE ST_Intersects(r.rast, b.geom)
+    ),
+    value_counts AS (
+      SELECT (ST_ValueCount(clipped_raster)).* 
+      FROM raster_clipped
+    )
+    SELECT 
+      value as crop_code,
+      count as pixel_count
+    FROM value_counts
+    WHERE value IS NOT NULL
+    ORDER BY pixel_count DESC;
+  ", target_srid)
+  
+  # Execute the query
+  crop_pixels <- dbGetQuery(con, crop_extraction_query)
+  return(crop_pixels)
+}
+
+# Step 4: Alternative method using ST_DumpAsPolygons (for smaller datasets)
+extract_crops_as_polygons <- function(con) {
+  cat("=== Alternative: Converting raster to polygons first ===\n")
+  
+  query <- "
+    WITH boundary_reprojected AS (
+      SELECT ST_Transform(wkb_geometry, 9999) as geom
+      FROM crop_inventory.csd_boundary
+    ),
+    raster_polygons AS (
+      SELECT 
+        (ST_DumpAsPolygons(ST_Clip(r.rast, b.geom))).val as crop_code,
+        (ST_DumpAsPolygons(ST_Clip(r.rast, b.geom))).geom as geom
+      FROM crop_inventory.aci_2024_qc r,
+           boundary_reprojected b
+      WHERE ST_Intersects(r.rast, b.geom)
+    )
+    SELECT 
+      crop_code,
+      COUNT(*) as polygon_count,
+      SUM(ST_Area(geom)) as total_area_sq_units
+    FROM raster_polygons
+    WHERE crop_code IS NOT NULL
+    GROUP BY crop_code
+    ORDER BY total_area_sq_units DESC;
+  "
+  
+  crop_polygons <- dbGetQuery(con, query)
+  return(crop_polygons)
+}
+
+# Step 5: Get detailed crop analysis with classifications
+get_detailed_crop_analysis <- function(con, method = "pixels") {
+  cat("=== Generating detailed crop analysis ===\n")
+  
+  # Get crop classifications
+  crop_classes <- get_crop_classifications(con)
+  
+  # Extract crops using chosen method
+  if (method == "pixels") {
+    crop_data <- extract_crops_in_boundary(con)
+    count_col <- "pixel_count"
+  } else {
+    crop_data <- extract_crops_as_polygons(con)
+    count_col <- "total_area_sq_units"
+  }
+  
+  # Join with classifications
+  crop_analysis <- crop_data %>%
+    left_join(crop_classes, by = c("crop_code" = "Code")) %>%
+    arrange(desc(.data[[count_col]]))
+  
+  # Calculate percentages
+  total_count <- sum(crop_analysis[[count_col]], na.rm = TRUE)
+  crop_analysis$percentage <- round((crop_analysis[[count_col]] / total_count) * 100, 2)
+  
+  return(crop_analysis)
+}
+
+# Step 6: Visualization helper
+plot_crop_summary <- function(crop_analysis, top_n = 10) {
+  library(ggplot2)
+  
+  top_crops <- crop_analysis %>%
+    head(top_n) %>%
+    mutate(crop_name = ifelse(is.na(Label), 
+                              paste("Unknown Code", crop_code), 
+                              Label))
+  
+  ggplot(top_crops, aes(x = reorder(crop_name, percentage), y = percentage)) +
+    geom_col(fill = "steelblue", alpha = 0.8) +
+    coord_flip() +
+    labs(title = paste("Top", top_n, "Crops in CSD Boundary"),
+         x = "Crop Type",
+         y = "Percentage of Area") +
+    theme_minimal() +
+    theme(axis.text.y = element_text(size = 9))
+}
+
+# Step 7: Main execution function
+analyze_crops_in_csd <- function(con, method = "pixels", plot = TRUE) {
+  cat("Starting crop analysis...\n\n")
+  
+  # Check projections
+  projections <- check_projections(con)
+  cat("\n")
+  
+  # Get detailed analysis
+  crop_analysis <- get_detailed_crop_analysis(con, method = method)
+  
+  # Display results
+  cat("=== CROP ANALYSIS RESULTS ===\n")
+  print(crop_analysis)
+  cat("\nTotal unique crops found:", nrow(crop_analysis), "\n")
+  
+  # Create plot if requested
+  if (plot && nrow(crop_analysis) > 0) {
+    p <- plot_crop_summary(crop_analysis)
+    print(p)
+  }
+  
+  return(crop_analysis)
+}
+
+# USAGE EXAMPLES:
+
+# 1. Basic analysis
+# results <- analyze_crops_in_csd(con)
+
+# 2. Using area-based method instead of pixel count
+# results <- analyze_crops_in_csd(con, method = "area")
+
+# 3. Just check projections
+# projections <- check_projections(con)
+
+# 4. Get crop classifications table
+# crop_classes <- get_crop_classifications(con)
+
+# 5. Manual extraction if you want more control
+# crop_pixels <- extract_crops_in_boundary(con)
+
+# Remember to close connection when done
+# dbDisconnect(con)
+```
+
+```{r}
+results <- extract_crops_in_boundary(con, target_srid = 3978)
+```
+
+```{r}
+# Debug 1: Check if CSD boundary and raster tiles intersect at all
+debug_intersection <- dbGetQuery(con, "
+  WITH boundary_reprojected AS (
+    SELECT ST_Transform(wkb_geometry, 3978) as geom
+    FROM crop_inventory.csd_boundary
+  )
+  SELECT 
+    COUNT(*) as intersecting_tiles,
+    COUNT(DISTINCT r.rid) as unique_tiles_hit
+  FROM crop_inventory.aci_2024_qc r,
+       boundary_reprojected b
+  WHERE ST_Intersects(r.rast, b.geom);
+")
+print("Intersection check:")
+print(debug_intersection)
+
+# Debug 2: Check the extent of your CSD boundary vs raster extent
+boundary_extent <- dbGetQuery(con, "
+  SELECT 
+    ST_XMin(ST_Transform(wkb_geometry, 3978)) as min_x,
+    ST_YMin(ST_Transform(wkb_geometry, 3978)) as min_y,
+    ST_XMax(ST_Transform(wkb_geometry, 3978)) as max_x,
+    ST_YMax(ST_Transform(wkb_geometry, 3978)) as max_y
+  FROM crop_inventory.csd_boundary;
+")
+
+raster_extent <- dbGetQuery(con, "
+  SELECT 
+    MIN(ST_XMin(rast)) as min_x,
+    MIN(ST_YMin(rast)) as min_y,
+    MAX(ST_XMax(rast)) as max_x,
+    MAX(ST_YMax(rast)) as max_y
+  FROM crop_inventory.aci_2024_qc;
+")
+
+print("Boundary extent (in SRID 3978):")
+print(boundary_extent)
+print("Raster extent:")
+print(raster_extent)
+
+# Debug 3: Check if there are any non-null values in the raster at all
+raster_values <- dbGetQuery(con, "
+  SELECT 
+    MIN((ST_SummaryStats(rast)).min) as overall_min,
+    MAX((ST_SummaryStats(rast)).max) as overall_max,
+    COUNT(*) as total_tiles
+  FROM crop_inventory.aci_2024_qc
+  LIMIT 10;
+")
+print("Raster value summary:")
+print(raster_values)
+```
+
+```{r}
+# First, let's see the intersection results
+print(debug_intersection)
+
+# Debug 2: Check raster extent using proper raster functions
+raster_extent <- dbGetQuery(con, "
+  SELECT 
+    MIN(ST_UpperLeftX(rast)) as min_x,
+    MIN(ST_UpperLeftY(rast) - ST_Height(rast) * ST_ScaleY(rast)) as min_y,
+    MAX(ST_UpperLeftX(rast) + ST_Width(rast) * ST_ScaleX(rast)) as max_x,
+    MAX(ST_UpperLeftY(rast)) as max_y,
+    COUNT(*) as total_tiles
+  FROM crop_inventory.aci_2024_qc;
+")
+
+print("Boundary extent (in SRID 3978):")
+print(boundary_extent)
+print("Raster extent:")
+print(raster_extent)
+
+# Debug 3: Check if raster tiles have actual data
+sample_values <- dbGetQuery(con, "
+  SELECT 
+    rid,
+    (ST_SummaryStats(rast)).count as pixel_count,
+    (ST_SummaryStats(rast)).min as min_val,
+    (ST_SummaryStats(rast)).max as max_val,
+    (ST_SummaryStats(rast)).mean as mean_val
+  FROM crop_inventory.aci_2024_qc
+  LIMIT 5;
+")
+
+print("Sample raster tile statistics:")
+print(sample_values)
+```
+
+```{r}
+# Check 1: Verify the reprojection is working
+reprojection_check <- dbGetQuery(con, "
+  SELECT 
+    -- Original coordinates (4326)
+    ST_XMin(wkb_geometry) as orig_lon,
+    ST_YMin(wkb_geometry) as orig_lat,
+    ST_XMax(wkb_geometry) as orig_lon_max,
+    ST_YMax(wkb_geometry) as orig_lat_max,
+    -- Reprojected coordinates (3978)
+    ST_XMin(ST_Transform(wkb_geometry, 3978)) as albers_x_min,
+    ST_YMin(ST_Transform(wkb_geometry, 3978)) as albers_y_min,
+    ST_XMax(ST_Transform(wkb_geometry, 3978)) as albers_x_max,
+    ST_YMax(ST_Transform(wkb_geometry, 3978)) as albers_y_max
+  FROM crop_inventory.csd_boundary;
+")
+
+print("Reprojection check:")
+print(reprojection_check)
+
+# Check 2: Sample raster tile coordinates
+raster_sample <- dbGetQuery(con, "
+  SELECT 
+    rid,
+    ST_UpperLeftX(rast) as tile_x,
+    ST_UpperLeftY(rast) as tile_y,
+    ST_UpperLeftX(rast) + ST_Width(rast) * ST_ScaleX(rast) as tile_x_max,
+    ST_UpperLeftY(rast) + ST_Height(rast) * ST_ScaleY(rast) as tile_y_min
+  FROM crop_inventory.aci_2024_qc 
+  LIMIT 3;
+")
+
+print("Sample raster tiles:")
+print(raster_sample)
+```
+
+
+
+```{r}
+dbGetQuery(con, "
+  SELECT 
+    ST_UpperLeftX(rast) as upper_left_x,
+    ST_UpperLeftY(rast) as upper_left_y,
+    ST_ScaleX(rast) as scale_x,
+    ST_ScaleY(rast) as scale_y
+  FROM crop_inventory.aci_2024_qc 
+  LIMIT 5;
+")
+```
+
+
+
+
+
+
+```{r}
+# PostGIS Crop Analysis: Extract crops within CSD boundary
+# Required libraries
+library(DBI)
+library(RPostgres)
+library(sf)
+library(raster)
+library(terra)
+library(dplyr)
+
+
+# Step 1: Check projections/CRS of your tables
+check_projections <- function(con) {
+  cat("=== Checking Coordinate Reference Systems ===\n")
+  
+  # Check CSD boundary CRS
+  csd_crs <- dbGetQuery(con, "
+    SELECT ST_SRID(wkb_geometry) as srid, 
+           ST_GeometryType(wkb_geometry) as geom_type
+    FROM crop_inventory.csd_boundary 
+    LIMIT 1;
+  ")
+  
+  # Check raster CRS
+  raster_crs <- dbGetQuery(con, "
+    SELECT ST_SRID(rast) as srid,
+           ST_Width(rast) as width,
+           ST_Height(rast) as height,
+           ST_NumBands(rast) as num_bands
+    FROM crop_inventory.aci_2024_qc 
+    LIMIT 1;
+  ")
+  
+  cat("CSD Boundary - SRID:", csd_crs$srid, "Type:", csd_crs$geom_type, "\n")
+  cat("Raster - SRID:", raster_crs$srid, 
+      "Dimensions:", raster_crs$width, "x", raster_crs$height,
+      "Bands:", raster_crs$num_bands, "\n")
+  
+  return(list(csd_srid = csd_crs$srid, raster_srid = raster_crs$srid))
+}
+
+# Step 2: Get crop classifications lookup
+get_crop_classifications <- function(con) {
+  crop_classes <- dbGetQuery(con, "
+    SELECT \"Code\", \"Label\", \"Étiquette\", \"Red\", \"Green\", \"Blue\" 
+    FROM crop_inventory.crop_classifications
+    ORDER BY \"Code\";
+  ")
+  return(crop_classes)
+}
+
+# Step 3: Extract raster values within CSD boundary
+extract_crops_in_boundary <- function(con, target_srid = NULL) {
+  cat("=== Extracting crops within CSD boundary ===\n")
+  
+  # Check projections
+  projections <- check_projections(con)
+  
+  # Determine target SRID (use raster's SRID or specified one)
+  if (is.null(target_srid)) {
+    # Default to using SRID 9999 (custom Canada Albers for crop data)
+    target_srid <- 9999
+    cat("Using custom SRID 9999 (Quebec crop data Albers projection)\n")
+  }
+  
+  # Always reproject CSD boundary to match raster for Albers projection
+  crop_extraction_query <- sprintf("
+    WITH boundary_reprojected AS (
+      SELECT ST_Transform(wkb_geometry, %d) as geom
+      FROM crop_inventory.csd_boundary
+    ),
+    raster_clipped AS (
+      SELECT ST_Clip(r.rast, b.geom) as clipped_raster
+      FROM crop_inventory.aci_2024_qc r,
+           boundary_reprojected b
+      WHERE ST_Intersects(r.rast, b.geom)
+    ),
+    value_counts AS (
+      SELECT (ST_ValueCount(clipped_raster)).* 
+      FROM raster_clipped
+    ),
+    aggregated_counts AS (
+      SELECT 
+        value::integer as crop_code,
+        SUM(count::integer) as pixel_count
+      FROM value_counts
+      WHERE value IS NOT NULL
+      GROUP BY value
+    )
+    SELECT 
+      crop_code,
+      pixel_count
+    FROM aggregated_counts
+    ORDER BY pixel_count DESC;
+  ", target_srid)
+  
+  # Execute the query
+  crop_pixels <- dbGetQuery(con, crop_extraction_query)
+  return(crop_pixels)
+}
+
+# Step 4: Alternative method using ST_DumpAsPolygons (for smaller datasets)
+extract_crops_as_polygons <- function(con) {
+  cat("=== Alternative: Converting raster to polygons first ===\n")
+  
+  query <- "
+    WITH boundary_reprojected AS (
+      SELECT ST_Transform(wkb_geometry, 9999) as geom
+      FROM crop_inventory.csd_boundary
+    ),
+    raster_polygons AS (
+      SELECT 
+        (ST_DumpAsPolygons(ST_Clip(r.rast, b.geom))).val as crop_code,
+        (ST_DumpAsPolygons(ST_Clip(r.rast, b.geom))).geom as geom
+      FROM crop_inventory.aci_2024_qc r,
+           boundary_reprojected b
+      WHERE ST_Intersects(r.rast, b.geom)
+    )
+    SELECT 
+      crop_code,
+      COUNT(*) as polygon_count,
+      SUM(ST_Area(geom)) as total_area_sq_units
+    FROM raster_polygons
+    WHERE crop_code IS NOT NULL
+    GROUP BY crop_code
+    ORDER BY total_area_sq_units DESC;
+  "
+  
+  crop_polygons <- dbGetQuery(con, query)
+  return(crop_polygons)
+}
+
+# Step 5: Get detailed crop analysis with classifications
+get_detailed_crop_analysis <- function(con, method = "pixels") {
+  cat("=== Generating detailed crop analysis ===\n")
+  
+  # Get crop classifications
+  crop_classes <- get_crop_classifications(con)
+  
+  # Extract crops using chosen method
+  if (method == "pixels") {
+    crop_data <- extract_crops_in_boundary(con)
+    count_col <- "pixel_count"
+  } else {
+    crop_data <- extract_crops_as_polygons(con)
+    count_col <- "total_area_sq_units"
+  }
+  
+  # Join with classifications
+  crop_analysis <- crop_data %>%
+    left_join(crop_classes, by = c("crop_code" = "Code")) %>%
+    arrange(desc(.data[[count_col]]))
+  
+  # Calculate percentages
+  total_count <- sum(crop_analysis[[count_col]], na.rm = TRUE)
+  crop_analysis$percentage <- round((crop_analysis[[count_col]] / total_count) * 100, 2)
+  
+  return(crop_analysis)
+}
+
+# Step 6: Visualization helper
+plot_crop_summary <- function(crop_analysis, top_n = 10) {
+  library(ggplot2)
+  
+  top_crops <- crop_analysis %>%
+    head(top_n) %>%
+    mutate(crop_name = ifelse(is.na(Label), 
+                              paste("Unknown Code", crop_code), 
+                              Label))
+  
+  ggplot(top_crops, aes(x = reorder(crop_name, percentage), y = percentage)) +
+    geom_col(fill = "steelblue", alpha = 0.8) +
+    coord_flip() +
+    labs(title = paste("Top", top_n, "Crops in CSD Boundary"),
+         x = "Crop Type",
+         y = "Percentage of Area") +
+    theme_minimal() +
+    theme(axis.text.y = element_text(size = 9))
+}
+
+# Step 7: Main execution function
+analyze_crops_in_csd <- function(con, method = "pixels", plot = TRUE) {
+  cat("Starting crop analysis...\n\n")
+  
+  # Check projections
+  projections <- check_projections(con)
+  cat("\n")
+  
+  # Get detailed analysis
+  crop_analysis <- get_detailed_crop_analysis(con, method = method)
+  
+  # Display results
+  cat("=== CROP ANALYSIS RESULTS ===\n")
+  print(crop_analysis)
+  cat("\nTotal unique crops found:", nrow(crop_analysis), "\n")
+  
+  # Create plot if requested
+  if (plot && nrow(crop_analysis) > 0) {
+    p <- plot_crop_summary(crop_analysis)
+    print(p)
+  }
+  
+  return(crop_analysis)
+}
+
+# USAGE EXAMPLES:
+
+# 1. Basic analysis
+# results <- analyze_crops_in_csd(con)
+
+# 2. Using area-based method instead of pixel count
+# results <- analyze_crops_in_csd(con, method = "area")
+
+# 3. Just check projections
+# projections <- check_projections(con)
+
+# 4. Get crop classifications table
+# crop_classes <- get_crop_classifications(con)
+
+# 5. Manual extraction if you want more control
+# crop_pixels <- extract_crops_in_boundary(con)
+
+# Step 8: Map the raster data
+map_crops_in_boundary <- function(con, crop_analysis = NULL) {
+  library(sf)
+  library(terra)
+  library(tmap)
+  
+  cat("=== Creating crop map ===\n")
+  
+  # Get the CSD boundary
+  boundary <- st_read(con, query = "SELECT * FROM crop_inventory.csd_boundary")
+  boundary_reprojected <- st_transform(boundary, crs = 9999)
+  
+  # Get raster tiles that intersect the boundary
+  raster_query <- "
+    WITH boundary_reprojected AS (
+      SELECT ST_Transform(wkb_geometry, 9999) as geom
+      FROM crop_inventory.csd_boundary
+    )
+    SELECT 
+      rid,
+      ST_AsBinary(ST_Clip(r.rast, b.geom)) as raster_binary
+    FROM crop_inventory.aci_2024_qc r,
+         boundary_reprojected b
+    WHERE ST_Intersects(r.rast, b.geom);
+  "
+  
+  # This is complex - let's use a simpler approach with tmap
+  # For now, let's create a simple summary map
+  
+  if (is.null(crop_analysis)) {
+    crop_analysis <- get_detailed_crop_analysis(con)
+  }
+  
+  # Create a simple text-based map summary
+  cat("\\n=== CROP MAP SUMMARY ===\\n")
+  cat("Location: Quebec City CSD\\n")
+  cat("Total area analyzed:", format(sum(crop_analysis$pixel_count) * 30^2 / 10000, big.mark=","), "hectares\\n")
+  cat("\\nTop 5 land uses:\\n")
+  
+  top5 <- head(crop_analysis, 5)
+  for(i in 1:nrow(top5)) {
+    cat(sprintf("  %s: %.1f%% (%s)\\n", 
+                ifelse(is.na(top5$Label[i]), paste("Code", top5$crop_code[i]), top5$Label[i]),
+                top5$percentage[i],
+                ifelse(is.na(top5$Étiquette[i]), "", top5$Étiquette[i])))
+  }
+  
+  return(boundary_reprojected)
+}
+
+# Step 9: Simple raster visualization function
+visualize_crop_data <- function(con) {
+  library(ggplot2)
+  
+  # Get boundary for plotting
+  boundary <- st_read(con, query = "SELECT * FROM crop_inventory.csd_boundary")
+  
+  # Simple boundary map
+  p <- ggplot(boundary) +
+    geom_sf(fill = "lightblue", alpha = 0.5, color = "darkblue") +
+    labs(title = "Quebec City CSD Boundary",
+         subtitle = "Area analyzed for crop data") +
+    theme_minimal()
+  
+  print(p)
+  return(boundary)
+}
+```
+
+## nouveau scrip apres requete de carte raster   
+
+```{r}
+# PostGIS Crop Analysis: Extract crops within CSD boundary
+# Required libraries
+library(DBI)
+library(RPostgres)
+library(sf)
+library(raster)
+library(terra)
+library(dplyr)
+
+# Step 1: Check projections/CRS of your tables
+check_projections <- function(con) {
+  cat("=== Checking Coordinate Reference Systems ===\n")
+  
+  # Check CSD boundary CRS
+  csd_crs <- dbGetQuery(con, "
+    SELECT ST_SRID(wkb_geometry) as srid, 
+           ST_GeometryType(wkb_geometry) as geom_type
+    FROM crop_inventory.csd_boundary 
+    LIMIT 1;
+  ")
+  
+  # Check raster CRS
+  raster_crs <- dbGetQuery(con, "
+    SELECT ST_SRID(rast) as srid,
+           ST_Width(rast) as width,
+           ST_Height(rast) as height,
+           ST_NumBands(rast) as num_bands
+    FROM crop_inventory.aci_2024_qc 
+    LIMIT 1;
+  ")
+  
+  cat("CSD Boundary - SRID:", csd_crs$srid, "Type:", csd_crs$geom_type, "\n")
+  cat("Raster - SRID:", raster_crs$srid, 
+      "Dimensions:", raster_crs$width, "x", raster_crs$height,
+      "Bands:", raster_crs$num_bands, "\n")
+  
+  return(list(csd_srid = csd_crs$srid, raster_srid = raster_crs$srid))
+}
+
+# Step 2: Get crop classifications lookup
+get_crop_classifications <- function(con) {
+  crop_classes <- dbGetQuery(con, "
+    SELECT \"Code\", \"Label\", \"Étiquette\", \"Red\", \"Green\", \"Blue\" 
+    FROM crop_inventory.crop_classifications
+    ORDER BY \"Code\";
+  ")
+  return(crop_classes)
+}
+
+# Step 3: Extract raster values within CSD boundary
+extract_crops_in_boundary <- function(con, target_srid = NULL) {
+  cat("=== Extracting crops within CSD boundary ===\n")
+  
+  # Check projections
+  projections <- check_projections(con)
+  
+  # Determine target SRID (use raster's SRID or specified one)
+  if (is.null(target_srid)) {
+    # Default to using SRID 9999 (custom Canada Albers for crop data)
+    target_srid <- 9999
+    cat("Using custom SRID 9999 (Quebec crop data Albers projection)\n")
+  }
+  
+  # Always reproject CSD boundary to match raster for Albers projection
+  crop_extraction_query <- sprintf("
+    WITH boundary_reprojected AS (
+      SELECT ST_Transform(wkb_geometry, %d) as geom
+      FROM crop_inventory.csd_boundary
+    ),
+    raster_clipped AS (
+      SELECT ST_Clip(r.rast, b.geom) as clipped_raster
+      FROM crop_inventory.aci_2024_qc r,
+           boundary_reprojected b
+      WHERE ST_Intersects(r.rast, b.geom)
+    ),
+    value_counts AS (
+      SELECT (ST_ValueCount(clipped_raster)).* 
+      FROM raster_clipped
+    ),
+    aggregated_counts AS (
+      SELECT 
+        value::integer as crop_code,
+        SUM(count::integer) as pixel_count
+      FROM value_counts
+      WHERE value IS NOT NULL
+      GROUP BY value
+    )
+    SELECT 
+      crop_code,
+      pixel_count
+    FROM aggregated_counts
+    ORDER BY pixel_count DESC;
+  ", target_srid)
+  
+  # Execute the query
+  crop_pixels <- dbGetQuery(con, crop_extraction_query)
+  return(crop_pixels)
+}
+
+# Step 4: Alternative method using ST_DumpAsPolygons (for smaller datasets)
+extract_crops_as_polygons <- function(con) {
+  cat("=== Alternative: Converting raster to polygons first ===\n")
+  
+  query <- "
+    WITH boundary_reprojected AS (
+      SELECT ST_Transform(wkb_geometry, 9999) as geom
+      FROM crop_inventory.csd_boundary
+    ),
+    raster_polygons AS (
+      SELECT 
+        (ST_DumpAsPolygons(ST_Clip(r.rast, b.geom))).val as crop_code,
+        (ST_DumpAsPolygons(ST_Clip(r.rast, b.geom))).geom as geom
+      FROM crop_inventory.aci_2024_qc r,
+           boundary_reprojected b
+      WHERE ST_Intersects(r.rast, b.geom)
+    )
+    SELECT 
+      crop_code,
+      COUNT(*) as polygon_count,
+      SUM(ST_Area(geom)) as total_area_sq_units
+    FROM raster_polygons
+    WHERE crop_code IS NOT NULL
+    GROUP BY crop_code
+    ORDER BY total_area_sq_units DESC;
+  "
+  
+  crop_polygons <- dbGetQuery(con, query)
+  return(crop_polygons)
+}
+
+# Step 5: Get detailed crop analysis with classifications
+get_detailed_crop_analysis <- function(con, method = "pixels") {
+  cat("=== Generating detailed crop analysis ===\n")
+  
+  # Get crop classifications
+  crop_classes <- get_crop_classifications(con)
+  
+  # Extract crops using chosen method
+  if (method == "pixels") {
+    crop_data <- extract_crops_in_boundary(con)
+    count_col <- "pixel_count"
+  } else {
+    crop_data <- extract_crops_as_polygons(con)
+    count_col <- "total_area_sq_units"
+  }
+  
+  # Join with classifications
+  crop_analysis <- crop_data %>%
+    left_join(crop_classes, by = c("crop_code" = "Code")) %>%
+    arrange(desc(.data[[count_col]]))
+  
+  # Calculate percentages
+  total_count <- sum(crop_analysis[[count_col]], na.rm = TRUE)
+  crop_analysis$percentage <- round((crop_analysis[[count_col]] / total_count) * 100, 2)
+  
+  return(crop_analysis)
+}
+
+# Step 6: Visualization helper
+plot_crop_summary <- function(crop_analysis, top_n = 10) {
+  library(ggplot2)
+  
+  top_crops <- crop_analysis %>%
+    head(top_n) %>%
+    mutate(crop_name = ifelse(is.na(Label), 
+                              paste("Unknown Code", crop_code), 
+                              Label))
+  
+  ggplot(top_crops, aes(x = reorder(crop_name, percentage), y = percentage)) +
+    geom_col(fill = "steelblue", alpha = 0.8) +
+    coord_flip() +
+    labs(title = paste("Top", top_n, "Crops in CSD Boundary"),
+         x = "Crop Type",
+         y = "Percentage of Area") +
+    theme_minimal() +
+    theme(axis.text.y = element_text(size = 9))
+}
+
+# Step 7: Main execution function
+analyze_crops_in_csd <- function(con, method = "pixels", plot = TRUE) {
+  cat("Starting crop analysis...\n\n")
+  
+  # Check projections
+  projections <- check_projections(con)
+  cat("\n")
+  
+  # Get detailed analysis
+  crop_analysis <- get_detailed_crop_analysis(con, method = method)
+  
+  # Display results
+  cat("=== CROP ANALYSIS RESULTS ===\n")
+  print(crop_analysis)
+  cat("\nTotal unique crops found:", nrow(crop_analysis), "\n")
+  
+  # Create plot if requested
+  if (plot && nrow(crop_analysis) > 0) {
+    p <- plot_crop_summary(crop_analysis)
+    print(p)
+  }
+  
+  return(crop_analysis)
+}
+
+# USAGE EXAMPLES:
+
+# 1. Basic analysis
+# results <- analyze_crops_in_csd(con)
+
+# 2. Using area-based method instead of pixel count
+# results <- analyze_crops_in_csd(con, method = "area")
+
+# 3. Just check projections
+# projections <- check_projections(con)
+
+# 4. Get crop classifications table
+# crop_classes <- get_crop_classifications(con)
+
+# 5. Manual extraction if you want more control
+# crop_pixels <- extract_crops_in_boundary(con)
+
+# Step 8: Extract and map the actual raster data
+
+
+
+# -------------------------------
+# Safe RGB conversion function
+# -------------------------------
+safe_rgb <- function(r, g, b) {
+  if (any(is.na(c(r, g, b))) || any(c(r, g, b) < 0) || any(c(r, g, b) > 255)) {
+    return("#888888")  # default gray
+  } else {
+    return(rgb(r, g, b, maxColorValue = 255))
+  }
+}
+
+# -------------------------------
+# Raster points map
+# -------------------------------
+create_crop_raster_map <- function(con, crop_analysis = NULL, max_points = 1e6) {
+  library(sf)
+  library(dplyr)
+  library(ggplot2)
+  
+  cat("=== Creating crop raster map ===\n")
+  
+  # Safe RGB conversion function
+  safe_rgb <- function(r, g, b) {
+    if (any(is.na(c(r, g, b))) || any(c(r, g, b) < 0) || any(c(r, g, b) > 255)) {
+      return("#888888")  # default gray
+    } else {
+      return(rgb(r, g, b, maxColorValue = 255))
+    }
+  }
+  
+  # Get crop classifications
+  crop_classes <- get_crop_classifications(con)
+  
+  # Load and reproject boundary
+  boundary <- st_read(con, query = "SELECT * FROM crop_inventory.csd_boundary")
+  boundary_reprojected <- st_transform(boundary, crs = proj4_string)
+  
+  # Extract raster points from all intersecting tiles
+  cat("Extracting raster pixels as points from all tiles...\n")
+  
+  raster_points_query <- sprintf("
+    WITH boundary_reprojected AS (
+      SELECT ST_Transform(wkb_geometry, %s) AS geom
+      FROM crop_inventory.csd_boundary
+    ),
+    clipped_rasters AS (
+      SELECT ST_Clip(r.rast, b.geom) AS clipped_rast
+      FROM crop_inventory.aci_2024_qc r
+      JOIN boundary_reprojected b
+      ON ST_Intersects(r.rast, b.geom)
+    ),
+    raster_points AS (
+      SELECT (ST_PixelAsPoints(clipped_rast)).val AS crop_code,
+             (ST_PixelAsPoints(clipped_rast)).geom AS geom
+      FROM clipped_rasters
+    )
+    SELECT crop_code::integer,
+           ST_X(geom) AS x,
+           ST_Y(geom) AS y
+    FROM raster_points
+    WHERE crop_code IS NOT NULL;
+  ", 9999)  # We still pass 9999 to PostGIS since the raster SRID is stored as 9999
+  
+  raster_points <- dbGetQuery(con, raster_points_query)
+  
+  if (nrow(raster_points) == 0) {
+    cat("No raster points extracted.\n")
+    return(NULL)
+  }
+  
+  cat("Extracted", nrow(raster_points), "pixels\n")
+  
+  # Join with classifications and handle RGB safely
+  raster_points_classified <- raster_points %>%
+    left_join(crop_classes, by = c("crop_code" = "Code")) %>%
+    mutate(
+      crop_name = ifelse(is.na(Label), paste("Code", crop_code), Label),
+      color_hex = mapply(safe_rgb, Red, Green, Blue)
+    )
+  
+  # Optional: sample points for plotting if too many
+  if (!is.null(max_points) && nrow(raster_points_classified) > max_points) {
+    set.seed(123)
+    raster_points_classified <- raster_points_classified %>%
+      sample_n(max_points)
+    cat("Sampling to", max_points, "points for plotting...\n")
+  }
+  
+  # Plot
+  p <- ggplot() +
+    geom_point(data = raster_points_classified,
+               aes(x = x, y = y, color = crop_name),
+               size = 0.1, alpha = 0.8) +
+    geom_sf(data = boundary_reprojected, fill = NA, color = "black", size = 1) +
+    scale_color_manual(values = setNames(unique(raster_points_classified$color_hex),
+                                        unique(raster_points_classified$crop_name)),
+                       name = "Land Use") +
+    coord_sf(crs = st_crs(proj4_string)) +
+    labs(title = "Crop/Land Use Map - Quebec City CSD",
+         subtitle = paste("Showing", nrow(raster_points_classified), "pixels")) +
+    theme_minimal() +
+    theme(axis.text = element_blank(),
+          axis.ticks = element_blank(),
+          panel.grid = element_blank(),
+          legend.position = "right")
+  
+  print(p)
+  
+  return(list(
+    plot = p,
+    data = raster_points_classified,
+    boundary = boundary_reprojected
+  ))
+}
+
+
+
+create_crop_polygon_map <- function(con) {
+  library(sf)
+  library(ggplot2)
+  library(dplyr)
+  
+  cat("=== Creating simplified polygon crop map ===\n")
+  
+  # Query using LATERAL for ST_DumpAsPolygons
+  polygon_query <- "
+    WITH boundary_reprojected AS (
+      SELECT ST_Transform(wkb_geometry, 9999) as geom
+      FROM crop_inventory.csd_boundary
+    ),
+    clipped_rasters AS (
+      SELECT ST_Clip(r.rast, b.geom) as clipped_rast
+      FROM crop_inventory.aci_2024_qc r,
+           boundary_reprojected b
+      WHERE ST_Intersects(r.rast, b.geom)
+    )
+    SELECT 
+      rp.val::integer as crop_code,
+      ST_AsText(ST_SimplifyPreserveTopology(rp.geom, 10)) as geom_wkt,
+      ST_Area(rp.geom) as area_sqm
+    FROM clipped_rasters cr,
+         LATERAL ST_DumpAsPolygons(cr.clipped_rast) as rp
+    WHERE rp.val IS NOT NULL
+      AND ST_Area(rp.geom) > 900;
+  "
+  
+  polygon_data <- dbGetQuery(con, polygon_query)
+  
+  if (nrow(polygon_data) == 0) {
+    cat("No polygons extracted.\n")
+    return(NULL)
+  }
+  
+  # Convert to sf
+  polygons_sf <- st_as_sf(polygon_data, wkt = "geom_wkt", crs = proj4_string)
+  
+  # Join with crop classifications and handle RGB safely
+  crop_classes <- get_crop_classifications(con)
+  polygons_classified <- polygons_sf %>%
+    left_join(crop_classes, by = c("crop_code" = "Code")) %>%
+    mutate(
+      crop_name = ifelse(is.na(Label), paste("Code", crop_code), Label),
+      color_hex = mapply(safe_rgb, Red, Green, Blue)
+    )
+  
+  # Get boundary
+  boundary <- st_read(con, query = "SELECT * FROM crop_inventory.csd_boundary")
+  boundary_reprojected <- st_transform(boundary, crs = proj4_string)
+  
+  # Create plot
+  p <- ggplot() +
+    geom_sf(data = polygons_classified, aes(fill = crop_name), color = NA, size = 0) +
+    geom_sf(data = boundary_reprojected, fill = NA, color = "black", size = 1) +
+    scale_fill_manual(values = setNames(unique(polygons_classified$color_hex),
+                                       unique(polygons_classified$crop_name)),
+                      name = "Land Use") +
+    coord_sf(crs = st_crs(proj4_string)) +
+    labs(title = "Land Use Map - Quebec City CSD",
+         subtitle = paste("Showing", nrow(polygons_classified), "land use polygons")) +
+    theme_minimal() +
+    theme(axis.text = element_blank(),
+          axis.ticks = element_blank(),
+          panel.grid = element_blank(),
+          legend.position = "right")
+  
+  print(p)
+  return(list(plot = p, data = polygons_classified,  boundary_reprojected = boundary_reprojected))
+}
+```
+
+
+```{r}
+#CA MARCHE HOLY SHIT
+create_crop_polygon_map(con)
+```
+
+
+```{r raster-to-postgis}
+# Function to upload raster using raster2pgsql
+upload_raster_to_postgis <- function(raster_path, table_name, year) {
+  
+  # Create temporary clipped raster
+  temp_raster_path <- file.path(data_dir, glue("temp_{table_name}.tif"))
+  
+  # Clip raster to CSD boundary using gdalwarp
+  csd_extent <- st_bbox(csd_buffered)
+  
+  gdalwarp_cmd <- glue('gdalwarp -cutline "{csd_shp_path}" -crop_to_cutline -tr 30 30 "{raster_path}" "{temp_raster_path}"')
+  
+  cat("Clipping raster for year", year, "\n")
+  system(gdalwarp_cmd, ignore.stdout = TRUE)
+  
+  # Create SQL file using raster2pgsql
+  sql_file <- file.path(data_dir, glue("{table_name}.sql"))
+  
+  raster2pgsql_cmd <- glue('raster2pgsql -s 3347 -I -C -M -t 100x100 "{temp_raster_path}" {schema_name}.{table_name} > "{sql_file}"')
+  
+  cat("Creating SQL for", table_name, "\n")
+  system(raster2pgsql_cmd, ignore.stdout = TRUE)
+  
+  # Execute SQL
+  psql_cmd <- glue('psql -h 192.168.2.15 -d {Sys.getenv("POSTGIS_DBNAME")} -U {Sys.getenv("POSTGIS_USER")} -f "{sql_file}"')
+  
+  cat("Uploading raster", table_name, "to PostGIS\n")
+  Sys.setenv(PGPASSWORD = Sys.getenv("POSTGIS_PASSWORD"))
+  system(psql_cmd, ignore.stdout = TRUE)
+  
+  # Clean up temporary files
+  file.remove(temp_raster_path)
+  file.remove(sql_file)
+  
+  cat("Completed upload for", table_name, "\n")
+}
+
+# Upload both rasters
+upload_raster_to_postgis(tif_2024_path, "crop_raster_2024", 2024)
+upload_raster_to_postgis(tif_2011_path, "crop_raster_2011", 2011)
+```
+
+```{r}
+# Load colormaps
+colormap_2011 <- read_table(dest_paths$colormap_2011, 
+                            col_names = c("Code", "Red", "Green", "Blue"))
+colormap_2014 <- read_table(dest_paths$colormap_2014, 
+                            col_names = c("Code", "Red", "Green", "Blue"))
+```
+
+```{r get-csd}
+# Get CSD boundary using cancensus
+# Note: You may need to set your census API key first
+# options(cancensus.api_key = "your_api_key")
+
+csd_boundary <- get_census(
+  dataset = "CA21",
+  regions = list(CSD = TARGET_CSD),
+  geo_format = "sf",
+  level = "CSD"
+)  %>% 
+  janitor::clean_names()
+
+csd_boundary %>% glimpse()
+
+```
+
+##
+
+# Let's try stuff!
+
+## check data still exists on SQL
+
+```{r}
+dbGetQuery(con, "select * from crop_inventory.crop_classifications")
+```
+
+```{r}
+dbGetQuery(con, "select * from crop_inventory.csd_boundary")
+```
+
+::: callout-tip
+## Pourquoi est-ce qu'on est ici?
+
+@leandercampbell.bsky.social‬ posted about the 2024 annual crop inventory
+data on blue sky. [Data is
+here](https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/).
+
+Je vais comparer le Québec 2011 à 2024
+:::
+
+```{r}
+gdalinfo aci_2024_qc_v1.tif | grep "Coordinate System"
+
+gdalwarp -t_srs EPSG:4326 aci_2024_qc_v1.tif aci_2024_qc_v1_4326.tif
+
+raster2pgsql -I -C -M -t 100x100 aci_2024_qc_v1_4326.tif -F public."annualCropInventory_2024_qc" \
+| psql -d your_database -U your_user -h your_host -p 5432
+
+
+```
+
+tif 2024 qc
+https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2024/aci_2024_qc_v1.zip
+
+tif qc 2011
+https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/tif/2011/aci_2011_qc_v4.zip
+
+aci crop classification.csv
+https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/supportdocument_documentdesupport/aci_crop_classifications_iac_classifications_des_cultures.csv
+
+colourmap 2014.clr
+https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/colourmaps/colourmap_2014.clr
+
+colourmap 2011.clr
+https://agriculture.canada.ca/atlas/data_donnees/annualCropInventory/data_donnees/colourmaps/colourmap_2011.clr
+
+```{r}
+library(cancensus)
+library(sf)
+library(RPostgres)
+
+# Set your Census API key if needed
+# options(cancensus.api_key = "YOUR_API_KEY")
+
+# Get all CSDs in Quebec (CA21 = 2021 Census)
+qc_csds <- get_census(
+  dataset = "CA21",
+  regions = list(PR = "24"),  # Quebec province code
+  level = "CSD",
+  geo_format = "sf"
+)
+
+# Connect to PostGIS
+con <- dbConnect(
+  RPostgres::Postgres(),
+  dbname = "your_database",
+  host = "localhost",
+  port = 5432,
+  user = "your_user",
+  password = "your_password"
+)
+
+# Upload polygons
+st_write(
+  qc_csds,
+  dsn = con,
+  layer = "qc_csds",
+  driver = "PostgreSQL",
+  layer_options = "SCHEMA=public",
+  overwrite = TRUE
+)
+```
+
+```{r}
+-- Compute pixel counts per crop class per CSD
+CREATE TABLE qc_crops_summary AS
+SELECT
+csd.CSDUID,
+csd.CSDNAME,
+(stats).value AS crop_class,
+SUM((stats).count) AS pixel_count
+FROM (
+  SELECT
+  csd.CSDUID,
+  csd.CSDNAME,
+  ST_ValueCount(ST_Clip(rast, 1, csd.geom, true)) AS stats
+  FROM annualCropInventory_2024_qc r
+  JOIN qc_csds csd
+  ON ST_Intersects(r.rast, csd.geom)
+) foo
+GROUP BY CSDUID, CSDNAME, crop_class
+ORDER BY CSDUID, pixel_count DESC;
+
+```
+
+<!-- :::{.callout-note collapse="true"} -->
+
+## Reproductibilité {.unnumbered .unlisted}
+
+<!-- unlisted doesnt appear in table of contents -->
+
+Ce document a été généré le `r format(Sys.time(),"%e %B %Y à %T ")`. par
+le programme `r knitr::current_input()`. Note: les fichiers `.qmd`
+voient leur extension remplacée par rmarkdown ici.
+
+```{r repo, cache=FALSE, echo = FALSE}
+git2r::repository()
+```
+
+```{r sessioninfo, cache = FALSE, echo = FALSE}
+# save the session info as an object
+library(sessioninfo)
+pkg_sesh <- sessioninfo::session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_sesh$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+)
+
+# print it out
+pkg_sesh
+```
+
+<!-- ::: -->
