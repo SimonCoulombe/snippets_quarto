@@ -14,20 +14,54 @@ editor:
 ::: callout-tip
 ## Pourquoi est-ce qu'on est ici?
 
-Hydro-Québec rend les données d'info-panne disponible, mais seulement
-pour 1 journée.\
-J'ai commencé à sauvegarder ces fichiers il y a 3 ans à l'aide de github
-actions dans mon repo
-[hydroquebecoutage](http://pannes.hydroquebec.com/pannes/donnees/v3_0/open_data/).
-C'est enfin le moment de trouver qui est le pauvre hère qui a manqué le
-plus longtemps de courant durant ces 3 années!
+J'ai envie de savoir qui a eu le plus souvent besoin de souper aux
+chandelles à cause d'une panne de courant.
 :::
 
-# Les données
+```{r}
+library(dplyr)
+library(sf)
+library(lubridate)
+library(purrr)
+library(furrr)
+library(DBI)
+library(pool)
+library(mapview)
+library(ggplot2)
+con <- dbPool(
+  RPostgres::Postgres(),
+  host = "192.168.2.15",
+  dbname = Sys.getenv("POSTGIS_DBNAME"),
+  port = 5432,
+  user = Sys.getenv("POSTGIS_USER"),
+  password = Sys.getenv("POSTGIS_PASSWORD"),
+   bigint = "numeric"
+  
+)
+```
+
+# Les sources de données
 
 ## Info-Panne
 
-Les fichiers kmz d'info panne sont disponibles à l'adresse
+Hydro-Québec rend les polygones derrières les données d'info-panne
+disponible sur son site.
+
+Vous ne verrez que les données d'aujourd'hui.
+
+J'imagine que c'est pratique pour répondre à des questions
+existentielles comme "est-ce que j'ai de l'électricité présentement dans
+ma maison?" quand on n'a aucun appareil électrique pour vérifier.
+
+Ça ne permet pas de reculer dans le temps pour.
+
+C'est décevant, mais le Simon du passé a une bonne surprise: j'ai
+commencé à archiver ces fichiers il y a 3 ans.
+
+Aujourd'hui c'est enfin le moment de trouver qui est le pauvre hère qui
+a manqué le plus longtemps de courant durant ces 3 années!
+
+Les fichiers KMZ d'info-panne sont disponibles à l'adresse
 `http://pannes.hydroquebec.com/pannes/donnees/v3_0/open_data/`.
 
 Si vous le visitez aujourd'hui, vous allez voir les polygones des pannes
@@ -35,19 +69,116 @@ des 24 dernières heures:
 
 ![](images/clipboard-40312133.png)
 
-``` sql
-J'ai accumulé près de 40 000 KMZ en 3 ans.
+Comme vous pouvez voir, il y a plusieurs fichiers par jour, chacun
+indiquant le territoire couvert par les panne au moment indiqué dans le
+nom du fichier.
+
+Voici à quoi ressemble le contenu d'un d'entre eux, celui du 6 avril
+2023 à 10h40 du matin (20230406104016.kmz):
+
+```{r}
+url <- "https://raw.githubusercontent.com/simoncoulombe/hydroquebecoutage/main/data/20230406104016.kmz"
+
+# Define local destination
+destfile <- "20230406104016.kmz"
+
+# Download the file
+#download.file(url, destfile, mode = "wb")
+
+# Function to read KMZ files with better error handling
+read_kmz_manual <- function(path, add_metadata = FALSE) {
+  tryCatch({
+    # Create unique temporary directory for each file
+    tmpdir <- file.path(tempdir(), basename(path))
+    dir.create(tmpdir, showWarnings = FALSE, recursive = TRUE)
+    
+    # Use utils::unzip instead of zip package - more robust
+    utils::unzip(path, exdir = tmpdir, junkpaths = TRUE)
+    
+    # Find KML file
+    kml_files <- list.files(tmpdir, pattern = "\\.kml$", full.names = TRUE)
+    if (length(kml_files) == 0) {
+      stop("No KML file found in KMZ archive")
+    }
+    
+    # Read the first KML file
+    sf_obj <- sf::st_read(kml_files[1], quiet = TRUE)
+    
+    # Clean up temporary directory
+    unlink(tmpdir, recursive = TRUE)
+    
+    # Remove Z/M dimensions unconditionally
+    sf_obj <- sf::st_zm(sf_obj, drop = TRUE, what = "ZM")
+    
+    # Check if the file is empty (no features)
+    if (nrow(sf_obj) == 0) {
+      cat("KMZ file", basename(path), "is empty (0 features). Skipping.\n")
+      return(NULL)
+    }
+    
+    # Add metadata
+    if(add_metadata){
+    sf_obj$source_file <- basename(path)
+    sf_obj$file_path <- path
+    sf_obj$row_number <- 1:nrow(sf_obj)
+    }
+    return(sf_obj)
+    
+  }, error = function(e) {
+    cat("Failed to read", basename(path), ":", conditionMessage(e), "\n")
+    # Clean up on error
+    if (exists("tmpdir") && dir.exists(tmpdir)) {
+      unlink(tmpdir, recursive = TRUE)
+    }
+    return(NULL)
+  })
+}
+kmz20230406104016 <-read_kmz_manual("20230406104016.kmz")
+kmz20230406104016
+
 ```
 
 Ce sont seulement des polygônes. On n'a pas d'information comme la durée
-de la panne.
+de la panne ou la durée de la panne.
 
-J'ai donc dû faire une hypothèse: Les pannes indiquées dans un fichier
-durent du timestamp du fichier jusqu'au timestamp du fichier suivant.
+Voici à quoi il peut ressembler sur une carte. Il y a quand même pas mal
+de pannes. C'est fait exprès, j'ai choisi le moment où le plus de
+bâtiments étaient affectés, soit 742 955 bâtiments (sachant que les
+bâtiments collés se font fusionner..)
+
+![](images/clipboard-1825345928.png)
+
+```{r}
+mapview(kmz20230406104016)
+```
+
+Mon plan initial était de trouver qui avait manqué le "plus longtemps"
+de courant. Comme la durée des pannes Au début, je pensais faire une
+hypothèse: les pannes indiquées dans un fichier dureraient du timestamp
+du fichier jusqu'au timestamp du fichier suivant.
+
+C'est quand même une hypothèse forte: ça implique que le site
+d'hydro-québec est mis à jour dès qu'une panne se termine et aussi que
+mon système broche-à-foin récupère tous les KMZ qu'hydro rend
+disponible.
+
+J'ai donc décidé de compter **le nombre de jours avec au moins une
+panne**.
+
+J'ai quand même créé les colonnes "outage_start" , "outage_end" et
+"outage_duration_sec", mais je ne les ai pas utilisées.
+
+### Processing (nerd alert)
+
+Mon processus d'ingestion de données a simplement été de faire une
+boucle sur les 39 000 KMZ, d'ajouter un peu de metadata aux polygones (
+source_file, source_path et row_number) et d'append ça à la table
+"outages" sur mon serveur postgis.
 
 Ensuite j'ai lu chacun des KMZ, j'ai ajouté un peu de metadata aux
 pannes (outage_start, outage_end, outage_duration_sec, row_num,
-file_name) et j'ai ajouté ça à mon serveur PostGIS.
+file_name) et j'ai ajouté ça à mon serveur PostGIS. Ça ressemble un peu
+à ça:
 
 ``` r
 st_write(
@@ -56,37 +187,78 @@ st_write(
     "outage", 
     append = TRUE,  
     row.names = FALSE,
-    layer_options = "GEOMETRY_NAME=geom"  # explicitly enforce column name
+    layer_options = "GEOMETRY_NAME=geom"
 )
+```
+
+J'ai aussi créé un index géospatial pour que ça aille un peu plus vite
+quand on va vouloir déterminer quelle bâtiment est dans quelle panne..
+
+``` r
+dbExecute(con, "
+  CREATE INDEX IF NOT EXISTS outages_start_idx
+  ON outages(outage_start DESC);
+")
+```
+
+Au final, ma table de pannes compte `2 641 483` polygones de pannes,
+entre le 31 mai 2022 et le 27 août 2025 (1184 jours?):
+
+```{r}
+#dbGetQuery(con, "SELECT count(*)  as count , min(source_file) as min_date, max(source_file) as max_date   FROM outages ;") %>% gt::gt()
+```
+
+```{r}
+st_read(con,query = " select  * FROM outages limit 5 ;") %>% knitr::kable(caption = "exemple de lignes dans outages")
 ```
 
 ## Les bâtiments
 
-Le [référentiel québécois sur les
+J'aurais voulu des données ouvertes avec toutes les adresses du Québec.
+Il me semble que ça existait, mais je n'ai pas trouvé dans mon google
+rapide.
+
+Je me suis donc rabattu sur le [référentiel québécois sur les
 bâtiments](https://www.donneesquebec.ca/recherche/dataset/referentiel_bati)
-contient les polygônes de tous les bâtiments du Québec. Ça semble avoir
-été créé à partir d'orthophotographie et bien de l'intelligence
-artificielle.
+, qui contient les polygônes de tous les bâtiments du Québec. Ça semble
+avoir été créé à partir d'orthophotographie et d'une bone dose
+d'intelligence artificielle.
+
+Ça a un gros défaut: c'est plein de beau polygones, mais on n'a pas
+d'adresse et surtout un jumelé (ou plusieurs maison de villes sur les
+rues de Montréal) va apparaître comme un seul "bâtiment".
+
+La table du référentiel bâti compte `3 289 166` bâtiments.
+
+```{r}
+#dbGetQuery(con, "SELECT count(*)    FROM batiments_4326 ;") %>% gt::gt()
+```
+
+```{r}
+st_read(con,query =" select  * FROM batiments_4326 limit 5 ;") %>% knitr::kable(caption = "exemple de lignes dans batiments_4326")
+```
+
+### Processing (nerd alert)
 
 Je l'ai téléchargé en format GPKG et je l'ai aussi ajouté à mon serveur
-PostGIS. Tant qu'à être là, on reprojette en CRS4326 pour être
-compatible avec les pannes.
+PostGIS avec ogr2ogr. Tant qu'à être là, on reprojette en CRS4326 pour
+être compatible avec la projection des pannes.
 
 ``` bash
 ogr2ogr -f "PostgreSQL" PG:"host=192.168.2.15 port=5432 dbname=dbname user=user password=password" "C:\Users\Simon\Downloads\RefBati_GPKG\Referentiel_batiment.gpkg" -nln batiments_4326 -overwrite -t_srs EPSG:4326 -lco GEOMETRY_NAME=geom -lco FID=id
 ```
 
-Mon LLM préféré m'a dit de créer un index spatial, qui se faisait en
-roulant ceci dans `psql` :
+On fait unindex sur lui aussi:
 
 `CREATE INDEX idx_batiments_geom ON batiments_4326 USING GIST(geom);`
 
-# Combiner les deux
+# Identifier quel bâtiment est dans quelle panne
 
-Une fois que c'est fait, je roule cette query. Ça va me redonner une
-ligne par bâtiment-panne:
+J'ai commencé par rouler cette query qui regarde quel bâtiment
+intersecte avec quelle panne. Ça devait me redonner une ligne par
+bâtiment-panne:
 
-``` R
+``` r
 buildings_sf <- st_read(con, query = "
 +   SELECT DISTINCT b.*, o.source_file, o.outage_start, o.outage_end, o.outage_duration_sec
 +   FROM batiments_4326 AS b
@@ -94,12 +266,298 @@ buildings_sf <- st_read(con, query = "
 +     ON ST_Intersects(b.geom, o.geom)
 ```
 
-... mais ça roule encore pour le moment.
-Je pense que je devrais faire deux choses :
-1 ) remplacer les bâtiments par un centroide
-2) ne pas retourner la geometry des batiments...    
+Mais après un très long moment j'ai dû me rentre à l'évidence que je
+devais simplifier car trouver l'intersection de 2.6 millions de pannes
+avec 3.2 millions de bâtiments ça va être long.
+
+J'ai donc créé une nouvelle colonne de points pour les centroïdes de
+chaque bâtiments et je regarde ensuite si le centroide est dans une
+panne. C'est beaucoup moins lourd que de regarder si "une partie du
+building" est dans la panne
+
+Aussi, j'ai pas besoin de retourner la geometry des batiments à chaque
+ligne, alors j'ai flushé ça.
+
+``` r
+dbExecute(con, "
+ALTER TABLE batiments_4326
+ADD COLUMN geom_inside geometry(Point, 4326);
+")
+
+dbExecute(con, "
+UPDATE batiments_4326
+SET geom_inside = ST_PointOnSurface(geom);
+")
+
+dbExecute(con, "
+CREATE INDEX IF NOT EXISTS batiments_inside_idx
+ON batiments_4326 USING GIST(geom_inside);
+")
+
+dbExecute(con, "
+CREATE TABLE points_in_outages AS
+SELECT 
+    b.id AS building_id,
+    o.source_file, 
+    o.row_number, 
+    o.outage_duration_sec,
+    CAST(LEFT(regexp_replace(split_part(o.source_file, '/', -1), '\\.kmz$', ''), 8) AS date) AS outage_date
+FROM batiments_4326 AS b
+JOIN outages AS o
+ON ST_Contains(o.geom, b.geom_inside);
+")
+```
+
+La table points_in_outage qui indique simplement chaque combinaison de
+panne-bâtiments compte un débile `284 841 906` lignes et a pris 2
+minutes à calculer sur mon ryzen 5600g.
+
+```{r}
+#dbGetQuery(con, "select count(*) as count from points_in_outages")
+```
+
+La table ressemble à ceci :
+
+```{r}
+dbGetQuery(con, "select * from points_in_outages limit 5")
+```
+
+C'est normal que le nombre de ligne soit élevé: une grosse panne qui
+affecterait le québec en entier affecterait 3 millions de bâtiments et
+contriburait autant de lignes à la table.
+
+## Quelle est la pire panne?
+
+Tiens, c'est quoi le moment avec le plus de "bâtiments" affectés ? voici
+la distribution du nombre de bâtiments affectés par fichier de panne
+
+```{r}
+# tictoc::tic()
+# dbExecute(con, "
+#   CREATE TABLE buildings_per_file AS
+# SELECT source_file, COUNT(DISTINCT building_id) AS building_count
+# FROM points_in_outages
+# GROUP BY source_file;"
+# )
+# tictoc::toc()  # 295s elapsed # 38944 rows
 
 
-anyway, on se reparle quand c'est fini!
+buildings_per_file <- dbGetQuery(con, "select * from buildings_per_file")
 
 
+```
+
+C'était le 6 avril juillet 2023 au matin, avec 742955 "buildings"
+affectés.
+
+```{r}
+buildings_per_file %>% filter(building_count == max(building_count)) %>% head(1)
+```
+
+Ça ressemblait à ça sur une carte:
+
+```{r}
+pire_panne_poly <- st_read(con, query = "select * from outages where source_file = '20230406104016.kmz' ")
+
+mapview(pire_panne_poly)
+
+
+
+```
+
+mettons que je veux les polygones des 745 000 buildings, je ferais qqch
+comme
+
+```{r}
+# dbExecute(con, "CREATE TEMP TABLE peak_ids AS
+# SELECT DISTINCT building_id
+# FROM points_in_outages
+# WHERE source_file = '20230406104016.kmz';")
+# 
+# peak_buildings <- st_read(con, query= "SELECT b.id, b.geom
+# FROM batiments_4326 AS b
+# JOIN peak_ids AS p
+#   ON b.id = p.building_id;")
+
+```
+
+# Qui mange le plus de cannes de bines froides à la chandelles ?
+
+On va commencer par créer une table
+
+```         
+# one row per building per day, even if a building appears in multiple polygons that day. 
+dbExecute(con, "
+CREATE TABLE buildings_in_day AS
+SELECT DISTINCT
+    building_id,
+    outage_date
+FROM points_in_outages;
+") # 26758624
+
+# Number of buildings affected per day (outage_date × total buildings). To find the worst day
+dbExecute(con, "
+CREATE TABLE buildings_count_per_day AS
+SELECT
+    outage_date,
+    COUNT(*) AS building_count
+FROM buildings_in_day
+GROUP BY outage_date
+ORDER BY outage_date;
+") # 1168
+
+# Number of outage days per building per month for each building (building_id × month × days_with_outage)
+dbExecute(con, "
+CREATE TABLE building_outage_days_per_month AS
+SELECT
+    building_id,
+    DATE_TRUNC('month', outage_date)::date AS month,
+    COUNT(*) AS days_with_outage
+FROM buildings_in_day
+GROUP BY building_id, month
+ORDER BY building_id, month;
+
+")
+
+dbExecute(con, "
+CREATE TABLE building_outage_ever AS
+SELECT
+    building_id,
+    COUNT(*) AS days_with_outage
+FROM buildings_in_day
+GROUP BY building_id
+ORDER BY building_id;
+
+") #  3100871
+```
+
+Bon, je pensais faire un beau geocoding pour sortir les adresses, mais
+on va se contenter d'une carte:
+
+```{r}
+top10_pauvres_heres <- st_read(con, query = "
+  SELECT b.id, b.geom_inside, top10.days_with_outage
+  FROM batiments_4326 AS b
+  JOIN (
+    SELECT building_id, days_with_outage 
+    FROM building_outage_ever
+    ORDER BY days_with_outage DESC
+    LIMIT 100
+  ) AS top10
+  ON b.id = top10.building_id;
+")
+
+```
+
+```{r}
+top10_pauvres_heres %>% st_drop_geometry()  %>% head(10) %>% knitr::kable()
+```
+
+```{r}
+
+mapview(top10_pauvres_heres)
+```
+
+Avec qq screenshots zoomés.\
+Voici le champion toute catégorie, le nu,éro 429738 (et sa grappe), sur
+l'avenue Boomfield à Montréal, qui a eu des pannes pendant 88 journées
+distinctes.
+
+Ceci-dit, j'ai envie de l'accuser de dopage, parce que lui et sa grappe
+n'aurait pas eu de courant pendant tout l'été 2023 alors je pense que
+c'était peut-être fait exprès?
+
+![](images/clipboard-2921060602.png)
+
+La 2e plus grosse grappe c'est un paquet de maisons au bord du Lac des
+Seize-Iles.\
+Ce pauvre type au 202 Côté Estate du Lac à côté du Lac des Seize perdu
+le courant 68 jours au cours des 3 dernières années. J'avoue que j'ai
+envie de le déclarer champion car il a accumulé un peu de pannes à tous
+les mois.
+
+![](images/clipboard-547982662.png)
+
+
+Voici la distribution de leur nombre de pannes mensuel:
+
+```{r}
+top2 <- dbGetQuery(con, "select * from building_outage_days_per_month where building_id in ( 429738, 1565816) ")
+```
+
+```{r}
+
+top2 <- top2 %>%
+  mutate(building_name = case_when(
+    building_id == 429738    ~ "Montreal",
+    building_id == 1565816   ~ "Lac des Seize Îles",
+    TRUE ~ as.character(building_id)
+  ))
+
+
+top2 %>%
+  ggplot(aes(x = month, y = days_with_outage, fill = building_name)) +
+  geom_col(show.legend = FALSE) +
+  geom_text(aes(label = days_with_outage), vjust = -0.5, size = 3) +
+  facet_wrap(~building_name, ncol = 1) +
+  scale_x_date(
+    date_labels = "%b %Y",
+    date_breaks = "1 month",
+    limits = as.Date(c("2022-04-01", "2025-09-01"))
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.1))) +
+  labs(
+    title = "Distribution du nombre mensuel de pannes pour le top 2",
+    x = NULL,
+    y = "Nombre de jours avec au moins une panne"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    strip.text = element_text(face = "bold", size = 12),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_blank()
+  )
+```
+
+
+
+# TODO: Quelle est la distribution du % de jour sans panne ?
+
+Je me demande c'est quoi la médiane du nombre de jour de panne par année
+en 2023 et 2024 (années complètes). mais faut pas oublier que si t'es
+pas dans mes outages alors t'as eu 0 pannes..
+
+
+# TODO: Quelle est la distribution du nombre de buildings affectés par région ?
+
+Si j'étais une personne importante dans ma région, j'aimerais savoir
+quelle est la fréquence où des grosses pannes se produisent. On va
+regarder la distribution du nombre quotidiens de buildings affectés pour
+chaque région administrative.
+
+Faut commencer par aller chercher les polygones des régions
+administratives.
+
+... mais ça c'est pour une autre fois.
+
+# appendice: Obtenir les données info-panne
+
+Pour ceux que ça intéresse (absolument personne) , voici comment j'ai
+fait pour organiser toutes les backups.
+
+Dans le repo
+[hydroquebecoutage](https://github.com/SimonCoulombe/hydroquebecoutage),
+il y a :
+
+1)  Le script
+    [hydroquebecoutage.R](https://github.com/SimonCoulombe/hydroquebecoutage/blob/main/hydroquebecoutage.R)
+    qui utilise le package `rvest`pour déterminer la liste des fichiers
+    qui sont disponibles et qui les télécharge.
+
+2)  La github action
+    [download_and_save_to_git.yaml](https://github.com/SimonCoulombe/hydroquebecoutage/blob/main/.github/workflows/download_and_save_to_git.yaml)
+    qui s'exécute plusieurs fois par jour. Sa job est d'exécuter
+    `hydroquebecoutage.R`, puis de `git commit`tous les fichiers
+    télécharges dans le répertoire `data/`du repo.
+
+Le répertoire `data/` contient aujourd'hui plus de 39 000 fichiers.
