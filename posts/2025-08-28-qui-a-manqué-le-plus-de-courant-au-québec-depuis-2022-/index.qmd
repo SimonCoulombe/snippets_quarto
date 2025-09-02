@@ -9,6 +9,9 @@ lang: fr
 editor: 
   markdown: 
     wrap: 72
+execute:
+  echo: true
+  code-fold: true   # <-- this makes all code chunks folded by default    
 ---
 
 ::: callout-tip
@@ -134,7 +137,7 @@ read_kmz_manual <- function(path, add_metadata = FALSE) {
   })
 }
 kmz20230406104016 <-read_kmz_manual("20230406104016.kmz")
-kmz20230406104016
+kmz20230406104016 %>% knitr::kable()
 
 ```
 
@@ -168,8 +171,6 @@ panne**.
 J'ai quand même créé les colonnes "outage_start" , "outage_end" et
 "outage_duration_sec", mais je ne les ai pas utilisées.
 
-### Processing (nerd alert)
-
 Mon processus d'ingestion de données a simplement été de faire une
 boucle sur les 39 000 KMZ, d'ajouter un peu de metadata aux polygones (
 source_file, source_path et row_number) et d'append ça à la table
@@ -177,29 +178,7 @@ source_file, source_path et row_number) et d'append ça à la table
 
 Ensuite j'ai lu chacun des KMZ, j'ai ajouté un peu de metadata aux
 pannes (outage_start, outage_end, outage_duration_sec, row_num,
-file_name) et j'ai ajouté ça à mon serveur PostGIS. Ça ressemble un peu
-à ça:
-
-``` r
-st_write(
-    kmz_data, 
-    con, 
-    "outage", 
-    append = TRUE,  
-    row.names = FALSE,
-    layer_options = "GEOMETRY_NAME=geom"
-)
-```
-
-J'ai aussi créé un index géospatial pour que ça aille un peu plus vite
-quand on va vouloir déterminer quelle bâtiment est dans quelle panne..
-
-``` r
-dbExecute(con, "
-  CREATE INDEX IF NOT EXISTS outages_start_idx
-  ON outages(outage_start DESC);
-")
-```
+file_name) et j'ai ajouté ça à mon serveur PostGIS.
 
 Au final, ma table de pannes compte `2 641 483` polygones de pannes,
 entre le 31 mai 2022 et le 27 août 2025 (1184 jours?):
@@ -237,20 +216,6 @@ La table du référentiel bâti compte `3 289 166` bâtiments.
 ```{r}
 st_read(con,query =" select  * FROM batiments_4326 limit 5 ;") %>% knitr::kable(caption = "exemple de lignes dans batiments_4326")
 ```
-
-### Processing (nerd alert)
-
-Je l'ai téléchargé en format GPKG et je l'ai aussi ajouté à mon serveur
-PostGIS avec ogr2ogr. Tant qu'à être là, on reprojette en CRS4326 pour
-être compatible avec la projection des pannes.
-
-``` bash
-ogr2ogr -f "PostgreSQL" PG:"host=192.168.2.15 port=5432 dbname=dbname user=user password=password" "C:\Users\Simon\Downloads\RefBati_GPKG\Referentiel_batiment.gpkg" -nln batiments_4326 -overwrite -t_srs EPSG:4326 -lco GEOMETRY_NAME=geom -lco FID=id
-```
-
-On fait unindex sur lui aussi:
-
-`CREATE INDEX idx_batiments_geom ON batiments_4326 USING GIST(geom);`
 
 # Identifier quel bâtiment est dans quelle panne
 
@@ -309,8 +274,8 @@ ON ST_Contains(o.geom, b.geom_inside);
 ```
 
 La table points_in_outage qui indique simplement chaque combinaison de
-panne-bâtiments compte un débile `284 841 906` lignes et a pris 2
-minutes à calculer sur mon ryzen 5600g.
+panne-bâtiments compte un débile `284 841 906` lignes et a pris une
+vingtaine de minutes minutes à calculer sur mon ryzen 5600g.
 
 ```{r}
 #dbGetQuery(con, "select count(*) as count from points_in_outages")
@@ -471,13 +436,11 @@ c'était peut-être fait exprès?
 
 La 2e plus grosse grappe c'est un paquet de maisons au bord du Lac des
 Seize-Iles.\
-Ce pauvre type au 202 Côté Estate du Lac à côté du Lac des Seize perdu
-le courant 68 jours au cours des 3 dernières années. J'avoue que j'ai
-envie de le déclarer champion car il a accumulé un peu de pannes à tous
-les mois.
+Ce pauvre type a perdu le courant 68 jours au cours des 3 dernières
+années. J'avoue que j'ai envie de le déclarer champion car il a accumulé
+un peu de pannes à tous les mois.
 
 ![](images/clipboard-547982662.png)
-
 
 Voici la distribution de leur nombre de pannes mensuel:
 
@@ -519,16 +482,28 @@ top2 %>%
   )
 ```
 
+# Conclusion
 
+Bon, alors j'imagine que la réponse à ma question c'est la série de
+blocs à Montréal, avec 88 jours avec une panne de courant durant les 1
+184 jours observés (7.4% des jours ). Une moyenne de 2.2 pannes par
+mois. Mais je ne trouve pas ça naturel, parce que le gros des pannes
+provient d'une longue coupure à l'été 2023.
 
-# TODO: Quelle est la distribution du % de jour sans panne ?
+Suite à cette disqualification, je décerne donc le championnat au pauvre
+hère qui habite au **202 Côté Estate du Lac à Lac des Seize** avec ses
+68 jours avec une panne.
+
+On le salue bien bas. Bravo.
+
+Quelques pistes à regarder avec ce data dans l'avenir:\
+\# \# TODO: Quelle est la distribution du % de jour sans panne ?
 
 Je me demande c'est quoi la médiane du nombre de jour de panne par année
 en 2023 et 2024 (années complètes). mais faut pas oublier que si t'es
 pas dans mes outages alors t'as eu 0 pannes..
 
-
-# TODO: Quelle est la distribution du nombre de buildings affectés par région ?
+## TODO: Quelle est la distribution du nombre de buildings affectés par région ?
 
 Si j'étais une personne importante dans ma région, j'aimerais savoir
 quelle est la fréquence où des grosses pannes se produisent. On va
@@ -540,10 +515,14 @@ administratives.
 
 ... mais ça c'est pour une autre fois.
 
-# appendice: Obtenir les données info-panne
+# Appendice nerd
 
 Pour ceux que ça intéresse (absolument personne) , voici comment j'ai
-fait pour organiser toutes les backups.
+fait quelques trucs. C'est surtout pour m'aider à ne pas l'oublier.
+
+## scheduler les downloads les données info-panne
+
+pour organiser toutes les backups.
 
 Dans le repo
 [hydroquebecoutage](https://github.com/SimonCoulombe/hydroquebecoutage),
@@ -561,3 +540,42 @@ il y a :
     télécharges dans le répertoire `data/`du repo.
 
 Le répertoire `data/` contient aujourd'hui plus de 39 000 fichiers.
+
+## process and load outages to postgis
+
+Ça ressemble un peu à ça:
+
+``` r
+st_write(
+    kmz_data, 
+    con, 
+    "outage", 
+    append = TRUE,  
+    row.names = FALSE,
+    layer_options = "GEOMETRY_NAME=geom"
+)
+```
+
+J'ai aussi créé un index géospatial pour que ça aille un peu plus vite
+quand on va vouloir déterminer quelle bâtiment est dans quelle panne..
+
+``` r
+dbExecute(con, "
+  CREATE INDEX IF NOT EXISTS outages_start_idx
+  ON outages(outage_start DESC);
+")
+```
+
+## process and load batiments to postgis
+
+Je l'ai téléchargé en format GPKG et je l'ai aussi ajouté à mon serveur
+PostGIS avec ogr2ogr. Tant qu'à être là, on reprojette en CRS4326 pour
+être compatible avec la projection des pannes.
+
+``` bash
+ogr2ogr -f "PostgreSQL" PG:"host=192.168.2.15 port=5432 dbname=dbname user=user password=password" "C:\Users\Simon\Downloads\RefBati_GPKG\Referentiel_batiment.gpkg" -nln batiments_4326 -overwrite -t_srs EPSG:4326 -lco GEOMETRY_NAME=geom -lco FID=id
+```
+
+On fait unindex sur lui aussi:
+
+`CREATE INDEX idx_batiments_geom ON batiments_4326 USING GIST(geom);`
