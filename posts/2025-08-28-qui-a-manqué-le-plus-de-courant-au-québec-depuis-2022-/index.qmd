@@ -152,7 +152,7 @@ mapview(kmz20230406104016)
 ```
 
 Mon plan initial était de trouver qui avait manqué le "plus longtemps"
-de courant. Comme la durée des pannes Au début, je pensais faire une
+de courant. Mais on n'a pas ça dans le polygone. Je pensais initialement faire une
 hypothèse: les pannes indiquées dans un fichier dureraient du timestamp
 du fichier jusqu'au timestamp du fichier suivant.
 
