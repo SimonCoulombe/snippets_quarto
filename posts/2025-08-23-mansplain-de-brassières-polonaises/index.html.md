@@ -3,7 +3,7 @@ title: "Mansplain de brassières polonaises"
 description: |
   Parce que le ridicule ne tue pas :)
 author: Simon Coulombe
-date: 2025-08-24
+date: 2025-06-24
 categories: [ewamichalak]
 lang: fr
 editor: 
@@ -16,13 +16,16 @@ editor:
 
 
 
-
 ::: callout-tip
 ## Pourquoi est-ce qu'on est ici?
 
 Parce que le ridicule ne tue pas et parce que ça a été révolutionnaire
 chez nous, Simon te mansplain les brassières polonaises😁.
+
+Pas de data science ici, juste un ti partage d'info avant qu'on l'oublie.
 :::
+
+
 
 **Contexte**: Ma blonde vient de traverser une crise de "ma taille
 existe pas" parce qu'à Québec les boutiques ne tiennent rien en haut de

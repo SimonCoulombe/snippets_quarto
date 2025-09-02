@@ -1,8 +1,9 @@
 ---
 title: "Messing around crop data"
 description: |
-thanks @leandercampbell.bsky.social!
+  thanks @leandercampbell.bsky.social!
 author: Simon Coulombe
+draft: true
 date: 2025-08-31
 categories: []
 lang: fr
@@ -231,17 +232,28 @@ dbGetQuery(con, "SELECT count(*) FROM public.aci_2024_qc ;")
 ```
 
 
-projection for my raster is unknown.. let's force it :
-```{r}
-# Update your raster to use standard Canada Albers
-dbExecute(con, "
-  SELECT UpdateRasterSRID('crop_inventory', 'aci_2024_qc', 'rast', 3978);
-")
+## no wait, let's use the real custom projectio nthat was used..
+we can know the crs that was used in the original TIF using gdalinfo
+
+```
+D:\git\snippets_quarto\posts\2025-08-31-messing-around-crop-data\data\extracted\tif_2024>"c:\Program Files\QGIS 3.40.10\bin\gdalinfo" aci_2024_qc_v1.tif Driver: GTiff/GeoTIFF Files: aci_2024_qc_v1.tif Size is 44461, 23742 Coordinate System is: PROJCRS["unnamed", BASEGEOGCRS["WGS 84", DATUM["World Geodetic System 1984", ELLIPSOID["WGS 84",6378137,298.257223563, LENGTHUNIT["metre",1]]], PRIMEM["Greenwich",0, ANGLEUNIT["degree",0.0174532925199433]], ID["EPSG",4326]], CONVERSION["Albers Equal Area", METHOD["Albers Equal Area", ID["EPSG",9822]], PARAMETER["Latitude of false origin",40, ANGLEUNIT["degree",0.0174532925199433], ID["EPSG",8821]], PARAMETER["Longitude of false origin",-96, ANGLEUNIT["degree",0.0174532925199433], ID["EPSG",8822]], PARAMETER["Latitude of 1st standard parallel",44.75, ANGLEUNIT["degree",0.0174532925199433], ID["EPSG",8823]], PARAMETER["Latitude of 2nd standard parallel",55.75, ANGLEUNIT["degree",0.0174532925199433], ID["EPSG",8824]], PARAMETER["Easting at false origin",0, LENGTHUNIT["metre",1], ID["EPSG",8826]], PARAMETER["Northing at false origin",0, LENGTHUNIT["metre",1], ID["EPSG",8827]]], CS[Cartesian,2], AXIS["easting",east, ORDER[1], LENGTHUNIT["metre",1, ID["EPSG",9001]]], AXIS["northing",north, ORDER[2], LENGTHUNIT["metre",1, ID["EPSG",9001]]]] Data axis to CRS axis mapping: 1,2 Origin = (1175370.000000000000000,1503300.000000000000000) Pixel Size = (30.000000000000000,-30.000000000000000) Metadata: AREA_OR_POINT=Area Image Structure Metadata: INTERLEAVE=BAND Corner Coordinates: Upper Left ( 1175370.000, 1503300.000) ( 78d32'54.23"W, 52d16'54.19"N) Lower Left ( 1175370.000, 791040.000) ( 80d40'42.71"W, 46d 3'12.61"N) Upper Right ( 2509200.000, 1503300.000) ( 60d52'46.36"W, 48d 8'47.73"N) Lower Right ( 2509200.000, 791040.000) ( 64d46'24.65"W, 42d21'25.63"N) Center ( 1842285.000, 1147170.000) ( 70d59' 2.64"W, 47d32'38.65"N) Band 1 Block=44461x1 Type=Byte, ColorInterp=Palette Description = aci_2024_qc_v1
+
+i converted it using 
+raster2pgsql.exe -s 9999 -I -C -M -t 512x512 "D:/git/snippets_quarto/posts/2025-08-31-messing-around-crop-data/data/extracted/tif_2024/aci_2024_qc_v1.tif" public.aci_2024_qc > aci_2024_qc.sql
 ```
 
-## no wait, let's use the real custom projectio nthat was used..
+Your raster is in a custom Albers Equal Area projection with these parameters:
 
-# first define the project
+False origin: Latitude 40°, Longitude -96°
+Standard parallels: 44.75° and 55.75°
+False easting/northing: 0,0
+
+This is essentially Canada Albers Equal Area Conic (EPSG:3978) but with slightly different parameters. 
+
+
+# first define the projection in postgis
+we define proj4_string, which we will re-use in R too.
+
 ```{r}
 # Step 1: Delete existing if it exists
 dbExecute(con, "DELETE FROM spatial_ref_sys WHERE srid = 9999;")
@@ -1268,27 +1280,27 @@ create_crop_raster_map <- function(con, crop_analysis = NULL, max_points = 1e6) 
   }
   
   # Plot
-  p <- ggplot() +
-    geom_point(data = raster_points_classified,
-               aes(x = x, y = y, color = crop_name),
-               size = 0.1, alpha = 0.8) +
-    geom_sf(data = boundary_reprojected, fill = NA, color = "black", size = 1) +
-    scale_color_manual(values = setNames(unique(raster_points_classified$color_hex),
-                                        unique(raster_points_classified$crop_name)),
-                       name = "Land Use") +
-    coord_sf(crs = st_crs(proj4_string)) +
-    labs(title = "Crop/Land Use Map - Quebec City CSD",
-         subtitle = paste("Showing", nrow(raster_points_classified), "pixels")) +
-    theme_minimal() +
-    theme(axis.text = element_blank(),
-          axis.ticks = element_blank(),
-          panel.grid = element_blank(),
-          legend.position = "right")
-  
-  print(p)
+  # p <- ggplot() +
+  #   geom_point(data = raster_points_classified,
+  #              aes(x = x, y = y, color = crop_name),
+  #              size = 0.1, alpha = 0.8) +
+  #   geom_sf(data = boundary_reprojected, fill = NA, color = "black", size = 1) +
+  #   scale_color_manual(values = setNames(unique(raster_points_classified$color_hex),
+  #                                       unique(raster_points_classified$crop_name)),
+  #                      name = "Land Use") +
+  #   coord_sf(crs = st_crs(proj4_string)) +
+  #   labs(title = "Crop/Land Use Map - Quebec City CSD",
+  #        subtitle = paste("Showing", nrow(raster_points_classified), "pixels")) +
+  #   theme_minimal() +
+  #   theme(axis.text = element_blank(),
+  #         axis.ticks = element_blank(),
+  #         panel.grid = element_blank(),
+  #         legend.position = "right")
+  # 
+  # print(p)
   
   return(list(
-    plot = p,
+    #plot = p,
     data = raster_points_classified,
     boundary = boundary_reprojected
   ))
@@ -1374,7 +1386,155 @@ create_crop_polygon_map <- function(con) {
 #CA MARCHE HOLY SHIT
 create_crop_polygon_map(con)
 ```
+# mapdeck?    ----
 
+```{r}
+library(mapdeck)
+set_token(Sys.getenv("mapbox"))
+
+result <- create_crop_raster_map(con)
+ 
+
+raster_points_sf <- st_as_sf(result$data, coords = c("x", "y"), crs = proj4_string)
+
+# Transform to WGS84
+raster_points_sf <- st_transform(raster_points_sf, 4326)
+
+# Extract coordinates and combine with existing columns
+raster_points_latlon <- raster_points_sf %>%
+  mutate(
+    lon = st_coordinates(.)[,1],
+    lat = st_coordinates(.)[,2]
+  ) %>%
+  st_set_geometry(NULL)  # drop geometry for mapdeck
+
+
+boundary_latlon <- st_transform(result$boundary, 4326)
+
+ mapdeck(style = mapdeck_style("dark"), pitch = 0) %>%
+  add_scatterplot(
+    data = raster_points_latlon,
+    lon = "lon",
+    lat = "lat",
+    fill_colour = "color_hex",
+    radius = 15,
+    tooltip = "crop_name",
+    legend = TRUE
+  ) %>%
+  add_polygon(
+    data = boundary_latlon,
+    fill_colour = "#00000000",
+    stroke_colour = "black",
+    stroke_width = 2
+  )
+```
+
+
+hmmm what about this 
+
+```{r}
+library(DBI)
+library(RPostgres)
+library(sf)
+library(dplyr)
+library(mapdeck)
+
+
+# proj string for your custom Albers projection
+proj4_string <- "+proj=aea +lat_0=40 +lon_0=-96 +lat_1=44.75 +lat_2=55.75 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"
+
+# Function to extract polygons from raster and prepare for mapdeck
+
+
+# Function to extract raster polygons from PostGIS for mapdeck
+extract_raster_polygons_for_mapdeck <- function(con) {
+  
+  cat("=== Extracting raster polygons ===\n")
+  
+  # Get crop classifications
+  crop_classes <- st_read(con, query = "SELECT * FROM crop_inventory.crop_classifications")
+  
+  # Polygon extraction query
+  polygon_query <- "
+    WITH boundary_reprojected AS (
+      SELECT ST_Transform(wkb_geometry, 9999) AS geom
+      FROM crop_inventory.csd_boundary
+    ),
+    clipped_rasters AS (
+      SELECT ST_Clip(r.rast, b.geom) AS clipped_rast
+      FROM crop_inventory.aci_2024_qc r,
+           boundary_reprojected b
+      WHERE ST_Intersects(r.rast, b.geom)
+    ),
+    raster_polygons AS (
+      SELECT (ST_DumpAsPolygons(clipped_rast)).* 
+      FROM clipped_rasters
+    )
+    SELECT val::integer AS crop_code, geom
+    FROM raster_polygons
+    WHERE val IS NOT NULL AND val != 0
+  "
+  
+  # Use st_read to directly get an sf object
+  polygons_sf <- st_read(con, query = polygon_query, crs = proj4_string, quiet = TRUE)
+  
+  # Join with crop classifications and assign colors
+  polygons_sf <- polygons_sf %>%
+    left_join(crop_classes, by = c("crop_code" = "Code")) %>%
+    mutate(
+      crop_name = ifelse(is.na(Label), paste0("Code ", crop_code), Label),
+      color_hex = ifelse(!is.na(Red) & !is.na(Green) & !is.na(Blue),
+                         rgb(Red, Green, Blue, maxColorValue = 255),
+                         "#888888")
+    )
+  
+  # Transform to WGS84 for mapdeck
+  polygons_sf <- st_transform(polygons_sf, 4326)
+  
+  # Get boundary in WGS84
+  boundary_sf <- st_read(con, query = "SELECT * FROM crop_inventory.csd_boundary") %>%
+    st_transform(4326)
+  
+  list(polygons = polygons_sf, boundary = boundary_sf)
+}
+
+# Function to plot polygons in mapdeck
+plot_raster_polygons_mapdeck <- function(polygons_sf, boundary_sf, map_style = "streets") {
+  
+  cat("=== Plotting raster polygons in mapdeck ===\n")
+  
+  mapdeck(style = mapdeck_style(map_style), pitch = 0) %>%
+    add_polygon(
+      data = polygons_sf,
+      fill_colour = "color_hex",
+      stroke_colour = "#00000000",
+      legend = TRUE
+    ) %>%
+    add_polygon(
+      data = boundary_sf,
+      fill_colour = "#00000000",
+      stroke_colour = "black",
+      stroke_width = 2
+    )
+}
+
+# -------------------------
+# Usage Example:
+
+# Step 1: Extract polygons
+result <- extract_raster_polygons_for_mapdeck(con)
+
+# Step 2: Plot interactive map
+z <- plot_raster_polygons_mapdeck(result$polygons, result$boundary)
+```
+
+
+```{r}
+result <- extract_raster_polygons_for_mapdeck(con)
+
+# Step 2: Plot interactive map
+plot_raster_polygons_mapdeck(result$polygons, result$boundary)
+```
 
 ```{r raster-to-postgis}
 # Function to upload raster using raster2pgsql
