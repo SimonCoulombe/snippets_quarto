@@ -32,6 +32,8 @@ library(DBI)
 library(pool)
 library(mapview)
 library(ggplot2)
+library(ggmap)
+library(gganimate)
 con <- dbPool(
   RPostgres::Postgres(),
   host = "192.168.2.15",
@@ -70,7 +72,6 @@ commencé à archiver ces fichiers il y a 3 ans.
 
 Aujourd'hui c'est enfin le moment de trouver qui est le pauvre hère qui
 a manqué le plus longtemps de courant durant ces 3 années!
-
 
 Voici à quoi ressemble le contenu d'un d'entre eux, celui du 6 avril
 2023 à 10h40 du matin (20230406104016.kmz):
@@ -152,9 +153,9 @@ mapview(kmz20230406104016)
 ```
 
 Mon plan initial était de trouver qui avait manqué le "plus longtemps"
-de courant. Mais on n'a pas ça dans le polygone. Je pensais initialement faire une
-hypothèse: les pannes indiquées dans un fichier dureraient du timestamp
-du fichier jusqu'au timestamp du fichier suivant.
+de courant. Mais on n'a pas ça dans le polygone. Je pensais initialement
+faire une hypothèse: les pannes indiquées dans un fichier dureraient du
+timestamp du fichier jusqu'au timestamp du fichier suivant.
 
 C'est quand même une hypothèse forte: ça implique que le site
 d'hydro-québec est mis à jour dès qu'une panne se termine et aussi que
@@ -481,6 +482,86 @@ ggsave("thumbnail.png", plot = myplot, width = 8, height = 5)
 
 myplot
 ```
+
+Pour rire, une petite animation rapide des tourments de notre maison aux
+Seize Iles. L'idée c'est de montrer que je ne suis pas buggé et qu'il a
+bien eu plein de pannes différentes...
+
+```{r, eval= FALSE}
+center_point <- st_read(
+  con,
+  query = "
+    SELECT *
+    FROM batiments_4326
+    WHERE id = 1565816
+  "
+)
+
+
+outages <- st_read(
+  con,
+  query = "
+    SELECT o.source_file, o.row_number, o.geom, 
+      CAST(LEFT(regexp_replace(split_part(o.source_file, '/', -1), '\\.kmz$', ''), 8) AS date) AS outage_date
+    FROM outages o
+    JOIN (
+        SELECT pio.source_file, pio.row_number
+        FROM points_in_outages pio
+        WHERE pio.building_id = 1565816
+    ) pio
+    ON o.source_file = pio.source_file
+    AND o.row_number = pio.row_number
+  "
+)
+
+outages_1_per_day <- outages %>% 
+  group_by(outage_date) %>%
+  slice(1) %>%
+  ungroup()
+  mutate(frame_id = row_number())
+
+
+
+# Bounding box with padding
+bbox <- st_bbox(center_point)
+xrange <- bbox["xmax"] - bbox["xmin"]
+yrange <- bbox["ymax"] - bbox["ymin"]
+
+bbox_expanded <- c(
+  left   = as.numeric(bbox["xmin"] - 100 * xrange),
+  bottom = as.numeric(bbox["ymin"] - 100 * xrange),
+  right  = as.numeric(bbox["xmax"] + 100 * xrange),
+  top    = as.numeric(bbox["ymax"] + 100 * xrange)
+)
+
+
+ggmap::register_stadiamaps(key = Sys.getenv("stadiamaps"))
+# Fetch free Stamen tile map via Stadia (static map)
+stadia_map <- get_stadiamap(
+  bbox = bbox_expanded,
+  maptype = "stamen_terrain",  # try "stamen_terrain", "stamen_toner", "stamen_watercolor"
+  zoom = 14                    # lower zoom avoids tile errors
+)
+
+
+p <- ggmap(stadia_map) +
+  geom_sf(data = center_point, fill = "lightblue", alpha = 0.5, color = "black", inherit.aes = FALSE) +
+  geom_sf(data = outages_1_per_day, fill = "orange", color = "orange", alpha = 0.3, size = 1.2, inherit.aes = FALSE) +
+  theme_void() +
+  theme(legend.position = "none") +
+  labs(title = "Date de la panne: {current_frame}")
+
+
+anim <- p +
+  transition_manual(frames = outages_1_per_day$outage_date)
+
+animate(anim, nframes = nrow(outages_1_per_day), fps = 2, width = 600, height = 600,
+        renderer = gifski_renderer("house_outages.gif"))
+
+
+```
+
+![](house_outages.gif)
 
 # Conclusion
 
