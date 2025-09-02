@@ -12,6 +12,7 @@ editor:
 execute:
   echo: true
   code-fold: true   # <-- this makes all code chunks folded by default    
+thumbnail: thumbnail.png  
 ---
 
 ::: callout-tip
@@ -50,20 +51,6 @@ con <- dbPool(
 Hydro-Québec rend les polygones derrières les données d'info-panne
 disponible sur son site.
 
-Vous ne verrez que les données d'aujourd'hui.
-
-J'imagine que c'est pratique pour répondre à des questions
-existentielles comme "est-ce que j'ai de l'électricité présentement dans
-ma maison?" quand on n'a aucun appareil électrique pour vérifier.
-
-Ça ne permet pas de reculer dans le temps pour.
-
-C'est décevant, mais le Simon du passé a une bonne surprise: j'ai
-commencé à archiver ces fichiers il y a 3 ans.
-
-Aujourd'hui c'est enfin le moment de trouver qui est le pauvre hère qui
-a manqué le plus longtemps de courant durant ces 3 années!
-
 Les fichiers KMZ d'info-panne sont disponibles à l'adresse
 `http://pannes.hydroquebec.com/pannes/donnees/v3_0/open_data/`.
 
@@ -72,9 +59,18 @@ des 24 dernières heures:
 
 ![](images/clipboard-40312133.png)
 
-Comme vous pouvez voir, il y a plusieurs fichiers par jour, chacun
-indiquant le territoire couvert par les panne au moment indiqué dans le
-nom du fichier.
+J'imagine que c'est pratique pour répondre à des questions
+existentielles comme "est-ce que j'ai de l'électricité présentement dans
+ma maison?" quand on n'a aucun appareil électrique pour vérifier.
+
+Ça ne permet pas de reculer dans le temps pour faire une bonne analyse.
+
+C'est décevant, mais le Simon du passé a une bonne surprise: j'ai
+commencé à archiver ces fichiers il y a 3 ans.
+
+Aujourd'hui c'est enfin le moment de trouver qui est le pauvre hère qui
+a manqué le plus longtemps de courant durant ces 3 années!
+
 
 Voici à quoi ressemble le contenu d'un d'entre eux, celui du 6 avril
 2023 à 10h40 du matin (20230406104016.kmz):
@@ -346,7 +342,7 @@ comme
 
 ```
 
-# Qui mange le plus de cannes de bines froides à la chandelles ?
+# Qui mange le plus de cannes de bines froides à la chandelle ?
 
 On va commencer par créer une table
 
@@ -458,7 +454,7 @@ top2 <- top2 %>%
   ))
 
 
-top2 %>%
+myplot <- top2 %>%
   ggplot(aes(x = month, y = days_with_outage, fill = building_name)) +
   geom_col(show.legend = FALSE) +
   geom_text(aes(label = days_with_outage), vjust = -0.5, size = 3) +
@@ -480,6 +476,10 @@ top2 %>%
     axis.text.x = element_text(angle = 45, hjust = 1),
     panel.grid.major.x = element_blank()
   )
+
+ggsave("thumbnail.png", plot = myplot, width = 8, height = 5)
+
+myplot
 ```
 
 # Conclusion
