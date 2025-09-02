@@ -521,6 +521,8 @@ outages_1_per_day <- outages %>%
   mutate(frame_id = row_number())
 
 
+  outages_1_per_day$date_label <- paste("Date de la panne:", outages_1_per_day$outage_date)
+
 
 # Bounding box with padding
 bbox <- st_bbox(center_point)
@@ -528,10 +530,10 @@ xrange <- bbox["xmax"] - bbox["xmin"]
 yrange <- bbox["ymax"] - bbox["ymin"]
 
 bbox_expanded <- c(
-  left   = as.numeric(bbox["xmin"] - 100 * xrange),
-  bottom = as.numeric(bbox["ymin"] - 100 * xrange),
-  right  = as.numeric(bbox["xmax"] + 100 * xrange),
-  top    = as.numeric(bbox["ymax"] + 100 * xrange)
+  left   = as.numeric(bbox["xmin"] - 400 * xrange),
+  bottom = as.numeric(bbox["ymin"] - 400 * xrange),
+  right  = as.numeric(bbox["xmin"] + 400 * xrange),
+  top    = as.numeric(bbox["ymin"] + 400 * xrange)
 )
 
 
@@ -540,28 +542,41 @@ ggmap::register_stadiamaps(key = Sys.getenv("stadiamaps"))
 stadia_map <- get_stadiamap(
   bbox = bbox_expanded,
   maptype = "stamen_terrain",  # try "stamen_terrain", "stamen_toner", "stamen_watercolor"
-  zoom = 14                    # lower zoom avoids tile errors
+  zoom = 12                    # lower zoom avoids tile errors
 )
 
+# Get the map bounds to position text in corner
+map_bounds <- attr(stadia_map, "bb")
+corner_x <- map_bounds$ur.lon
+corner_y <- map_bounds$ur.lat
 
 p <- ggmap(stadia_map) +
-  geom_sf(data = center_point, fill = "lightblue", alpha = 0.5, color = "black", inherit.aes = FALSE) +
+
   geom_sf(data = outages_1_per_day, fill = "orange", color = "orange", alpha = 0.3, size = 1.2, inherit.aes = FALSE) +
+  geom_sf(data = center_point, aes(geometry = geom_inside), fill = "black", size = 4, alpha = 1, color = "black", inherit.aes = FALSE) +
+  geom_text(data = outages_1_per_day, aes(label = date_label), 
+            x = corner_x, y = corner_y, hjust = 1, vjust = 1,
+            size = 4, color = "white", fontface = "bold", inherit.aes = FALSE) +
   theme_void() +
-  theme(legend.position = "none") +
-  labs(title = "Date de la panne: {current_frame}")
+  theme(
+    legend.position = "none",
+    plot.margin = margin(0, 0, 0, 0, "cm")
+  )
 
-
-anim <- p +
-  transition_manual(frames = outages_1_per_day$outage_date)
-
+anim <- p + transition_manual(frames = outages_1_per_day$outage_date)
 animate(anim, nframes = nrow(outages_1_per_day), fps = 2, width = 600, height = 600,
         renderer = gifski_renderer("house_outages.gif"))
 
+library(magick)
+img <- image_read("house_outages.gif")
+img_trimmed <- image_trim(img)
+image_write(img_trimmed, "house_outages_trimmed.gif")
 
 ```
 
-![](house_outages.gif)
+
+
+![](house_outages_trimmed.gif)
 
 # Conclusion
 
