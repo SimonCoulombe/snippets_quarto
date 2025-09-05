@@ -1,5 +1,5 @@
 ---
-title: "Les pannes de François Lambert"
+title: "Les pannes de la Compagnie François Lambert"
 description: |
   
 author: Simon Coulombe
@@ -11,22 +11,23 @@ lang: fr
 ::: callout-tip
 ## Pourquoi est-ce qu'on est ici?
 
-Il y a un monsieur qui s'appelle François Lambert qui m'a traité de nerd et ça m'a vexé. :P On m'a dit qu'il habite Outremont et qu'il se plaint toujours de ses pannes. Ça a piqué ma curiosité, est-ce que j'aurais manqué le champion du monde (Marko Estrada sort de ce corps).
+On m'a dit qu'il y a une compagnie qui s'appelle "François Lambert" basée à Outremont qui pense
+être championne provinciale des pannes de courant.
 :::
 
-Vous vous souvenez peut-être de mon[post sur les pannes d'hydro québec](https://www.simoncoulombe.com/posts/2025-08-28-qui-a-manqu%C3%A9-le-plus-de-courant-au-qu%C3%A9bec-depuis-2022-/). J'espère pour vous, ça fait genre 3 jours. Anyway, il y a un monsieur qui s'appelle François Lambert qui m'a [traité de nerd](https://www.linkedin.com/feed/update/urn:li:ugcPost:7368621306155667458?commentUrn=urn%3Ali%3Acomment%3A%28ugcPost%3A7368621306155667458%2C7369524648750870529%29&replyUrn=urn%3Ali%3Acomment%3A%28ugcPost%3A7368621306155667458%2C7369526283443118081%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287369524648750870529%2Curn%3Ali%3AugcPost%3A7368621306155667458%29&dashReplyUrn=urn%3Ali%3Afsd_comment%3A%287369526283443118081%2Curn%3Ali%3AugcPost%3A7368621306155667458%29) , je sais pas pourquoi lol. on me chuchote à l'oreille qu'il habite à Outremont, qu'il a une compagnie qui porte son nom et qu'il chiale tout le temps qu'il a des pannes.
+Vous vous souvenez peut-être de mon [post sur les pannes d'hydro québec](https://www.simoncoulombe.com/posts/2025-08-28-qui-a-manqu%C3%A9-le-plus-de-courant-au-qu%C3%A9bec-depuis-2022-/). J'espère pour vous, ça fait genre 3 jours.
 
-J'imagine que vous me voyez venir gros comme un éléphant.
+Anyway, on m'a dit qu'il y a une compagnie qui s'appelle "François Lambert" basée à Outremont qui pense être championne provinciale des pannes.
 
-![](images/francoislambert.png)
+Je pense que vous me voyez venir gros comme un éléphant.
 
 ## 
 
-# Étape #1 - Trouver l'adresse
+# Étape #1 - Trouver l'adresse de la compagnie  
 
 C'est pas extrêmement sorcier. On va sur le [registre des entreprises du Québec](https://www.registreentreprises.gouv.qc.ca/REQNA/GR/GR03/GR03A71.RechercheRegistre.MVC/GR03A71) pis on cherche une compagnie qui s'appelle "François Lambert".
 
-Il y en a plus que je pensais, mais jai trouvé une seule adresse à Outremont. Je dis pas que c'est lui, mais on va sortir les pannes de cette maison là.
+Il y en a plus que je pensais, mais jai trouvé une seule adresse à Outremont. On va supposer que c'est celle là
 
 ![](images/clipboard-4019153242.png)
 
@@ -84,7 +85,7 @@ les_pannes_de_francois %>%
   gt::gt()
 ```
 
-## Les pannes de françois
+## Les pannes de la compagnie françois lambert  
 
 ```{r}
 
@@ -118,7 +119,7 @@ ggsave("thumbnail.png", plot = myplot, width = 8, height = 5)
 myplot
 ```
 
-## La carte de françois
+## La carte des pannes de la compagnie françois lambert  
 
 ```{r}
 

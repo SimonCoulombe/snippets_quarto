@@ -1,5 +1,5 @@
 ---
-title: "Les pannes de François Lambert"
+title: "Les pannes de la Compagnie François Lambert"
 description: |
   
 author: Simon Coulombe
@@ -14,22 +14,23 @@ lang: fr
 ::: callout-tip
 ## Pourquoi est-ce qu'on est ici?
 
-Il y a un monsieur qui s'appelle François Lambert qui m'a traité de nerd et ça m'a vexé. :P On m'a dit qu'il habite Outremont et qu'il se plaint toujours de ses pannes. Ça a piqué ma curiosité, est-ce que j'aurais manqué le champion du monde (Marko Estrada sort de ce corps).
+On m'a dit qu'il y a une compagnie qui s'appelle "François Lambert" basée à Outremont qui pense
+être championne provinciale des pannes de courant.
 :::
 
-Vous vous souvenez peut-être de mon[post sur les pannes d'hydro québec](https://www.simoncoulombe.com/posts/2025-08-28-qui-a-manqu%C3%A9-le-plus-de-courant-au-qu%C3%A9bec-depuis-2022-/). J'espère pour vous, ça fait genre 3 jours. Anyway, il y a un monsieur qui s'appelle François Lambert qui m'a [traité de nerd](https://www.linkedin.com/feed/update/urn:li:ugcPost:7368621306155667458?commentUrn=urn%3Ali%3Acomment%3A%28ugcPost%3A7368621306155667458%2C7369524648750870529%29&replyUrn=urn%3Ali%3Acomment%3A%28ugcPost%3A7368621306155667458%2C7369526283443118081%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287369524648750870529%2Curn%3Ali%3AugcPost%3A7368621306155667458%29&dashReplyUrn=urn%3Ali%3Afsd_comment%3A%287369526283443118081%2Curn%3Ali%3AugcPost%3A7368621306155667458%29) , je sais pas pourquoi lol. on me chuchote à l'oreille qu'il habite à Outremont, qu'il a une compagnie qui porte son nom et qu'il chiale tout le temps qu'il a des pannes.
+Vous vous souvenez peut-être de mon [post sur les pannes d'hydro québec](https://www.simoncoulombe.com/posts/2025-08-28-qui-a-manqu%C3%A9-le-plus-de-courant-au-qu%C3%A9bec-depuis-2022-/). J'espère pour vous, ça fait genre 3 jours.
 
-J'imagine que vous me voyez venir gros comme un éléphant.
+Anyway, on m'a dit qu'il y a une compagnie qui s'appelle "François Lambert" basée à Outremont qui pense être championne provinciale des pannes.
 
-![](images/francoislambert.png)
+Je pense que vous me voyez venir gros comme un éléphant.
 
 ## 
 
-# Étape #1 - Trouver l'adresse
+# Étape #1 - Trouver l'adresse de la compagnie  
 
 C'est pas extrêmement sorcier. On va sur le [registre des entreprises du Québec](https://www.registreentreprises.gouv.qc.ca/REQNA/GR/GR03/GR03A71.RechercheRegistre.MVC/GR03A71) pis on cherche une compagnie qui s'appelle "François Lambert".
 
-Il y en a plus que je pensais, mais jai trouvé une seule adresse à Outremont. Je dis pas que c'est lui, mais on va sortir les pannes de cette maison là.
+Il y en a plus que je pensais, mais jai trouvé une seule adresse à Outremont. On va supposer que c'est celle là
 
 ![](images/clipboard-4019153242.png)
 
@@ -54,23 +55,23 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
 
 
 ```{=html}
-<div id="ikxgpumhgi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#ikxgpumhgi table {
+<div id="kgmzifidff" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#kgmzifidff table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#ikxgpumhgi thead, #ikxgpumhgi tbody, #ikxgpumhgi tfoot, #ikxgpumhgi tr, #ikxgpumhgi td, #ikxgpumhgi th {
+#kgmzifidff thead, #kgmzifidff tbody, #kgmzifidff tfoot, #kgmzifidff tr, #kgmzifidff td, #kgmzifidff th {
   border-style: none;
 }
 
-#ikxgpumhgi p {
+#kgmzifidff p {
   margin: 0;
   padding: 0;
 }
 
-#ikxgpumhgi .gt_table {
+#kgmzifidff .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -96,12 +97,12 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   border-left-color: #D3D3D3;
 }
 
-#ikxgpumhgi .gt_caption {
+#kgmzifidff .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#ikxgpumhgi .gt_title {
+#kgmzifidff .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -113,7 +114,7 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   border-bottom-width: 0;
 }
 
-#ikxgpumhgi .gt_subtitle {
+#kgmzifidff .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -125,7 +126,7 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   border-top-width: 0;
 }
 
-#ikxgpumhgi .gt_heading {
+#kgmzifidff .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -137,13 +138,13 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   border-right-color: #D3D3D3;
 }
 
-#ikxgpumhgi .gt_bottom_border {
+#kgmzifidff .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#ikxgpumhgi .gt_col_headings {
+#kgmzifidff .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -158,7 +159,7 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   border-right-color: #D3D3D3;
 }
 
-#ikxgpumhgi .gt_col_heading {
+#kgmzifidff .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -178,7 +179,7 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   overflow-x: hidden;
 }
 
-#ikxgpumhgi .gt_column_spanner_outer {
+#kgmzifidff .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -190,15 +191,15 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   padding-right: 4px;
 }
 
-#ikxgpumhgi .gt_column_spanner_outer:first-child {
+#kgmzifidff .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#ikxgpumhgi .gt_column_spanner_outer:last-child {
+#kgmzifidff .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#ikxgpumhgi .gt_column_spanner {
+#kgmzifidff .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -210,11 +211,11 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   width: 100%;
 }
 
-#ikxgpumhgi .gt_spanner_row {
+#kgmzifidff .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#ikxgpumhgi .gt_group_heading {
+#kgmzifidff .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -240,7 +241,7 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   text-align: left;
 }
 
-#ikxgpumhgi .gt_empty_group_heading {
+#kgmzifidff .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -255,15 +256,15 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   vertical-align: middle;
 }
 
-#ikxgpumhgi .gt_from_md > :first-child {
+#kgmzifidff .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#ikxgpumhgi .gt_from_md > :last-child {
+#kgmzifidff .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#ikxgpumhgi .gt_row {
+#kgmzifidff .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -282,7 +283,7 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   overflow-x: hidden;
 }
 
-#ikxgpumhgi .gt_stub {
+#kgmzifidff .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -295,7 +296,7 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   padding-right: 5px;
 }
 
-#ikxgpumhgi .gt_stub_row_group {
+#kgmzifidff .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -309,15 +310,15 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   vertical-align: top;
 }
 
-#ikxgpumhgi .gt_row_group_first td {
+#kgmzifidff .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#ikxgpumhgi .gt_row_group_first th {
+#kgmzifidff .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#ikxgpumhgi .gt_summary_row {
+#kgmzifidff .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -327,16 +328,16 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   padding-right: 5px;
 }
 
-#ikxgpumhgi .gt_first_summary_row {
+#kgmzifidff .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#ikxgpumhgi .gt_first_summary_row.thick {
+#kgmzifidff .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#ikxgpumhgi .gt_last_summary_row {
+#kgmzifidff .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -346,7 +347,7 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   border-bottom-color: #D3D3D3;
 }
 
-#ikxgpumhgi .gt_grand_summary_row {
+#kgmzifidff .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -356,7 +357,7 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   padding-right: 5px;
 }
 
-#ikxgpumhgi .gt_first_grand_summary_row {
+#kgmzifidff .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -366,7 +367,7 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   border-top-color: #D3D3D3;
 }
 
-#ikxgpumhgi .gt_last_grand_summary_row_top {
+#kgmzifidff .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -376,11 +377,11 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   border-bottom-color: #D3D3D3;
 }
 
-#ikxgpumhgi .gt_striped {
+#kgmzifidff .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#ikxgpumhgi .gt_table_body {
+#kgmzifidff .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -389,7 +390,7 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   border-bottom-color: #D3D3D3;
 }
 
-#ikxgpumhgi .gt_footnotes {
+#kgmzifidff .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -403,7 +404,7 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   border-right-color: #D3D3D3;
 }
 
-#ikxgpumhgi .gt_footnote {
+#kgmzifidff .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -412,7 +413,7 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   padding-right: 5px;
 }
 
-#ikxgpumhgi .gt_sourcenotes {
+#kgmzifidff .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -426,7 +427,7 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   border-right-color: #D3D3D3;
 }
 
-#ikxgpumhgi .gt_sourcenote {
+#kgmzifidff .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -434,63 +435,63 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
   padding-right: 5px;
 }
 
-#ikxgpumhgi .gt_left {
+#kgmzifidff .gt_left {
   text-align: left;
 }
 
-#ikxgpumhgi .gt_center {
+#kgmzifidff .gt_center {
   text-align: center;
 }
 
-#ikxgpumhgi .gt_right {
+#kgmzifidff .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#ikxgpumhgi .gt_font_normal {
+#kgmzifidff .gt_font_normal {
   font-weight: normal;
 }
 
-#ikxgpumhgi .gt_font_bold {
+#kgmzifidff .gt_font_bold {
   font-weight: bold;
 }
 
-#ikxgpumhgi .gt_font_italic {
+#kgmzifidff .gt_font_italic {
   font-style: italic;
 }
 
-#ikxgpumhgi .gt_super {
+#kgmzifidff .gt_super {
   font-size: 65%;
 }
 
-#ikxgpumhgi .gt_footnote_marks {
+#kgmzifidff .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#ikxgpumhgi .gt_asterisk {
+#kgmzifidff .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#ikxgpumhgi .gt_indent_1 {
+#kgmzifidff .gt_indent_1 {
   text-indent: 5px;
 }
 
-#ikxgpumhgi .gt_indent_2 {
+#kgmzifidff .gt_indent_2 {
   text-indent: 10px;
 }
 
-#ikxgpumhgi .gt_indent_3 {
+#kgmzifidff .gt_indent_3 {
   text-indent: 15px;
 }
 
-#ikxgpumhgi .gt_indent_4 {
+#kgmzifidff .gt_indent_4 {
   text-indent: 20px;
 }
 
-#ikxgpumhgi .gt_indent_5 {
+#kgmzifidff .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -549,7 +550,7 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
 
 
 
-## Les pannes de françois
+## Les pannes de la compagnie françois lambert  
 
 
 
@@ -561,7 +562,7 @@ Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , 
 
 
 
-## La carte de françois
+## La carte des pannes de la compagnie françois lambert  
 
 
 
