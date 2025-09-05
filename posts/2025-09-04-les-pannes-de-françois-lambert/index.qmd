@@ -1,0 +1,193 @@
+---
+title: "Les pannes de François Lambert"
+description: |
+  
+author: Simon Coulombe
+date: 2025-09-04
+categories: []
+lang: fr
+---
+
+::: callout-tip
+## Pourquoi est-ce qu'on est ici?
+
+Il y a un monsieur qui s'appelle François Lambert qui m'a traité de nerd et ça m'a vexé. :P On m'a dit qu'il habite Outremont et qu'il se plaint toujours de ses pannes. Ça a piqué ma curiosité, est-ce que j'aurais manqué le champion du monde (Marko Estrada sort de ce corps).
+:::
+
+Vous vous souvenez peut-être de mon[post sur les pannes d'hydro québec](https://www.simoncoulombe.com/posts/2025-08-28-qui-a-manqu%C3%A9-le-plus-de-courant-au-qu%C3%A9bec-depuis-2022-/). J'espère pour vous, ça fait genre 3 jours. Anyway, il y a un monsieur qui s'appelle François Lambert qui m'a [traité de nerd](https://www.linkedin.com/feed/update/urn:li:ugcPost:7368621306155667458?commentUrn=urn%3Ali%3Acomment%3A%28ugcPost%3A7368621306155667458%2C7369524648750870529%29&replyUrn=urn%3Ali%3Acomment%3A%28ugcPost%3A7368621306155667458%2C7369526283443118081%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287369524648750870529%2Curn%3Ali%3AugcPost%3A7368621306155667458%29&dashReplyUrn=urn%3Ali%3Afsd_comment%3A%287369526283443118081%2Curn%3Ali%3AugcPost%3A7368621306155667458%29) , je sais pas pourquoi lol. on me chuchote à l'oreille qu'il habite à Outremont, qu'il a une compagnie qui porte son nom et qu'il chiale tout le temps qu'il a des pannes.
+
+J'imagine que vous me voyez venir gros comme un éléphant.
+
+![](images/francoislambert.png)
+
+## 
+
+# Étape #1 - Trouver l'adresse
+
+C'est pas extrêmement sorcier. On va sur le [registre des entreprises du Québec](https://www.registreentreprises.gouv.qc.ca/REQNA/GR/GR03/GR03A71.RechercheRegistre.MVC/GR03A71) pis on cherche une compagnie qui s'appelle "François Lambert".
+
+Il y en a plus que je pensais, mais jai trouvé une seule adresse à Outremont. Je dis pas que c'est lui, mais on va sortir les pannes de cette maison là.
+
+![](images/clipboard-4019153242.png)
+
+Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , -73.5922
+
+![](images/clipboard-2540330535.png)
+
+# Étape 2 - Compter les jours de pannes
+
+```{r}
+library(dplyr)
+library(sf)
+library(lubridate)
+library(purrr)
+library(furrr)
+library(DBI)
+library(pool)
+library(mapview)
+library(ggplot2)
+library(ggmap)
+library(gganimate)
+con <- dbPool(
+  RPostgres::Postgres(),
+  host = "192.168.2.15",
+  dbname = Sys.getenv("POSTGIS_DBNAME"),
+  port = 5432,
+  user = Sys.getenv("POSTGIS_USER"),
+  password = Sys.getenv("POSTGIS_PASSWORD"),
+   bigint = "numeric"
+  
+)
+```
+
+```{r}
+les_pannes_de_francois <- st_read(con, query = "
+  SELECT 
+      to_date(left(o.source_file, 8), 'YYYYMMDD') AS outage_date,
+      ST_UnaryUnion(ST_Collect(o.geom)) AS geom
+  FROM outages o
+  WHERE ST_Contains(
+      o.geom,
+      ST_SetSRID(ST_MakePoint(-73.5922, 45.515), 4326)
+  )
+  GROUP BY to_date(left(o.source_file, 8), 'YYYYMMDD')
+")
+```
+
+```{r}
+les_pannes_de_francois %>%  
+  arrange(outage_date) %>%
+  mutate(numero_de_panne = row_number()) %>% 
+  rename(date = outage_date) %>% 
+  select(numero_de_panne, date) %>% 
+  st_set_geometry(NULL) %>% 
+  gt::gt()
+```
+
+## Les pannes de françois
+
+```{r}
+
+myplot <- les_pannes_de_francois %>%
+  mutate(month = floor_date(outage_date, unit = "months")) %>%
+  count(month) %>%
+  mutate(days_with_outage = n) %>% 
+  ggplot(aes(x = month, y = days_with_outage)) +
+  geom_col(show.legend = FALSE) +
+  geom_text(aes(label = days_with_outage), vjust = -0.5, size = 3) +
+  scale_x_date(
+    date_labels = "%b %Y",
+    date_breaks = "1 month",
+    limits = as.Date(c("2022-04-01", "2025-09-01"))
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.1))) +
+  labs(
+    title = "Distribution du nombre mensuel de pannes de François",
+    x = NULL,
+    y = "Nombre de jours avec au moins une panne"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    strip.text = element_text(face = "bold", size = 12),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_blank()
+  )
+
+ggsave("thumbnail.png", plot = myplot, width = 8, height = 5)
+
+myplot
+```
+
+## La carte de françois
+
+```{r}
+
+# Center point as sf
+center_point <- st_sf(
+  name = "House",                  # optional, can add attributes
+  geometry = st_sfc(st_point(c(-73.5922, 45.515)), crs = 4326)
+)
+# Project to meters
+center_proj <- st_transform(center_point, 3857)
+
+# 2 km buffer
+buffer <- st_buffer(center_proj, 2000)
+
+# Back to lon/lat
+buffer_lonlat <- st_transform(buffer, 4326)
+
+# Get bbox and name components
+bbox_expanded <- st_bbox(buffer_lonlat)
+bbox_expanded <- c(
+  left   = as.numeric(st_bbox(buffer_lonlat)["xmin"]),
+  bottom = as.numeric(st_bbox(buffer_lonlat)["ymin"]),
+  right  = as.numeric(st_bbox(buffer_lonlat)["xmax"]),
+  top    = as.numeric(st_bbox(buffer_lonlat)["ymax"])
+)
+bbox_expanded
+
+```
+
+```{r}
+ggmap::register_stadiamaps(key = Sys.getenv("stadiamaps"))
+
+stadia_map <- get_stadiamap(
+  bbox = bbox_expanded,
+  maptype = "stamen_terrain",
+  zoom = 16
+)
+```
+
+```{r, eval = FALSE}
+
+# Get the map bounds to position text in corner
+map_bounds <- attr(stadia_map, "bb")
+corner_x <- map_bounds$ur.lon
+corner_y <- map_bounds$ur.lat
+
+les_pannes_de_francois$date_label <- paste("Date de la panne:", les_pannes_de_francois$outage_date)
+
+p <- ggmap(stadia_map) +
+
+  geom_sf(data = les_pannes_de_francois, fill = "orange", color = "orange", alpha = 0.3, size = 1.2, inherit.aes = FALSE) +
+  geom_sf(data = center_point, aes(geometry = geometry), fill = "black", size = 4, alpha = 1, color = "black", inherit.aes = FALSE) +
+  geom_text(data = les_pannes_de_francois, aes(label = date_label), 
+            x = corner_x, y = corner_y, hjust = 1, vjust = 1,
+            size = 4, color = "black", fontface = "bold", inherit.aes = FALSE) +
+  theme_void() +
+  theme(
+    legend.position = "none",
+    plot.margin = margin(0, 0, 0, 0, "cm")
+  )
+
+anim <- p + transition_manual(frames = les_pannes_de_francois$outage_date)
+animate(anim, nframes = nrow(les_pannes_de_francois), fps = 2, width = 600, height = 600,
+        renderer = gifski_renderer("les_pannes_de_francois.gif"))
+
+library(magick)
+img <- image_read("les_pannes_de_francois.gif")
+img_trimmed <- image_trim(img)
+image_write(img_trimmed, "les_pannes_de_francois.gif")
+```
+
+![](les_pannes_de_francois.gif)

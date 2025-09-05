@@ -574,8 +574,6 @@ image_write(img_trimmed, "house_outages_trimmed.gif")
 
 ```
 
-
-
 ![](house_outages_trimmed.gif)
 
 # Conclusion
