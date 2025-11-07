@@ -14,6 +14,9 @@ editor:
 
 
 
+
+
+
 ::: callout-tip
 ## Pourquoi est-ce qu'on est ici?
 
@@ -48,6 +51,7 @@ votre poitrine".
 
 ## Méthodologie pour se procurer a bra that fits qui a fonctionné chez nous(le mansplain):
 
+
 ### 1- Déterminer la taille 
 
 
@@ -64,7 +68,7 @@ C'est peut-être là que vous allez avoir la surprise de votre vie et réaliser 
 ### 2- Déterminer la forme  
 
 La "bra size" c'est le volume, mais à volume égal il y en a pour toutes les formes.  
-Le [guide reddit abrathatfits](https://www.reddit.com/r/ABraThatFits/wiki/beginners_guide) va tout vous expliquer ça, mais le but c'est de savoir si vous êtes:  
+La section #2 du  [guide reddit abrathatfits](https://www.reddit.com/r/ABraThatFits/wiki/beginners_guide) va tout vous expliquer ça, mais le but c'est de savoir si vous êtes:  
 
    * projected shape (en forme de verre) vs shallow shape  (en forme de bol ou d'assiette)       
    * vertical fullness (penchée à 90 degrés par en avant, est-ce qu'il y a plus de viande en haut du mamelon, en bas, ou bien c'est égal? )  
