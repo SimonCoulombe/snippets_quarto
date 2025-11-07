@@ -11,8 +11,7 @@ lang: fr
 ::: callout-tip
 ## Pourquoi est-ce qu'on est ici?
 
-On m'a dit qu'il y a une compagnie qui s'appelle "François Lambert" basée à Outremont qui pense
-être championne provinciale des pannes de courant.
+On m'a dit qu'il y a une compagnie qui s'appelle "François Lambert" basée à Outremont qui pense être championne provinciale des pannes de courant.
 :::
 
 Vous vous souvenez peut-être de mon [post sur les pannes d'hydro québec](https://www.simoncoulombe.com/posts/2025-08-28-qui-a-manqu%C3%A9-le-plus-de-courant-au-qu%C3%A9bec-depuis-2022-/). J'espère pour vous, ça fait genre 3 jours.
@@ -23,17 +22,13 @@ Je pense que vous me voyez venir gros comme un éléphant.
 
 ## 
 
-# Étape #1 - Trouver l'adresse de la compagnie  
+# Étape #1 - Trouver l'adresse de la compagnie
 
 C'est pas extrêmement sorcier. On va sur le [registre des entreprises du Québec](https://www.registreentreprises.gouv.qc.ca/REQNA/GR/GR03/GR03A71.RechercheRegistre.MVC/GR03A71) pis on cherche une compagnie qui s'appelle "François Lambert".
 
 Il y en a plus que je pensais, mais jai trouvé une seule adresse à Outremont. On va supposer que c'est celle là
 
-![](images/clipboard-4019153242.png)
-
-Cherche ça dans google maps, right click, sort la latitude/longitude: 45.515 , -73.5922
-
-![](images/clipboard-2540330535.png)
+Cherche ça dans google maps, right click, sort la latitude/longitude.
 
 # Étape 2 - Compter les jours de pannes
 
@@ -85,7 +80,7 @@ les_pannes_de_francois %>%
   gt::gt()
 ```
 
-## Les pannes de la compagnie françois lambert  
+## Les pannes de la compagnie françois lambert
 
 ```{r}
 
@@ -119,7 +114,7 @@ ggsave("thumbnail.png", plot = myplot, width = 8, height = 5)
 myplot
 ```
 
-## La carte des pannes de la compagnie françois lambert  
+## La carte des pannes de la compagnie françois lambert
 
 ```{r}
 
