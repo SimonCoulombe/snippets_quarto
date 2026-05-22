@@ -80,6 +80,16 @@ Bitwarden.
 
 ![](images/clipboard-2726594985.png)
 
+Une note sur la sécurité: C'est certain qu'Avoir le mot de passe de
+questrade et le "Seed" pour les codes de vérifications au même endroit
+ça va réduire la sécurité car quelqu'un qui accède au coffre-fort aura
+accès à tout .
+
+Je me demande si à terme je vais pas faire un setup du genre "les mots
+de passes chez Bitwarden" , les TOTP chez proton. Comme ça quelqu'un
+aurait besoin des mots de passe des 2 coffre-forts (bitwarden et proton)
+avant de vider mon questrade.
+
 # New to me Feature #2: Les alias d'email
 
 ## 
@@ -112,7 +122,7 @@ de créer un nouvel email juste pour bureau en gros en un seul clic:
 On va focusser sur Proton et Bitwarden dont j'ai beaucoup parlé
 aujourd'hui.
 
-## Bitwarden   
+## Bitwarden
 
 Bitwarden est un chouchou de la communauté.
 
