@@ -11,3 +11,5 @@ _publish.yml
 .httr-oauth
 .quarto
 .Rdata
+
+**/*.quarto_ipynb
