@@ -13,3 +13,4 @@ _publish.yml
 .Rdata
 
 **/*.quarto_ipynb
+.positai

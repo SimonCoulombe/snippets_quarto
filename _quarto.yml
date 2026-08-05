@@ -23,6 +23,8 @@ website:
         file: blog.qmd
       - text: "Shiny"
         file: shiny.qmd
+      - text: "Références"
+        file: references.qmd        
       - text: "aide-mémoire"
         href: https://aidememoire.netlify.app/                
 

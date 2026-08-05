@@ -1,0 +1,33 @@
+---
+title: "Références"
+comments: false  
+about:
+  template: jolla
+  links:  # see https://icons.getbootstrap.com/ for icons
+    - icon: twitter
+      text: Twitter
+      href: https://twitter.com/coulsim
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/simon-c-310547112/
+    - icon: github
+      text: Github
+      href: https://github.com/simoncoulombe
+    - icon: envelope   
+      text: Email
+      href: mailto:janedoe@amazing.net
+---
+
+Yo,
+
+Je radote souvent sur des produits ou des compagnies qui me plaisent, alors tant qu'à faire je partage des codes de références qui peuvent nous donner à tous les deux un petits montant.
+
+**Langues**
+
+italki.com - - Here's \$5 to help kickstart your journey. After registering, enter "Me Center", select "redeem", and enter the referral code **AeEf0Ea** within 24 hours. Apparemment ça me donne 20\$
+
+preply.com -- [lien à cliquer pour 70% de rabais sur votre trial lesson. moi ça me donne apparemment 70\$](https://preply.com/en/?pref=Mjg0MDgwMTc=&id=1785950050.83329&ep=)
+
+**telecomm**
+
+Fizz.ca - code de référence **9D78A**
